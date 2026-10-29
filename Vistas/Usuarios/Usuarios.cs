@@ -31,6 +31,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonPeligro(btn_baja);
             Estilos.BotonSecundario(btn_restablecer);
             Estilos.BotonSecundario(btn_historial);
+            Estilos.BotonPrincipal(btn_detalle_cliente);
             Estilos.BotonSecundario(btn_descartar);
             Estilos.BotonPrincipal(btn_guardar);
             Estilos.Placeholder(txt_buscar, "Buscar por legajo, DNI o apellido");
@@ -107,6 +108,9 @@ namespace FixedSegurosApp.Vistas
 
             // la baja es definitiva: un usuario dado de baja ya no se puede modificar
             HabilitarAcciones(usuario.Estado != "Baja");
+
+            // el detalle (vehículos, pólizas, pagos...) solo existe para clientes
+            btn_detalle_cliente.Visible = usuario.Perfil == "Cliente";
         }
 
         // Muestra u oculta los botones que modifican al usuario (el Empleado nunca los ve)
@@ -142,6 +146,7 @@ namespace FixedSegurosApp.Vistas
             txt_fecha_baja.Clear();
             txt_motivo_baja.Clear();
             btn_suspender.Text = "Suspender";
+            btn_detalle_cliente.Visible = false;
             HabilitarAcciones(true);
         }
 
@@ -294,6 +299,29 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        private void btn_detalle_cliente_Click(object sender, EventArgs e)
+        {
+            AbrirDetalleCliente();
+        }
+
+        // Doble clic en la fila de un cliente: abre su detalle
+        private void dgv_usuarios_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                AbrirDetalleCliente();
+            }
+        }
+
+        private void AbrirDetalleCliente()
+        {
+            if (usuarioSeleccionado == null || usuarioSeleccionado.Perfil != "Cliente")
+            {
+                return;
+            }
+            ((Principal)this.ParentForm).AbrirForm(new DetalleCliente(usuarioSeleccionado.Legajo));
+        }
+
         private void btn_historial_Click(object sender, EventArgs e)
         {
             // ParentForm es la ventana Principal que contiene a esta pantalla
@@ -326,6 +354,7 @@ namespace FixedSegurosApp.Vistas
             btn_baja.Visible = false;
             btn_restablecer.Visible = false;
             btn_historial.Visible = false;
+            btn_detalle_cliente.Left = btn_historial.Right - btn_detalle_cliente.Width;   // ocupa el lugar del historial
             btn_descartar.Visible = false;
             btn_guardar.Visible = false;
 

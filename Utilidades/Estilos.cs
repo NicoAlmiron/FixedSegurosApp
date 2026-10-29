@@ -132,6 +132,7 @@ namespace FixedSegurosApp.Utilidades
                 case "Vigente":
                 case "Aprobado":
                 case "Pagada":
+                case "VTV vigente":
                     return Exito;
                 case "Suspendido":
                 case "Por habilitar":
@@ -141,6 +142,7 @@ namespace FixedSegurosApp.Utilidades
                 case "Rechazado":
                 case "Vencida":
                 case "Cuota impaga":
+                case "VTV vencida":
                     return Peligro;
                 case "En evaluación":
                     return Informacion;

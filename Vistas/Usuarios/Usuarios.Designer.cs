@@ -20,6 +20,7 @@
             System.Windows.Forms.DataGridViewCellStyle estiloLegajo = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
             this.btn_historial = new System.Windows.Forms.Button();
+            this.btn_detalle_cliente = new System.Windows.Forms.Button();
             this.pnl_lista = new System.Windows.Forms.Panel();
             this.txt_buscar = new System.Windows.Forms.TextBox();
             this.btn_nuevo = new System.Windows.Forms.Button();
@@ -93,6 +94,17 @@
             this.btn_historial.Text = "Historial de acciones";
             this.btn_historial.UseVisualStyleBackColor = false;
             this.btn_historial.Click += new System.EventHandler(this.btn_historial_Click);
+            //
+            // btn_detalle_cliente
+            //
+            this.btn_detalle_cliente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_detalle_cliente.Location = new System.Drawing.Point(666, 20);
+            this.btn_detalle_cliente.Name = "btn_detalle_cliente";
+            this.btn_detalle_cliente.Size = new System.Drawing.Size(162, 32);
+            this.btn_detalle_cliente.TabIndex = 4;
+            this.btn_detalle_cliente.Text = "Ver detalle del cliente";
+            this.btn_detalle_cliente.UseVisualStyleBackColor = false;
+            this.btn_detalle_cliente.Click += new System.EventHandler(this.btn_detalle_cliente_Click);
             //
             // pnl_lista
             //
@@ -171,6 +183,7 @@
             this.dgv_usuarios.Size = new System.Drawing.Size(582, 536);
             this.dgv_usuarios.TabIndex = 4;
             this.dgv_usuarios.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_usuarios_CellFormatting);
+            this.dgv_usuarios.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_usuarios_CellDoubleClick);
             this.dgv_usuarios.SelectionChanged += new System.EventHandler(this.dgv_usuarios_SelectionChanged);
             //
             // col_legajo
@@ -586,6 +599,7 @@
             this.ClientSize = new System.Drawing.Size(1020, 730);
             this.Controls.Add(this.pnl_detalle);
             this.Controls.Add(this.pnl_lista);
+            this.Controls.Add(this.btn_detalle_cliente);
             this.Controls.Add(this.btn_historial);
             this.Controls.Add(this.lbl_titulo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -608,6 +622,7 @@
 
         private System.Windows.Forms.Label lbl_titulo;
         private System.Windows.Forms.Button btn_historial;
+        private System.Windows.Forms.Button btn_detalle_cliente;
         private System.Windows.Forms.Panel pnl_lista;
         private System.Windows.Forms.TextBox txt_buscar;
         private System.Windows.Forms.Button btn_nuevo;

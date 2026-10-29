@@ -53,6 +53,34 @@
     <Compile Include="Entidades\Accion.cs" />
     <Compile Include="Entidades\Empleado.cs" />
     <Compile Include="Entidades\Proveedor.cs" />
+    <Compile Include="Entidades\Vehiculo.cs" />
+    <Compile Include="Datos\VehiculoDatos.cs" />
+    <Compile Include="Negocio\VehiculoNegocio.cs" />
+    <Compile Include="Utilidades\Imagenes.cs" />
+    <Compile Include="Entidades\FotoVehiculo.cs" />
+    <Compile Include="Entidades\Poliza.cs" />
+    <Compile Include="Entidades\Pago.cs" />
+    <Compile Include="Entidades\Siniestro.cs" />
+    <Compile Include="Datos\ClienteDatos.cs" />
+    <Compile Include="Vistas\GrillaFotos.cs" />
+    <Compile Include="Vistas\VerFoto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\VerFoto.Designer.cs">
+      <DependentUpon>VerFoto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Usuarios\DetalleCliente.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Usuarios\DetalleCliente.Designer.cs">
+      <DependentUpon>DetalleCliente.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Vehiculos\MisVehiculos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Vehiculos\MisVehiculos.Designer.cs">
+      <DependentUpon>MisVehiculos.cs</DependentUpon>
+    </Compile>
     <Compile Include="Datos\ProveedorDatos.cs" />
     <Compile Include="Negocio\ProveedorNegocio.cs" />
     <Compile Include="Vistas\Proveedores\Proveedores.cs">

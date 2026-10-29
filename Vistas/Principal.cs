@@ -74,6 +74,10 @@ namespace FixedSegurosApp.Vistas
             {
                 AbrirForm(new Empleados());
             }
+            else if (btn == btn_vehiculos)
+            {
+                AbrirForm(new MisVehiculos());
+            }
             else if (btn == btn_proveedores)
             {
                 AbrirForm(new Proveedores());
