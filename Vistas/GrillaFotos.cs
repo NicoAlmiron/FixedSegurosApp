@@ -1,11 +1,12 @@
-﻿using FixedSegurosApp.Utilidades;
+﻿using FixedSegurosApp.Negocio;
+using FixedSegurosApp.Utilidades;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Arma los 7 casilleros de fotos del vehículo (4 arriba y 3 abajo, cada uno con su nombre).
+    // Arma los casilleros de fotos del vehículo (4 arriba y el resto abajo, cada uno con su nombre).
     // Se usa en "Mis vehículos" y en "Detalle del cliente".
     internal class GrillaFotos
     {
@@ -39,6 +40,7 @@ namespace FixedSegurosApp.Vistas
                 casillero.Click += alHacerClic;
 
                 Label nombre = new Label();
+                nombre.Name = "lbl_foto_" + i;
                 nombre.Text = Nombres[i];
                 nombre.Location = new Point(posX, posY + alto + 2);
                 nombre.Size = new Size(ancho, 16);
@@ -52,6 +54,32 @@ namespace FixedSegurosApp.Vistas
             }
 
             return casilleros;
+        }
+
+        // Deja visibles solo las fotos que lleva ese tipo de vehículo y las acomoda sin dejar huecos.
+        public static void Mostrar(PictureBox[] casilleros, string tipoVehiculo)
+        {
+            string[] posiciones = VehiculoNegocio.PosicionesDe(tipoVehiculo);
+            int visibles = 0;
+
+            for (int i = 0; i < casilleros.Length; i++)
+            {
+                PictureBox casillero = casilleros[i];
+                Label nombre = (Label)casillero.Parent.Controls["lbl_foto_" + i];
+                bool visible = Array.IndexOf(posiciones, VehiculoNegocio.Posiciones[i]) >= 0;
+
+                casillero.Visible = visible;
+                nombre.Visible = visible;
+
+                if (visible)
+                {
+                    casillero.Left = casilleros[0].Left + (visibles % 4) * (casillero.Width + 6);
+                    casillero.Top = casilleros[0].Top + (visibles / 4) * (casillero.Height + 22);
+                    nombre.Left = casillero.Left;
+                    nombre.Top = casillero.Bottom + 2;
+                    visibles++;
+                }
+            }
         }
     }
 }

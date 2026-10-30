@@ -12,7 +12,8 @@ namespace FixedSegurosApp.Datos
         private const string columnas = "SELECT po.nroPoliza, po.idProveedor, pr.nombre, pr.activo, po.tipoCobertura, po.tipoVehiculo, " +
                                         "po.adicionales, po.fechaInicio, po.fechaVencimiento, po.descuento, po.duracion, po.requisitos, " +
                                         "po.tipoPrima, po.prima, po.formaPago, po.franquicia, po.estado, " +
-                                        "p.apellido + ', ' + p.nombre, v.dominio " +
+                                        "p.apellido + ', ' + p.nombre, v.dominio, po.comision, " +
+                                        "(SELECT COUNT(*) FROM Pago WHERE idPoliza = po.nroPoliza AND idArqueo IS NOT NULL) " +
                                         "FROM Poliza po " +
                                         "JOIN Proveedor pr ON pr.idProveedor = po.idProveedor " +
                                         "LEFT JOIN Cliente c ON c.idCliente = po.idCliente " +
@@ -172,10 +173,10 @@ namespace FixedSegurosApp.Datos
             try
             {
                 string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, descuento, duracion, requisitos, " +
-                               "referente, tipoPrima, prima, formaPago, franquicia, estado, idProveedor) " +
+                               "referente, tipoPrima, prima, formaPago, franquicia, comision, estado, idProveedor) " +
                                "VALUES (@cobertura, @tipoVehiculo, @adicionales, @inicio, @descuento, @duracion, @requisitos, " +
                                "(SELECT idEmpleado FROM Empleado WHERE idPersona = @legajo), " +
-                               "@tipoPrima, @prima, @formaPago, @franquicia, 'Ofrecida', @idProveedor); " +
+                               "@tipoPrima, @prima, @formaPago, @franquicia, @comision, 'Ofrecida', @idProveedor); " +
                                "SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
@@ -207,7 +208,7 @@ namespace FixedSegurosApp.Datos
             {
                 string query = "UPDATE Poliza SET tipoCobertura = @cobertura, tipoVehiculo = @tipoVehiculo, adicionales = @adicionales, " +
                                "fechaInicio = @inicio, descuento = @descuento, duracion = @duracion, requisitos = @requisitos, " +
-                               "tipoPrima = @tipoPrima, prima = @prima, formaPago = @formaPago, franquicia = @franquicia, " +
+                               "tipoPrima = @tipoPrima, prima = @prima, formaPago = @formaPago, franquicia = @franquicia, comision = @comision, " +
                                "idProveedor = @idProveedor " +
                                "WHERE nroPoliza = @nro AND estado = 'Ofrecida'";
 
@@ -296,10 +297,10 @@ namespace FixedSegurosApp.Datos
                 transaccion = con.BeginTransaction();
 
                 string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, fechaVencimiento, sumaAsegurada, " +
-                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, estado, " +
+                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, estado, " +
                                "idCliente, idVehiculo, idProveedor) " +
                                "SELECT tipoCobertura, tipoVehiculo, adicionales, @inicio, @vencimiento, sumaAsegurada, " +
-                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, 'Vigente', " +
+                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, 'Vigente', " +
                                "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo), @idVehiculo, idProveedor " +
                                "FROM Poliza WHERE nroPoliza = @nro AND estado = 'Ofrecida'; " +
                                "SELECT CAST(SCOPE_IDENTITY() AS INT);";
@@ -357,6 +358,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@prima", poliza.Prima);
             sql.Parameters.AddWithValue("@formaPago", poliza.FormaPago);
             sql.Parameters.AddWithValue("@franquicia", poliza.Franquicia);
+            sql.Parameters.AddWithValue("@comision", poliza.Comision);
             sql.Parameters.AddWithValue("@idProveedor", poliza.IdProveedor);
         }
 
@@ -382,7 +384,9 @@ namespace FixedSegurosApp.Datos
                 Franquicia = leer.GetDecimal(15),
                 Estado = leer.GetString(16),
                 Cliente = leer.IsDBNull(17) ? "" : leer.GetString(17),
-                Dominio = leer.IsDBNull(18) ? "" : leer.GetString(18)
+                Dominio = leer.IsDBNull(18) ? "" : leer.GetString(18),
+                Comision = leer.GetDecimal(19),
+                CuotasLiquidadas = leer.GetInt32(20)
             };
             return poliza;
         }

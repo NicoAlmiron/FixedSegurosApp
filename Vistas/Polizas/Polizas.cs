@@ -28,6 +28,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.Tarjeta(pnl_detalle);
             Estilos.Grilla(dgv_polizas);
             Estilos.BotonPrincipal(btn_nueva);
+            Estilos.BotonSecundario(btn_comision);
             Estilos.BotonPeligro(btn_baja);
             Estilos.BotonSecundario(btn_descartar);
             Estilos.BotonPrincipal(btn_guardar);
@@ -35,7 +36,11 @@ namespace FixedSegurosApp.Vistas
             Estilos.Placeholder(txt_prima, "$ 45000");
             Estilos.Placeholder(txt_descuento, "10 %");
             Estilos.Placeholder(txt_franquicia, "$ 80000");
+            Estilos.Placeholder(txt_comision, "12 %");
             Estilos.Placeholder(txt_adicionales, "Cristales, grúa...");
+
+            // las ganancias de la empresa solo las ve el Administrador
+            btn_comision.Visible = Sesion.UsuarioActual.Perfil == "Administrador";
 
             // todas las aseguradoras (si se elige una inactiva, Negocio avisa que no puede ofrecer pólizas)
             cb_aseguradora.DisplayMember = "Nombre";
@@ -95,20 +100,26 @@ namespace FixedSegurosApp.Vistas
             txt_duracion.Text = poliza.Duracion.ToString();
             dtp_inicio.Value = poliza.FechaInicio.Value;
             txt_franquicia.Text = poliza.Franquicia.ToString("0.##");
+            txt_comision.Text = poliza.Comision.ToString("0.##");
             txt_adicionales.Text = poliza.Adicionales;
             txt_requisitos.Text = poliza.Requisitos;
 
-            string cuotas = poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2") + " (prima con descuento).";
+            string cuotas = poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2");
 
             if (poliza.Estado == "Ofrecida")
             {
-                lbl_info.Text = "Póliza ofrecida: la puede contratar un cliente con un " + poliza.TipoVehiculo + " aprobado.\n" + cuotas;
+                lbl_info.Text = "Póliza ofrecida: la puede contratar un cliente con un " + poliza.TipoVehiculo + " aprobado.\n" + cuotas + " (prima con descuento).";
             }
             else
             {
                 lbl_info.Text = "Contratada por " + poliza.Cliente + " para el vehículo " + poliza.Dominio + ".\n" +
                                 "Vigencia: " + poliza.FechaInicio.Value.ToString("dd/MM/yyyy") + " al " + poliza.FechaVencimiento.Value.ToString("dd/MM/yyyy") + " · " + cuotas + "\n" +
-                                "Una póliza contratada no se modifica; solo se puede dar de baja.";
+                                "Una póliza contratada solo se puede dar de baja.";
+
+                if (Sesion.UsuarioActual.Perfil == "Administrador")
+                {
+                    lbl_info.Text += "\nCuotas liquidadas: " + poliza.CuotasLiquidadas + " de " + poliza.CantidadCuotas + ".";
+                }
             }
 
             // solo se editan las ofrecidas; una dada de baja tampoco se puede volver a dar de baja
@@ -132,6 +143,7 @@ namespace FixedSegurosApp.Vistas
             txt_duracion.Clear();
             dtp_inicio.Value = DateTime.Today;
             txt_franquicia.Clear();
+            txt_comision.Clear();
             txt_adicionales.Clear();
             txt_requisitos.Clear();
             lbl_info.Text = "La póliza queda como \"Ofrecida\" hasta que un cliente la contrate para un vehículo aprobado.";
@@ -153,6 +165,7 @@ namespace FixedSegurosApp.Vistas
             txt_duracion.ReadOnly = bloqueado;
             dtp_inicio.Enabled = !bloqueado;
             txt_franquicia.ReadOnly = bloqueado;
+            txt_comision.ReadOnly = bloqueado;
             txt_adicionales.ReadOnly = bloqueado;
             txt_requisitos.ReadOnly = bloqueado;
             btn_guardar.Visible = !bloqueado;
@@ -201,7 +214,7 @@ namespace FixedSegurosApp.Vistas
                 Requisitos = txt_requisitos.Text.Trim()
             };
 
-            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), out mensaje))
+            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), txt_comision.Text.Trim(), out mensaje))
             {
                 MessageBox.Show(esNueva ? "Póliza " + poliza.NroTexto + " creada. Ya la pueden contratar los clientes." : "Los cambios se guardaron correctamente.", "Pólizas", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txt_buscar.Clear();   // para que la póliza aparezca aunque hubiera una búsqueda escrita
@@ -251,6 +264,11 @@ namespace FixedSegurosApp.Vistas
                 CargarDatos();
                 SeleccionarFila(nro);
             }
+        }
+
+        private void btn_comision_Click(object sender, EventArgs e)
+        {
+            ((Principal)this.ParentForm).AbrirForm(new Comisiones());
         }
 
         // Pinta la columna Estado con el color que le corresponde

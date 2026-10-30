@@ -17,7 +17,6 @@
 
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle estiloComision = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
             this.pnl_lista = new System.Windows.Forms.Panel();
             this.txt_buscar = new System.Windows.Forms.TextBox();
@@ -27,7 +26,6 @@
             this.col_nombre = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_ssn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_cuit = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.col_comision = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_estado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.lbl_cantidad = new System.Windows.Forms.Label();
             this.pnl_detalle = new System.Windows.Forms.Panel();
@@ -47,8 +45,6 @@
             this.txt_email = new System.Windows.Forms.TextBox();
             this.lbl_sitio = new System.Windows.Forms.Label();
             this.txt_sitio = new System.Windows.Forms.TextBox();
-            this.lbl_comision = new System.Windows.Forms.Label();
-            this.txt_comision = new System.Windows.Forms.TextBox();
             this.lbl_direccion = new System.Windows.Forms.Label();
             this.txt_direccion = new System.Windows.Forms.TextBox();
             this.lbl_provincia = new System.Windows.Forms.Label();
@@ -132,7 +128,6 @@
             this.col_nombre,
             this.col_ssn,
             this.col_cuit,
-            this.col_comision,
             this.col_estado});
             this.dgv_proveedores.Location = new System.Drawing.Point(1, 58);
             this.dgv_proveedores.Name = "dgv_proveedores";
@@ -161,15 +156,6 @@
             this.col_cuit.FillWeight = 110F;
             this.col_cuit.HeaderText = "CUIT";
             this.col_cuit.Name = "col_cuit";
-            //
-            // col_comision
-            //
-            this.col_comision.DataPropertyName = "Comision";
-            estiloComision.Format = "0.##\' %\'";
-            this.col_comision.DefaultCellStyle = estiloComision;
-            this.col_comision.FillWeight = 75F;
-            this.col_comision.HeaderText = "Comisión";
-            this.col_comision.Name = "col_comision";
             //
             // col_estado
             //
@@ -209,8 +195,6 @@
             this.pnl_detalle.Controls.Add(this.txt_email);
             this.pnl_detalle.Controls.Add(this.lbl_sitio);
             this.pnl_detalle.Controls.Add(this.txt_sitio);
-            this.pnl_detalle.Controls.Add(this.lbl_comision);
-            this.pnl_detalle.Controls.Add(this.txt_comision);
             this.pnl_detalle.Controls.Add(this.lbl_direccion);
             this.pnl_detalle.Controls.Add(this.txt_direccion);
             this.pnl_detalle.Controls.Add(this.lbl_provincia);
@@ -370,26 +354,8 @@
             this.txt_sitio.Location = new System.Drawing.Point(16, 302);
             this.txt_sitio.MaxLength = 60;
             this.txt_sitio.Name = "txt_sitio";
-            this.txt_sitio.Size = new System.Drawing.Size(164, 23);
+            this.txt_sitio.Size = new System.Drawing.Size(344, 23);
             this.txt_sitio.TabIndex = 7;
-            //
-            // lbl_comision
-            //
-            this.lbl_comision.AutoSize = true;
-            this.lbl_comision.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_comision.Location = new System.Drawing.Point(196, 282);
-            this.lbl_comision.Name = "lbl_comision";
-            this.lbl_comision.Size = new System.Drawing.Size(81, 15);
-            this.lbl_comision.Text = "Comisión (%)";
-            //
-            // txt_comision
-            //
-            this.txt_comision.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_comision.Location = new System.Drawing.Point(196, 302);
-            this.txt_comision.MaxLength = 6;
-            this.txt_comision.Name = "txt_comision";
-            this.txt_comision.Size = new System.Drawing.Size(164, 23);
-            this.txt_comision.TabIndex = 8;
             //
             // lbl_direccion
             //
@@ -511,7 +477,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn col_nombre;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_ssn;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_cuit;
-        private System.Windows.Forms.DataGridViewTextBoxColumn col_comision;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_estado;
         private System.Windows.Forms.Label lbl_cantidad;
         private System.Windows.Forms.Panel pnl_detalle;
@@ -531,8 +496,6 @@
         private System.Windows.Forms.TextBox txt_email;
         private System.Windows.Forms.Label lbl_sitio;
         private System.Windows.Forms.TextBox txt_sitio;
-        private System.Windows.Forms.Label lbl_comision;
-        private System.Windows.Forms.TextBox txt_comision;
         private System.Windows.Forms.Label lbl_direccion;
         private System.Windows.Forms.TextBox txt_direccion;
         private System.Windows.Forms.Label lbl_provincia;

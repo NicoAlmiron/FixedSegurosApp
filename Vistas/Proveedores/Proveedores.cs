@@ -85,7 +85,6 @@ namespace FixedSegurosApp.Vistas
             txt_telefono.Text = proveedor.Telefono;
             txt_email.Text = proveedor.Email;
             txt_sitio.Text = proveedor.SitioWeb;
-            txt_comision.Text = proveedor.Comision.ToString("0.##");
             txt_direccion.Text = proveedor.Direccion;
             cb_provincia.Text = proveedor.Provincia;
             txt_ciudad.Text = proveedor.Ciudad;
@@ -106,7 +105,6 @@ namespace FixedSegurosApp.Vistas
             txt_telefono.Clear();
             txt_email.Clear();
             txt_sitio.Clear();
-            txt_comision.Clear();
             txt_direccion.Clear();
             cb_provincia.SelectedIndex = -1;
             txt_ciudad.Clear();
@@ -157,7 +155,7 @@ namespace FixedSegurosApp.Vistas
                 Ciudad = txt_ciudad.Text.Trim()
             };
 
-            if (ProveedorNegocio.GuardarProveedor(proveedor, txt_comision.Text.Trim(), out mensaje))
+            if (ProveedorNegocio.GuardarProveedor(proveedor, out mensaje))
             {
                 MessageBox.Show(esNueva ? "Aseguradora registrada correctamente." : "Los cambios se guardaron correctamente.", "Proveedores", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 CargarDatos();

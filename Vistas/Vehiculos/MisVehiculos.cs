@@ -13,7 +13,7 @@ namespace FixedSegurosApp.Vistas
     {
         private BindingList<Vehiculo> listaVehiculos = new BindingList<Vehiculo>();
         private Vehiculo vehiculoSeleccionado;     // null = se esta cargando uno nuevo
-        private PictureBox[] casilleros;           // los 7 casilleros de fotos
+        private PictureBox[] casilleros;           // los casilleros de fotos
 
         // Las fotos que se ven en pantalla: posición -> foto (bytes). Se guardan recién al tocar "Guardar cambios".
         private Dictionary<string, byte[]> fotosActuales = new Dictionary<string, byte[]>();
@@ -124,6 +124,12 @@ namespace FixedSegurosApp.Vistas
             lbl_revision_valor.Text = estado == "Nuevo" ? "Sin enviar" : estado;
             lbl_revision_valor.BackColor = Estilos.ColorEstado(estado);
             lbl_revision_motivo.Text = estado == "Rechazado" ? "Motivo: " + motivo + " Corrija y guarde para enviarlo de nuevo." : "";
+        }
+
+        // Una motocicleta lleva menos fotos que el resto
+        private void cb_tipo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            GrillaFotos.Mostrar(casilleros, cb_tipo.Text);
         }
 
         private void MostrarFotos()

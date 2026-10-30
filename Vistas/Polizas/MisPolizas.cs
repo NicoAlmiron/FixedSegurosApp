@@ -44,7 +44,7 @@ namespace FixedSegurosApp.Vistas
             if (vehiculos.Count == 0)
             {
                 dgv_ofrecidas.DataSource = null;
-                lbl_oferta.Text = "No tiene vehículos para asegurar.\n\nCargue su vehículo en \"Mis vehículos\" con sus 7 fotos y espere a que un empleado lo apruebe.";
+                lbl_oferta.Text = "No tiene vehículos para asegurar.\n\nCargue su vehículo en \"Mis vehículos\" con sus fotos y espere a que un empleado lo apruebe.";
                 btn_adquirir.Enabled = false;
             }
         }

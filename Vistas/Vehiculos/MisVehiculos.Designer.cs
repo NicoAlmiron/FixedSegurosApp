@@ -250,6 +250,7 @@
             "Camión"});
             this.cb_tipo.Location = new System.Drawing.Point(16, 80);
             this.cb_tipo.Name = "cb_tipo";
+            this.cb_tipo.SelectedIndexChanged += new System.EventHandler(this.cb_tipo_SelectedIndexChanged);
             this.cb_tipo.Size = new System.Drawing.Size(164, 23);
             this.cb_tipo.TabIndex = 1;
             //

@@ -138,6 +138,7 @@ namespace FixedSegurosApp.Utilidades
                 case "Por habilitar":
                 case "Pendiente":
                 case "Por vencer":
+                case "Sin liquidar":
                     return Advertencia;
                 case "Rechazado":
                 case "Vencida":

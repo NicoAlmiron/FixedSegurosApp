@@ -13,7 +13,7 @@ namespace FixedSegurosApp.Vistas
     {
         private int legajoCliente;
         private Vehiculo vehiculoSeleccionado;
-        private PictureBox[] casilleros;                                       // las 7 fotos del vehículo elegido
+        private PictureBox[] casilleros;                                       // las fotos del vehículo elegido
         private Dictionary<string, byte[]> fotos = new Dictionary<string, byte[]>();
 
         public DetalleCliente(int legajo)
@@ -146,6 +146,8 @@ namespace FixedSegurosApp.Vistas
             // chasis y motor: hay que compararlos con las fotos antes de aprobar
             lbl_vehiculo_datos.Text = "Chasis: " + vehiculo.NumeroChasis + "   ·   Motor: " + vehiculo.NumeroMotor;
 
+            GrillaFotos.Mostrar(casilleros, vehiculo.TipoVehiculo);
+
             fotos = new Dictionary<string, byte[]>();
             foreach (FotoVehiculo foto in VehiculoNegocio.ListarFotos(vehiculo.IdVehiculo, legajoCliente))
             {
@@ -162,7 +164,7 @@ namespace FixedSegurosApp.Vistas
 
             if (vehiculo.EstadoRevision == "Pendiente")
             {
-                lbl_revision_detalle.Text = "Revise las " + VehiculoNegocio.Posiciones.Length + " fotos (clic para verlas en grande) antes de aprobar.";
+                lbl_revision_detalle.Text = "Revise las " + VehiculoNegocio.PosicionesDe(vehiculo.TipoVehiculo).Length + " fotos (clic para verlas en grande) antes de aprobar.";
             }
             else
             {

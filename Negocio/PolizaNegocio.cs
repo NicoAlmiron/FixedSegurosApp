@@ -22,13 +22,14 @@ namespace FixedSegurosApp.Negocio
 
         // Si poliza.NroPoliza es 0 crea una póliza "Ofrecida"; si no, guarda los cambios (solo de una ofrecida).
         // Los montos llegan como texto ("45000", "$ 45.000", "10 %") y se validan acá.
-        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, out string mensaje)
+        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, out string mensaje)
         {
             mensaje = "";
             decimal prima;
             decimal descuento;
             int duracion;
             decimal franquicia;
+            decimal comision;
 
             if (Sesion.UsuarioActual.Perfil == "Cliente")
             {
@@ -37,9 +38,9 @@ namespace FixedSegurosApp.Negocio
             }
 
             if (poliza.IdProveedor == 0 || poliza.TipoCobertura == "" || poliza.TipoVehiculo == "" || poliza.TipoPrima == "" ||
-                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "")
+                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "" || comisionTexto == "")
             {
-                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago y duración.";
+                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago, duración y comisión.";
                 return false;
             }
 
@@ -55,7 +56,7 @@ namespace FixedSegurosApp.Negocio
             {
                 descuento = 0;
             }
-            else if (!decimal.TryParse(LimpiarNumero(descuentoTexto), out descuento) || descuento < 0 || descuento >= 100)
+            else if (!decimal.TryParse(LimpiarPorcentaje(descuentoTexto), out descuento) || descuento < 0 || descuento >= 100)
             {
                 mensaje = "El descuento debe ser un porcentaje entre 0 y 99.";
                 return false;
@@ -72,6 +73,13 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
             poliza.Franquicia = franquicia;
+
+            if (!decimal.TryParse(LimpiarPorcentaje(comisionTexto), out comision) || comision < 0 || comision > 100)
+            {
+                mensaje = "La comisión debe ser un porcentaje entre 0 y 100.";
+                return false;
+            }
+            poliza.Comision = comision;
 
             if (!int.TryParse(duracionTexto, out duracion) || duracion < 1 || duracion > 60)
             {
@@ -290,10 +298,16 @@ namespace FixedSegurosApp.Negocio
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Pólizas", accion, detalle);
         }
 
-        // Saca "$", "%" y los puntos de miles: "$ 45.000,50" -> "45000,50"
+        // Montos: saca "$" y los puntos de miles: "$ 45.000,50" -> "45000,50"
         private static string LimpiarNumero(string texto)
         {
-            return texto.Replace("$", "").Replace("%", "").Replace(".", "").Trim();
+            return texto.Replace("$", "").Replace(".", "").Trim();
+        }
+
+        // Porcentajes: saca "%" y acepta punto o coma decimal: "12.5 %" -> "12,5"
+        private static string LimpiarPorcentaje(string texto)
+        {
+            return texto.Replace("%", "").Replace(".", ",").Trim();
         }
     }
 }

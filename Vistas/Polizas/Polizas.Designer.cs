@@ -19,6 +19,7 @@
         {
             System.Windows.Forms.DataGridViewCellStyle estiloVence = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
+            this.btn_comision = new System.Windows.Forms.Button();
             this.pnl_lista = new System.Windows.Forms.Panel();
             this.txt_buscar = new System.Windows.Forms.TextBox();
             this.btn_nueva = new System.Windows.Forms.Button();
@@ -54,6 +55,8 @@
             this.dtp_inicio = new System.Windows.Forms.DateTimePicker();
             this.lbl_franquicia = new System.Windows.Forms.Label();
             this.txt_franquicia = new System.Windows.Forms.TextBox();
+            this.lbl_comision = new System.Windows.Forms.Label();
+            this.txt_comision = new System.Windows.Forms.TextBox();
             this.lbl_adicionales = new System.Windows.Forms.Label();
             this.txt_adicionales = new System.Windows.Forms.TextBox();
             this.lbl_requisitos = new System.Windows.Forms.Label();
@@ -77,6 +80,17 @@
             this.lbl_titulo.Size = new System.Drawing.Size(84, 30);
             this.lbl_titulo.TabIndex = 0;
             this.lbl_titulo.Text = "Pólizas";
+            //
+            // btn_comision
+            //
+            this.btn_comision.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_comision.Location = new System.Drawing.Point(836, 24);
+            this.btn_comision.Name = "btn_comision";
+            this.btn_comision.Size = new System.Drawing.Size(160, 32);
+            this.btn_comision.TabIndex = 3;
+            this.btn_comision.Text = "Calcular comisión";
+            this.btn_comision.UseVisualStyleBackColor = false;
+            this.btn_comision.Click += new System.EventHandler(this.btn_comision_Click);
             //
             // pnl_lista
             //
@@ -227,6 +241,8 @@
             this.pnl_detalle.Controls.Add(this.dtp_inicio);
             this.pnl_detalle.Controls.Add(this.lbl_franquicia);
             this.pnl_detalle.Controls.Add(this.txt_franquicia);
+            this.pnl_detalle.Controls.Add(this.lbl_comision);
+            this.pnl_detalle.Controls.Add(this.txt_comision);
             this.pnl_detalle.Controls.Add(this.lbl_adicionales);
             this.pnl_detalle.Controls.Add(this.txt_adicionales);
             this.pnl_detalle.Controls.Add(this.lbl_requisitos);
@@ -375,7 +391,8 @@
             "Débito automático",
             "Tarjeta de crédito",
             "Transferencia bancaria",
-            "Efectivo"});
+            "Efectivo",
+            "Todas las formas de pago"});
             this.cb_forma_pago.Location = new System.Drawing.Point(196, 194);
             this.cb_forma_pago.Name = "cb_forma_pago";
             this.cb_forma_pago.Size = new System.Drawing.Size(164, 23);
@@ -453,11 +470,29 @@
             this.txt_franquicia.Size = new System.Drawing.Size(164, 23);
             this.txt_franquicia.TabIndex = 10;
             //
+            // lbl_comision
+            //
+            this.lbl_comision.AutoSize = true;
+            this.lbl_comision.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_comision.Location = new System.Drawing.Point(16, 336);
+            this.lbl_comision.Name = "lbl_comision";
+            this.lbl_comision.Size = new System.Drawing.Size(80, 15);
+            this.lbl_comision.Text = "Comisión (%)";
+            //
+            // txt_comision
+            //
+            this.txt_comision.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_comision.Location = new System.Drawing.Point(16, 356);
+            this.txt_comision.MaxLength = 7;
+            this.txt_comision.Name = "txt_comision";
+            this.txt_comision.Size = new System.Drawing.Size(164, 23);
+            this.txt_comision.TabIndex = 11;
+            //
             // lbl_adicionales
             //
             this.lbl_adicionales.AutoSize = true;
             this.lbl_adicionales.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_adicionales.Location = new System.Drawing.Point(16, 336);
+            this.lbl_adicionales.Location = new System.Drawing.Point(196, 336);
             this.lbl_adicionales.Name = "lbl_adicionales";
             this.lbl_adicionales.Size = new System.Drawing.Size(66, 15);
             this.lbl_adicionales.Text = "Adicionales";
@@ -465,11 +500,11 @@
             // txt_adicionales
             //
             this.txt_adicionales.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_adicionales.Location = new System.Drawing.Point(16, 356);
+            this.txt_adicionales.Location = new System.Drawing.Point(196, 356);
             this.txt_adicionales.MaxLength = 200;
             this.txt_adicionales.Name = "txt_adicionales";
-            this.txt_adicionales.Size = new System.Drawing.Size(344, 23);
-            this.txt_adicionales.TabIndex = 11;
+            this.txt_adicionales.Size = new System.Drawing.Size(164, 23);
+            this.txt_adicionales.TabIndex = 12;
             //
             // lbl_requisitos
             //
@@ -488,7 +523,7 @@
             this.txt_requisitos.Multiline = true;
             this.txt_requisitos.Name = "txt_requisitos";
             this.txt_requisitos.Size = new System.Drawing.Size(344, 60);
-            this.txt_requisitos.TabIndex = 12;
+            this.txt_requisitos.TabIndex = 13;
             //
             // lbl_info
             //
@@ -513,7 +548,7 @@
             this.btn_descartar.Location = new System.Drawing.Point(124, 586);
             this.btn_descartar.Name = "btn_descartar";
             this.btn_descartar.Size = new System.Drawing.Size(110, 34);
-            this.btn_descartar.TabIndex = 14;
+            this.btn_descartar.TabIndex = 15;
             this.btn_descartar.Text = "Descartar";
             this.btn_descartar.UseVisualStyleBackColor = false;
             this.btn_descartar.Click += new System.EventHandler(this.btn_descartar_Click);
@@ -524,7 +559,7 @@
             this.btn_guardar.Location = new System.Drawing.Point(240, 586);
             this.btn_guardar.Name = "btn_guardar";
             this.btn_guardar.Size = new System.Drawing.Size(120, 34);
-            this.btn_guardar.TabIndex = 13;
+            this.btn_guardar.TabIndex = 14;
             this.btn_guardar.Text = "Guardar cambios";
             this.btn_guardar.UseVisualStyleBackColor = false;
             this.btn_guardar.Click += new System.EventHandler(this.btn_guardar_Click);
@@ -537,6 +572,7 @@
             this.ClientSize = new System.Drawing.Size(1020, 730);
             this.Controls.Add(this.pnl_detalle);
             this.Controls.Add(this.pnl_lista);
+            this.Controls.Add(this.btn_comision);
             this.Controls.Add(this.lbl_titulo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(42)))), ((int)(((byte)(56)))));
@@ -557,6 +593,7 @@
         #endregion
 
         private System.Windows.Forms.Label lbl_titulo;
+        private System.Windows.Forms.Button btn_comision;
         private System.Windows.Forms.Panel pnl_lista;
         private System.Windows.Forms.TextBox txt_buscar;
         private System.Windows.Forms.Button btn_nueva;
@@ -592,6 +629,8 @@
         private System.Windows.Forms.DateTimePicker dtp_inicio;
         private System.Windows.Forms.Label lbl_franquicia;
         private System.Windows.Forms.TextBox txt_franquicia;
+        private System.Windows.Forms.Label lbl_comision;
+        private System.Windows.Forms.TextBox txt_comision;
         private System.Windows.Forms.Label lbl_adicionales;
         private System.Windows.Forms.TextBox txt_adicionales;
         private System.Windows.Forms.Label lbl_requisitos;

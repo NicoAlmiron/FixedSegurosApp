@@ -9,7 +9,7 @@ namespace FixedSegurosApp.Datos
     internal class ProveedorDatos
     {
         // Columnas que usan ListarProveedores y BuscarPorId (en el mismo orden que LeerProveedor)
-        private const string columnas = "SELECT pr.idProveedor, pr.nombre, pr.registroSSN, pr.cuit, pr.tiposSeguro, pr.comision, " +
+        private const string columnas = "SELECT pr.idProveedor, pr.nombre, pr.registroSSN, pr.cuit, pr.tiposSeguro, " +
                                         "c.telefono, c.email, c.sitioWeb, d.calle, d.ciudad, d.provincia, pr.fechaAlta, pr.activo " +
                                         "FROM Proveedor pr " +
                                         "JOIN Direccion d ON d.idDireccion = pr.idDireccion " +
@@ -214,7 +214,6 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@registroSSN", proveedor.RegistroSSN);
             sql.Parameters.AddWithValue("@cuit", proveedor.Cuit);
             sql.Parameters.AddWithValue("@tiposSeguro", proveedor.TiposSeguro);
-            sql.Parameters.AddWithValue("@comision", proveedor.Comision);
             sql.Parameters.AddWithValue("@calle", proveedor.Direccion);
             sql.Parameters.AddWithValue("@ciudad", proveedor.Ciudad);
             sql.Parameters.AddWithValue("@provincia", proveedor.Provincia);
@@ -233,15 +232,14 @@ namespace FixedSegurosApp.Datos
                 RegistroSSN = leer.GetString(2),
                 Cuit = leer.GetString(3),
                 TiposSeguro = leer.IsDBNull(4) ? "" : leer.GetString(4),
-                Comision = leer.GetDecimal(5),
-                Telefono = leer.IsDBNull(6) ? "" : leer.GetString(6),
-                Email = leer.IsDBNull(7) ? "" : leer.GetString(7),
-                SitioWeb = leer.IsDBNull(8) ? "" : leer.GetString(8),
-                Direccion = leer.GetString(9),
-                Ciudad = leer.GetString(10),
-                Provincia = leer.GetString(11),
-                FechaAlta = leer.GetDateTime(12),
-                Activo = leer.GetBoolean(13)
+                Telefono = leer.IsDBNull(5) ? "" : leer.GetString(5),
+                Email = leer.IsDBNull(6) ? "" : leer.GetString(6),
+                SitioWeb = leer.IsDBNull(7) ? "" : leer.GetString(7),
+                Direccion = leer.GetString(8),
+                Ciudad = leer.GetString(9),
+                Provincia = leer.GetString(10),
+                FechaAlta = leer.GetDateTime(11),
+                Activo = leer.GetBoolean(12)
             };
             return proveedor;
         }

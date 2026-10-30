@@ -9,12 +9,24 @@ namespace FixedSegurosApp.Negocio
 {
     internal class VehiculoNegocio
     {
-        // Las 7 fotos obligatorias: registran el estado del vehículo al comenzar la póliza
+        // Las fotos obligatorias registran el estado del vehículo al comenzar la póliza.
+        // Esta es la lista completa (7): cada casillero de la pantalla es una de estas posiciones.
         public static readonly string[] Posiciones =
         {
             "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho",
             "Interior del baúl", "Interior delantero", "Motor (bajo el capot)"
         };
+
+        // Una motocicleta no tiene baúl ni interior: lleva 5 fotos
+        private static readonly string[] PosicionesMoto =
+        {
+            "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho", "Motor (bajo el capot)"
+        };
+
+        public static string[] PosicionesDe(string tipoVehiculo)
+        {
+            return tipoVehiculo == "Motocicleta" ? PosicionesMoto : Posiciones;
+        }
 
         // ================= Cliente: "Mis vehículos" =================
 
@@ -69,15 +81,18 @@ namespace FixedSegurosApp.Negocio
             }
             vehiculo.Anio = anio;
 
-            // Las 7 fotos son obligatorias
-            foreach (string posicion in Posiciones)
+            // Fotos obligatorias según el tipo de vehículo
+            string[] posiciones = PosicionesDe(vehiculo.TipoVehiculo);
+            foreach (string posicion in posiciones)
             {
                 if (!TieneFoto(fotos, posicion))
                 {
-                    mensaje = "Falta la foto: " + posicion + ". Las " + Posiciones.Length + " fotos son obligatorias.";
+                    mensaje = "Falta la foto: " + posicion + ". Las " + posiciones.Length + " fotos son obligatorias.";
                     return false;
                 }
             }
+
+            fotos = QuitarFotosDeMas(fotos, posiciones);
 
             if (VehiculoDatos.ExisteDominio(vehiculo.Dominio, vehiculo.IdVehiculo))
             {
@@ -239,6 +254,21 @@ namespace FixedSegurosApp.Negocio
             }
 
             return true;
+        }
+
+        // Si el cliente cambió el tipo de vehículo, pueden quedar fotos que ese tipo no lleva
+        private static List<FotoVehiculo> QuitarFotosDeMas(List<FotoVehiculo> fotos, string[] posiciones)
+        {
+            List<FotoVehiculo> lista = new List<FotoVehiculo>();
+
+            foreach (FotoVehiculo foto in fotos)
+            {
+                if (Array.IndexOf(posiciones, foto.Posicion) >= 0)
+                {
+                    lista.Add(foto);
+                }
+            }
+            return lista;
         }
 
         private static bool TieneFoto(List<FotoVehiculo> fotos, string posicion)

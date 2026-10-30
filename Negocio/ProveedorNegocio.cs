@@ -18,14 +18,12 @@ namespace FixedSegurosApp.Negocio
         }
 
         // Si proveedor.IdProveedor es 0 la crea; si no, guarda los cambios.
-        // La comision llega como texto ("12" o "12,5") y se valida aca.
-        public static bool GuardarProveedor(Proveedor proveedor, string comisionTexto, out string mensaje)
+        public static bool GuardarProveedor(Proveedor proveedor, out string mensaje)
         {
             mensaje = "";
-            decimal comision;
 
             if (proveedor.Nombre == "" || proveedor.RegistroSSN == "" || proveedor.Cuit == "" || proveedor.TiposSeguro == "" ||
-                proveedor.Telefono == "" || proveedor.Email == "" || comisionTexto == "" ||
+                proveedor.Telefono == "" || proveedor.Email == "" ||
                 proveedor.Direccion == "" || proveedor.Provincia == "" || proveedor.Ciudad == "")
             {
                 mensaje = "Complete todos los campos (el sitio web es opcional).";
@@ -40,13 +38,6 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
             proveedor.Cuit = cuitNumeros.Substring(0, 2) + "-" + cuitNumeros.Substring(2, 8) + "-" + cuitNumeros.Substring(10, 1);
-
-            if (!decimal.TryParse(comisionTexto.Replace("%", "").Trim(), out comision) || comision < 0 || comision > 100)
-            {
-                mensaje = "La comisión debe ser un número entre 0 y 100.";
-                return false;
-            }
-            proveedor.Comision = comision;
 
             if (!SoloNumeros(proveedor.Telefono))
             {

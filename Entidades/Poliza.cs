@@ -24,6 +24,8 @@ namespace FixedSegurosApp.Entidades
         public decimal Prima { get; set; }                  // monto de cada cuota antes del descuento
         public string FormaPago { get; set; }
         public decimal Franquicia { get; set; }
+        public decimal Comision { get; set; }               // porcentaje que gana Fixed Seguros sobre cada cuota cobrada
+        public int CuotasLiquidadas { get; set; }           // cuotas que ya entraron en un arqueo de comisiones
         public string Estado { get; set; }                  // Ofrecida / Vigente / Baja
         public string Cliente { get; set; }                 // "Apellido, Nombre" (vacío si es ofrecida)
         public string Dominio { get; set; }                 // vacío si es ofrecida
