@@ -27,6 +27,12 @@ namespace FixedSegurosApp.Entidades
             get { return Marca + " " + Modelo; }
         }
 
+        // Para los combos: "AB123CD · Fiat Cronos"
+        public string Descripcion
+        {
+            get { return Dominio + " · " + MarcaYModelo; }
+        }
+
         public string PolizaTexto
         {
             get { return NroPoliza == 0 ? "Sin póliza" : NroPoliza.ToString("000000"); }

@@ -78,6 +78,18 @@ namespace FixedSegurosApp.Vistas
             {
                 AbrirForm(new MisVehiculos());
             }
+            else if (btn == btn_polizas)
+            {
+                // el cliente ve sus pólizas y contrata; admin y empleado hacen el ABM
+                if (Sesion.UsuarioActual.Perfil == "Cliente")
+                {
+                    AbrirForm(new MisPolizas());
+                }
+                else
+                {
+                    AbrirForm(new Polizas());
+                }
+            }
             else if (btn == btn_proveedores)
             {
                 AbrirForm(new Proveedores());

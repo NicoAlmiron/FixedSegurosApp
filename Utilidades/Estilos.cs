@@ -145,6 +145,7 @@ namespace FixedSegurosApp.Utilidades
                 case "VTV vencida":
                     return Peligro;
                 case "En evaluación":
+                case "Ofrecida":
                     return Informacion;
                 default:
                     return TextoSecundario;   // Baja, Inactiva, Deshabilitado...

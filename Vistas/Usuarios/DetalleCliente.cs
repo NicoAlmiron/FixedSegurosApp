@@ -27,7 +27,7 @@ namespace FixedSegurosApp.Vistas
             dgv_siniestros.AutoGenerateColumns = false;
             dgv_historial.AutoGenerateColumns = false;
 
-            casilleros = GrillaFotos.Crear(pnl_vehiculo, 0, 30, 88, 66, casillero_Click);
+            casilleros = GrillaFotos.Crear(pnl_vehiculo, 0, 48, 88, 66, casillero_Click);
         }
 
         private void DetalleCliente_Load(object sender, EventArgs e)
@@ -143,6 +143,8 @@ namespace FixedSegurosApp.Vistas
             }
 
             lbl_vehiculo_titulo.Text = vehiculo.Dominio + " · " + vehiculo.MarcaYModelo + " (" + vehiculo.Anio + ")";
+            // chasis y motor: hay que compararlos con las fotos antes de aprobar
+            lbl_vehiculo_datos.Text = "Chasis: " + vehiculo.NumeroChasis + "   ·   Motor: " + vehiculo.NumeroMotor;
 
             fotos = new Dictionary<string, byte[]>();
             foreach (FotoVehiculo foto in VehiculoNegocio.ListarFotos(vehiculo.IdVehiculo, legajoCliente))

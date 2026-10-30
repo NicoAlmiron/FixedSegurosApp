@@ -72,7 +72,7 @@ namespace FixedSegurosApp.Negocio
 
         public static List<Poliza> ListarPolizas(int legajo)
         {
-            return ClienteDatos.ListarPolizas(legajo);
+            return PolizaDatos.ListarPolizasDeCliente(legajo);
         }
 
         public static List<Pago> ListarPagos(int legajo)

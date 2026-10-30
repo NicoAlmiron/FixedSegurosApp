@@ -47,6 +47,13 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
+            // Chasis y motor son obligatorios: el empleado los compara con las fotos antes de aprobar
+            if (vehiculo.NumeroChasis == "" || vehiculo.NumeroMotor == "")
+            {
+                mensaje = "Complete el número de chasis y el número de motor.";
+                return false;
+            }
+
             // Dominio: se guarda en mayúsculas y sin espacios ni guiones
             vehiculo.Dominio = vehiculo.Dominio.ToUpper().Replace(" ", "").Replace("-", "");
             if (!DominioValido(vehiculo.Dominio))

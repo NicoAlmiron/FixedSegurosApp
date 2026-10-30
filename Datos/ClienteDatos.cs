@@ -70,54 +70,6 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        public static List<Poliza> ListarPolizas(int legajo)
-        {
-            List<Poliza> lista = new List<Poliza>();
-
-            Conexion conexion = new Conexion();
-
-            try
-            {
-                string query = "SELECT po.nroPoliza, pr.nombre, v.dominio, po.tipoCobertura, po.fechaInicio, po.fechaVencimiento, po.estado " +
-                               "FROM Poliza po " +
-                               "JOIN Proveedor pr ON pr.idProveedor = po.idProveedor " +
-                               "JOIN Cliente c ON c.idCliente = po.idCliente " +
-                               "LEFT JOIN Vehiculo v ON v.idVehiculo = po.idVehiculo " +
-                               "WHERE c.idPersona = @legajo ORDER BY po.nroPoliza DESC";
-
-                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
-                sql.Parameters.AddWithValue("@legajo", legajo);
-
-                SqlDataReader leer = sql.ExecuteReader();
-
-                while (leer.Read())
-                {
-                    Poliza item = new Poliza()
-                    {
-                        NroPoliza = leer.GetInt32(0),
-                        Aseguradora = leer.GetString(1),
-                        Dominio = leer.IsDBNull(2) ? "" : leer.GetString(2),
-                        TipoCobertura = leer.GetString(3),
-                        FechaInicio = leer.IsDBNull(4) ? (DateTime?)null : leer.GetDateTime(4),
-                        FechaVencimiento = leer.IsDBNull(5) ? (DateTime?)null : leer.GetDateTime(5),
-                        Estado = leer.GetString(6)
-                    };
-                    lista.Add(item);
-                }
-                leer.Close();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                conexion.CerrarConexion();
-            }
-
-            return lista;
-        }
-
         public static List<Pago> ListarPagos(int legajo)
         {
             List<Pago> lista = new List<Pago>();

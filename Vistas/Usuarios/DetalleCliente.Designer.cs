@@ -51,6 +51,7 @@
             this.col_veh_estado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pnl_vehiculo = new System.Windows.Forms.Panel();
             this.lbl_vehiculo_titulo = new System.Windows.Forms.Label();
+            this.lbl_vehiculo_datos = new System.Windows.Forms.Label();
             this.lbl_revision_titulo = new System.Windows.Forms.Label();
             this.lbl_revision_valor = new System.Windows.Forms.Label();
             this.lbl_revision_detalle = new System.Windows.Forms.Label();
@@ -321,6 +322,7 @@
             this.pnl_vehiculo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnl_vehiculo.Controls.Add(this.lbl_vehiculo_titulo);
+            this.pnl_vehiculo.Controls.Add(this.lbl_vehiculo_datos);
             this.pnl_vehiculo.Controls.Add(this.lbl_revision_titulo);
             this.pnl_vehiculo.Controls.Add(this.lbl_revision_valor);
             this.pnl_vehiculo.Controls.Add(this.lbl_revision_detalle);
@@ -340,10 +342,19 @@
             this.lbl_vehiculo_titulo.Size = new System.Drawing.Size(127, 20);
             this.lbl_vehiculo_titulo.Text = "Fotos del vehículo";
             //
+            // lbl_vehiculo_datos
+            //
+            this.lbl_vehiculo_datos.AutoSize = true;
+            this.lbl_vehiculo_datos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_vehiculo_datos.Location = new System.Drawing.Point(0, 24);
+            this.lbl_vehiculo_datos.Name = "lbl_vehiculo_datos";
+            this.lbl_vehiculo_datos.Size = new System.Drawing.Size(150, 15);
+            this.lbl_vehiculo_datos.Text = "Chasis: -   ·   Motor: -";
+            //
             // lbl_revision_titulo
             //
             this.lbl_revision_titulo.AutoSize = true;
-            this.lbl_revision_titulo.Location = new System.Drawing.Point(0, 222);
+            this.lbl_revision_titulo.Location = new System.Drawing.Point(0, 240);
             this.lbl_revision_titulo.Name = "lbl_revision_titulo";
             this.lbl_revision_titulo.Size = new System.Drawing.Size(55, 15);
             this.lbl_revision_titulo.Text = "Revisión:";
@@ -354,7 +365,7 @@
             this.lbl_revision_valor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(154)))), ((int)(((byte)(103)))), ((int)(((byte)(0)))));
             this.lbl_revision_valor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lbl_revision_valor.ForeColor = System.Drawing.Color.White;
-            this.lbl_revision_valor.Location = new System.Drawing.Point(62, 220);
+            this.lbl_revision_valor.Location = new System.Drawing.Point(62, 238);
             this.lbl_revision_valor.Name = "lbl_revision_valor";
             this.lbl_revision_valor.Padding = new System.Windows.Forms.Padding(6, 2, 6, 2);
             this.lbl_revision_valor.Size = new System.Drawing.Size(80, 19);
@@ -363,14 +374,14 @@
             // lbl_revision_detalle
             //
             this.lbl_revision_detalle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_revision_detalle.Location = new System.Drawing.Point(0, 246);
+            this.lbl_revision_detalle.Location = new System.Drawing.Point(0, 264);
             this.lbl_revision_detalle.Name = "lbl_revision_detalle";
             this.lbl_revision_detalle.Size = new System.Drawing.Size(380, 54);
             this.lbl_revision_detalle.Text = "Detalle de la revisión";
             //
             // btn_aprobar
             //
-            this.btn_aprobar.Location = new System.Drawing.Point(0, 306);
+            this.btn_aprobar.Location = new System.Drawing.Point(0, 324);
             this.btn_aprobar.Name = "btn_aprobar";
             this.btn_aprobar.Size = new System.Drawing.Size(130, 32);
             this.btn_aprobar.TabIndex = 0;
@@ -380,7 +391,7 @@
             //
             // btn_rechazar
             //
-            this.btn_rechazar.Location = new System.Drawing.Point(138, 306);
+            this.btn_rechazar.Location = new System.Drawing.Point(138, 324);
             this.btn_rechazar.Name = "btn_rechazar";
             this.btn_rechazar.Size = new System.Drawing.Size(130, 32);
             this.btn_rechazar.TabIndex = 1;
@@ -464,7 +475,7 @@
             //
             // col_pol_estado
             //
-            this.col_pol_estado.DataPropertyName = "Estado";
+            this.col_pol_estado.DataPropertyName = "EstadoMostrado";
             this.col_pol_estado.FillWeight = 70F;
             this.col_pol_estado.HeaderText = "Estado";
             this.col_pol_estado.Name = "col_pol_estado";
@@ -739,6 +750,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn col_veh_estado;
         private System.Windows.Forms.Panel pnl_vehiculo;
         private System.Windows.Forms.Label lbl_vehiculo_titulo;
+        private System.Windows.Forms.Label lbl_vehiculo_datos;
         private System.Windows.Forms.Label lbl_revision_titulo;
         private System.Windows.Forms.Label lbl_revision_valor;
         private System.Windows.Forms.Label lbl_revision_detalle;
