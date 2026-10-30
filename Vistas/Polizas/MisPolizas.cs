@@ -78,16 +78,7 @@ namespace FixedSegurosApp.Vistas
             }
 
             Poliza poliza = (Poliza)dgv_ofrecidas.SelectedRows[0].DataBoundItem;
-            DateTime inicio = PolizaNegocio.CalcularInicio(poliza);
-
-            lbl_oferta.Text = poliza.Aseguradora + " · " + poliza.TipoCobertura + "\n\n" +
-                              "Prima " + poliza.TipoPrima.ToLower() + ": $ " + poliza.Prima.ToString("N2") +
-                              (poliza.Descuento > 0 ? " (" + poliza.Descuento.ToString("0.##") + " % de descuento)" : "") + "\n" +
-                              poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2") + " · " + poliza.FormaPago + "\n" +
-                              "Franquicia: $ " + poliza.Franquicia.ToString("N2") + "\n" +
-                              "Vigencia: " + inicio.ToString("dd/MM/yyyy") + " al " + inicio.AddMonths(poliza.Duracion).ToString("dd/MM/yyyy") + " (" + poliza.Duracion + " meses)\n" +
-                              (poliza.Adicionales != "" ? "Adicionales: " + poliza.Adicionales + "\n" : "") +
-                              (poliza.Requisitos != "" ? "Requisitos: " + poliza.Requisitos : "");
+            lbl_oferta.Text = PolizaNegocio.DescribirOferta(poliza);
             btn_adquirir.Enabled = true;
         }
 

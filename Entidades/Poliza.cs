@@ -37,6 +37,12 @@ namespace FixedSegurosApp.Entidades
             get { return NroPoliza.ToString("000000"); }
         }
 
+        // Para los combos: "000124 · AB123CD"
+        public string Descripcion
+        {
+            get { return NroTexto + " · " + Dominio; }
+        }
+
         public string ClienteTexto
         {
             get { return Cliente == "" ? "Sin asignar" : Cliente; }

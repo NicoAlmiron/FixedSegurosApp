@@ -20,6 +20,7 @@
             System.Windows.Forms.DataGridViewCellStyle estiloVence = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
             this.btn_comision = new System.Windows.Forms.Button();
+            this.btn_alta = new System.Windows.Forms.Button();
             this.pnl_lista = new System.Windows.Forms.Panel();
             this.txt_buscar = new System.Windows.Forms.TextBox();
             this.btn_nueva = new System.Windows.Forms.Button();
@@ -91,6 +92,17 @@
             this.btn_comision.Text = "Calcular comisión";
             this.btn_comision.UseVisualStyleBackColor = false;
             this.btn_comision.Click += new System.EventHandler(this.btn_comision_Click);
+            //
+            // btn_alta
+            //
+            this.btn_alta.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_alta.Location = new System.Drawing.Point(836, 24);
+            this.btn_alta.Name = "btn_alta";
+            this.btn_alta.Size = new System.Drawing.Size(160, 32);
+            this.btn_alta.TabIndex = 4;
+            this.btn_alta.Text = "Alta en oficina";
+            this.btn_alta.UseVisualStyleBackColor = false;
+            this.btn_alta.Click += new System.EventHandler(this.btn_alta_Click);
             //
             // pnl_lista
             //
@@ -572,6 +584,7 @@
             this.ClientSize = new System.Drawing.Size(1020, 730);
             this.Controls.Add(this.pnl_detalle);
             this.Controls.Add(this.pnl_lista);
+            this.Controls.Add(this.btn_alta);
             this.Controls.Add(this.btn_comision);
             this.Controls.Add(this.lbl_titulo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -594,6 +607,7 @@
 
         private System.Windows.Forms.Label lbl_titulo;
         private System.Windows.Forms.Button btn_comision;
+        private System.Windows.Forms.Button btn_alta;
         private System.Windows.Forms.Panel pnl_lista;
         private System.Windows.Forms.TextBox txt_buscar;
         private System.Windows.Forms.Button btn_nueva;

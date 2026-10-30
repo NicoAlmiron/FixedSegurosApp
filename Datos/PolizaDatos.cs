@@ -296,35 +296,7 @@ namespace FixedSegurosApp.Datos
                 SqlConnection con = conexion.AbrirConexion();
                 transaccion = con.BeginTransaction();
 
-                string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, fechaVencimiento, sumaAsegurada, " +
-                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, estado, " +
-                               "idCliente, idVehiculo, idProveedor) " +
-                               "SELECT tipoCobertura, tipoVehiculo, adicionales, @inicio, @vencimiento, sumaAsegurada, " +
-                               "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, 'Vigente', " +
-                               "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo), @idVehiculo, idProveedor " +
-                               "FROM Poliza WHERE nroPoliza = @nro AND estado = 'Ofrecida'; " +
-                               "SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                SqlCommand sql = new SqlCommand(query, con, transaccion);
-                sql.Parameters.AddWithValue("@inicio", inicio);
-                sql.Parameters.AddWithValue("@vencimiento", vencimiento);
-                sql.Parameters.AddWithValue("@legajo", legajoCliente);
-                sql.Parameters.AddWithValue("@idVehiculo", idVehiculo);
-                sql.Parameters.AddWithValue("@nro", nroOfrecida);
-
-                nro = Convert.ToInt32(sql.ExecuteScalar());
-
-                foreach (Pago cuota in cuotas)
-                {
-                    query = "INSERT INTO Pago (cuota, fechaVencimiento, monto, idPoliza) VALUES (@cuota, @vencimiento, @monto, @nro)";
-
-                    sql = new SqlCommand(query, con, transaccion);
-                    sql.Parameters.AddWithValue("@cuota", cuota.Cuota);
-                    sql.Parameters.AddWithValue("@vencimiento", cuota.FechaVencimiento);
-                    sql.Parameters.AddWithValue("@monto", cuota.Monto);
-                    sql.Parameters.AddWithValue("@nro", nro);
-                    sql.ExecuteNonQuery();
-                }
+                nro = InsertarAdquirida(con, transaccion, nroOfrecida, idVehiculo, legajoCliente, inicio, vencimiento, cuotas);
 
                 transaccion.Commit();
             }
@@ -340,6 +312,43 @@ namespace FixedSegurosApp.Datos
             finally
             {
                 conexion.CerrarConexion();
+            }
+
+            return nro;
+        }
+
+        // Copia la ofrecida como "Vigente" y guarda sus cuotas, usando una conexión y transacción ya abiertas.
+        // Devuelve el N° de la póliza nueva.
+        public static int InsertarAdquirida(SqlConnection con, SqlTransaction transaccion, int nroOfrecida, int idVehiculo, int legajoCliente, DateTime inicio, DateTime vencimiento, List<Pago> cuotas)
+        {
+            string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, fechaVencimiento, sumaAsegurada, " +
+                           "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, estado, " +
+                           "idCliente, idVehiculo, idProveedor) " +
+                           "SELECT tipoCobertura, tipoVehiculo, adicionales, @inicio, @vencimiento, sumaAsegurada, " +
+                           "descuento, duracion, requisitos, referente, tipoPrima, prima, formaPago, franquicia, comision, 'Vigente', " +
+                           "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo), @idVehiculo, idProveedor " +
+                           "FROM Poliza WHERE nroPoliza = @nro AND estado = 'Ofrecida'; " +
+                           "SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            SqlCommand sql = new SqlCommand(query, con, transaccion);
+            sql.Parameters.AddWithValue("@inicio", inicio);
+            sql.Parameters.AddWithValue("@vencimiento", vencimiento);
+            sql.Parameters.AddWithValue("@legajo", legajoCliente);
+            sql.Parameters.AddWithValue("@idVehiculo", idVehiculo);
+            sql.Parameters.AddWithValue("@nro", nroOfrecida);
+
+            int nro = Convert.ToInt32(sql.ExecuteScalar());
+
+            foreach (Pago cuota in cuotas)
+            {
+                query = "INSERT INTO Pago (cuota, fechaVencimiento, monto, idPoliza) VALUES (@cuota, @vencimiento, @monto, @nro)";
+
+                sql = new SqlCommand(query, con, transaccion);
+                sql.Parameters.AddWithValue("@cuota", cuota.Cuota);
+                sql.Parameters.AddWithValue("@vencimiento", cuota.FechaVencimiento);
+                sql.Parameters.AddWithValue("@monto", cuota.Monto);
+                sql.Parameters.AddWithValue("@nro", nro);
+                sql.ExecuteNonQuery();
             }
 
             return nro;

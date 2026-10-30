@@ -49,9 +49,60 @@ namespace FixedSegurosApp.Negocio
         // Si vehiculo.IdVehiculo es 0 lo crea; si no, guarda los cambios. En ambos casos queda Pendiente de revisión.
         public static bool GuardarVehiculo(Vehiculo vehiculo, string anioTexto, List<FotoVehiculo> fotos, out string mensaje)
         {
+            int legajo = Sesion.UsuarioActual.Legajo;
+
+            if (!ValidarVehiculo(vehiculo, anioTexto, fotos, out mensaje))
+            {
+                return false;
+            }
+
+            fotos = QuitarFotosDeMas(fotos, PosicionesDe(vehiculo.TipoVehiculo));
+
+            if (vehiculo.IdVehiculo == 0)
+            {
+                vehiculo.IdVehiculo = VehiculoDatos.CrearVehiculo(vehiculo, fotos, legajo);
+
+                if (vehiculo.IdVehiculo == 0)
+                {
+                    mensaje = "No se pudo guardar el vehículo.";
+                    return false;
+                }
+
+                Registrar("Agregó vehículo", vehiculo.Dominio);
+            }
+            else
+            {
+                Vehiculo actual = VehiculoDatos.BuscarPorId(vehiculo.IdVehiculo, legajo);
+
+                if (actual == null)
+                {
+                    mensaje = "No se encontró el vehículo.";
+                    return false;
+                }
+
+                if (actual.EstadoRevision == "Aprobado")
+                {
+                    mensaje = "El vehículo ya fue aprobado y no se puede modificar.";
+                    return false;
+                }
+
+                if (!VehiculoDatos.EditarVehiculo(vehiculo, fotos, legajo))
+                {
+                    mensaje = "No se pudieron guardar los cambios.";
+                    return false;
+                }
+
+                Registrar("Modificó vehículo", vehiculo.Dominio);
+            }
+
+            return true;
+        }
+
+        // Valida los datos y las fotos de un vehículo. Si está todo bien deja el dominio normalizado y el año cargado.
+        public static bool ValidarVehiculo(Vehiculo vehiculo, string anioTexto, List<FotoVehiculo> fotos, out string mensaje)
+        {
             mensaje = "";
             int anio;
-            int legajo = Sesion.UsuarioActual.Legajo;
 
             if (vehiculo.TipoVehiculo == "" || vehiculo.Dominio == "" || vehiculo.Marca == "" || vehiculo.Modelo == "" || anioTexto == "")
             {
@@ -92,49 +143,10 @@ namespace FixedSegurosApp.Negocio
                 }
             }
 
-            fotos = QuitarFotosDeMas(fotos, posiciones);
-
             if (VehiculoDatos.ExisteDominio(vehiculo.Dominio, vehiculo.IdVehiculo))
             {
                 mensaje = "Ya hay un vehículo registrado con el dominio " + vehiculo.Dominio + ".";
                 return false;
-            }
-
-            if (vehiculo.IdVehiculo == 0)
-            {
-                vehiculo.IdVehiculo = VehiculoDatos.CrearVehiculo(vehiculo, fotos, legajo);
-
-                if (vehiculo.IdVehiculo == 0)
-                {
-                    mensaje = "No se pudo guardar el vehículo.";
-                    return false;
-                }
-
-                Registrar("Agregó vehículo", vehiculo.Dominio);
-            }
-            else
-            {
-                Vehiculo actual = VehiculoDatos.BuscarPorId(vehiculo.IdVehiculo, legajo);
-
-                if (actual == null)
-                {
-                    mensaje = "No se encontró el vehículo.";
-                    return false;
-                }
-
-                if (actual.EstadoRevision == "Aprobado")
-                {
-                    mensaje = "El vehículo ya fue aprobado y no se puede modificar.";
-                    return false;
-                }
-
-                if (!VehiculoDatos.EditarVehiculo(vehiculo, fotos, legajo))
-                {
-                    mensaje = "No se pudieron guardar los cambios.";
-                    return false;
-                }
-
-                Registrar("Modificó vehículo", vehiculo.Dominio);
             }
 
             return true;
@@ -257,7 +269,7 @@ namespace FixedSegurosApp.Negocio
         }
 
         // Si el cliente cambió el tipo de vehículo, pueden quedar fotos que ese tipo no lleva
-        private static List<FotoVehiculo> QuitarFotosDeMas(List<FotoVehiculo> fotos, string[] posiciones)
+        public static List<FotoVehiculo> QuitarFotosDeMas(List<FotoVehiculo> fotos, string[] posiciones)
         {
             List<FotoVehiculo> lista = new List<FotoVehiculo>();
 

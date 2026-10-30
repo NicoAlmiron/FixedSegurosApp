@@ -202,22 +202,7 @@ namespace FixedSegurosApp.Datos
 
             try
             {
-                SqlCommand sql = new SqlCommand("sp_CrearUsuario", conexion.AbrirConexion());
-                sql.CommandType = CommandType.StoredProcedure;
-
-                sql.Parameters.AddWithValue("@perfil", usuario.Perfil);
-                sql.Parameters.AddWithValue("@nombre", usuario.Nombre);
-                sql.Parameters.AddWithValue("@apellido", usuario.Apellido);
-                sql.Parameters.AddWithValue("@contrasena", contrasenaHash);
-                sql.Parameters.AddWithValue("@dni", usuario.Dni);
-                sql.Parameters.AddWithValue("@fechaNacimiento", usuario.FechaNacimiento);
-                sql.Parameters.AddWithValue("@calle", usuario.Direccion);
-                sql.Parameters.AddWithValue("@ciudad", usuario.Ciudad);
-                sql.Parameters.AddWithValue("@provincia", usuario.Provincia);
-                sql.Parameters.AddWithValue("@telefono", usuario.Telefono);
-                sql.Parameters.AddWithValue("@email", usuario.Email);
-
-                legajo = Convert.ToInt32(sql.ExecuteScalar());
+                legajo = CrearUsuario(conexion.AbrirConexion(), null, usuario, contrasenaHash);
             }
             catch (Exception ex)
             {
@@ -229,6 +214,59 @@ namespace FixedSegurosApp.Datos
             }
 
             return legajo;
+        }
+
+        // Lo mismo, usando una conexión y transacción ya abiertas (la usa el alta en oficina)
+        public static int CrearUsuario(SqlConnection con, SqlTransaction transaccion, Persona usuario, string contrasenaHash)
+        {
+            SqlCommand sql = new SqlCommand("sp_CrearUsuario", con, transaccion);
+            sql.CommandType = CommandType.StoredProcedure;
+
+            sql.Parameters.AddWithValue("@perfil", usuario.Perfil);
+            sql.Parameters.AddWithValue("@nombre", usuario.Nombre);
+            sql.Parameters.AddWithValue("@apellido", usuario.Apellido);
+            sql.Parameters.AddWithValue("@contrasena", contrasenaHash);
+            sql.Parameters.AddWithValue("@dni", usuario.Dni);
+            sql.Parameters.AddWithValue("@fechaNacimiento", usuario.FechaNacimiento);
+            sql.Parameters.AddWithValue("@calle", usuario.Direccion);
+            sql.Parameters.AddWithValue("@ciudad", usuario.Ciudad);
+            sql.Parameters.AddWithValue("@provincia", usuario.Provincia);
+            sql.Parameters.AddWithValue("@telefono", usuario.Telefono);
+            sql.Parameters.AddWithValue("@email", usuario.Email);
+
+            return Convert.ToInt32(sql.ExecuteScalar());
+        }
+
+        // Busca un cliente por DNI. Devuelve null si no hay ningún cliente con ese DNI.
+        public static Persona BuscarClientePorDni(int dni)
+        {
+            int legajo = 0;
+
+            Conexion conexion = new Conexion();
+
+            try
+            {
+                string query = "SELECT legajo FROM vw_Usuarios WHERE dni = @dni AND perfil = 'Cliente'";
+
+                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
+                sql.Parameters.AddWithValue("@dni", dni);
+
+                object resultado = sql.ExecuteScalar();
+                if (resultado != null)
+                {
+                    legajo = Convert.ToInt32(resultado);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return legajo == 0 ? null : BuscarPorLegajo(legajo);
         }
 
         // Modifica los datos personales con sp_EditarUsuario

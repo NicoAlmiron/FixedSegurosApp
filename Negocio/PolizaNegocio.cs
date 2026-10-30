@@ -172,9 +172,14 @@ namespace FixedSegurosApp.Negocio
         // Vehículos del cliente que pueden adquirir una póliza: aprobados y sin póliza vigente
         public static List<Vehiculo> ListarVehiculosAsegurables()
         {
+            return ListarVehiculosAsegurables(Sesion.UsuarioActual.Legajo);
+        }
+
+        public static List<Vehiculo> ListarVehiculosAsegurables(int legajoCliente)
+        {
             List<Vehiculo> lista = new List<Vehiculo>();
 
-            foreach (Vehiculo v in VehiculoDatos.ListarVehiculos(Sesion.UsuarioActual.Legajo))
+            foreach (Vehiculo v in VehiculoDatos.ListarVehiculos(legajoCliente))
             {
                 if (v.EstadoRevision == "Aprobado" && v.NroPoliza == 0)
                 {
@@ -200,6 +205,21 @@ namespace FixedSegurosApp.Negocio
             return DateTime.Today;
         }
 
+        // Texto con el detalle de una póliza ofrecida: lo muestran MisPolizas y AltaOficina
+        public static string DescribirOferta(Poliza poliza)
+        {
+            DateTime inicio = CalcularInicio(poliza);
+
+            return poliza.Aseguradora + " · " + poliza.TipoCobertura + "\n\n" +
+                   "Prima " + poliza.TipoPrima.ToLower() + ": $ " + poliza.Prima.ToString("N2") +
+                   (poliza.Descuento > 0 ? " (" + poliza.Descuento.ToString("0.##") + " % de descuento)" : "") + "\n" +
+                   poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2") + " · " + poliza.FormaPago + "\n" +
+                   "Franquicia: $ " + poliza.Franquicia.ToString("N2") + "\n" +
+                   "Vigencia: " + inicio.ToString("dd/MM/yyyy") + " al " + inicio.AddMonths(poliza.Duracion).ToString("dd/MM/yyyy") + " (" + poliza.Duracion + " meses)\n" +
+                   (poliza.Adicionales != "" ? "Adicionales: " + poliza.Adicionales + "\n" : "") +
+                   (poliza.Requisitos != "" ? "Requisitos: " + poliza.Requisitos : "");
+        }
+
         // Arma las cuotas: la primera vence el día de inicio y las demás cada "MesesPorCuota" meses
         public static List<Pago> CalcularCuotas(Poliza poliza, DateTime inicio)
         {
@@ -218,20 +238,11 @@ namespace FixedSegurosApp.Negocio
             return cuotas;
         }
 
-        // Verificación de requisitos + alta de la póliza del cliente con sus cuotas
-        public static bool Adquirir(int nroOfrecida, int idVehiculo, out int nroNueva, out string mensaje)
+        // Verificación de requisitos: lo que tiene que cumplir un vehículo para contratar la póliza ofrecida
+        public static bool VerificarRequisitos(Poliza ofrecida, Vehiculo vehiculo, out string mensaje)
         {
             mensaje = "";
-            nroNueva = 0;
-            int legajo = Sesion.UsuarioActual.Legajo;
 
-            if (Sesion.UsuarioActual.Perfil != "Cliente")
-            {
-                mensaje = "Solo un cliente puede adquirir pólizas.";
-                return false;
-            }
-
-            Poliza ofrecida = PolizaDatos.BuscarPorNro(nroOfrecida);
             if (ofrecida == null || ofrecida.Estado != "Ofrecida")
             {
                 mensaje = "La póliza elegida ya no está disponible.";
@@ -244,8 +255,6 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            // BuscarPorId con el legajo asegura que el vehículo sea del cliente
-            Vehiculo vehiculo = VehiculoDatos.BuscarPorId(idVehiculo, legajo);
             if (vehiculo == null)
             {
                 mensaje = "Seleccione uno de sus vehículos.";
@@ -273,6 +282,32 @@ namespace FixedSegurosApp.Negocio
             if (vehiculo.TipoVehiculo != ofrecida.TipoVehiculo)
             {
                 mensaje = "Esa póliza es para " + ofrecida.TipoVehiculo + " y su vehículo es " + vehiculo.TipoVehiculo + ".";
+                return false;
+            }
+
+            return true;
+        }
+
+        // Alta de la póliza del cliente con sus cuotas
+        public static bool Adquirir(int nroOfrecida, int idVehiculo, out int nroNueva, out string mensaje)
+        {
+            mensaje = "";
+            nroNueva = 0;
+            int legajo = Sesion.UsuarioActual.Legajo;
+
+            if (Sesion.UsuarioActual.Perfil != "Cliente")
+            {
+                mensaje = "Solo un cliente puede adquirir pólizas.";
+                return false;
+            }
+
+            Poliza ofrecida = PolizaDatos.BuscarPorNro(nroOfrecida);
+
+            // BuscarPorId con el legajo asegura que el vehículo sea del cliente
+            Vehiculo vehiculo = VehiculoDatos.BuscarPorId(idVehiculo, legajo);
+
+            if (!VerificarRequisitos(ofrecida, vehiculo, out mensaje))
+            {
                 return false;
             }
 

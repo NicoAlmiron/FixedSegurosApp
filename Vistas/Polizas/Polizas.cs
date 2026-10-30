@@ -29,6 +29,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.Grilla(dgv_polizas);
             Estilos.BotonPrincipal(btn_nueva);
             Estilos.BotonSecundario(btn_comision);
+            Estilos.BotonPrincipal(btn_alta);
             Estilos.BotonPeligro(btn_baja);
             Estilos.BotonSecundario(btn_descartar);
             Estilos.BotonPrincipal(btn_guardar);
@@ -41,6 +42,9 @@ namespace FixedSegurosApp.Vistas
 
             // las ganancias de la empresa solo las ve el Administrador
             btn_comision.Visible = Sesion.UsuarioActual.Perfil == "Administrador";
+
+            // la atención en la oficina la hace el empleado
+            btn_alta.Visible = Sesion.UsuarioActual.Perfil == "Empleado";
 
             // todas las aseguradoras (si se elige una inactiva, Negocio avisa que no puede ofrecer pólizas)
             cb_aseguradora.DisplayMember = "Nombre";
@@ -264,6 +268,11 @@ namespace FixedSegurosApp.Vistas
                 CargarDatos();
                 SeleccionarFila(nro);
             }
+        }
+
+        private void btn_alta_Click(object sender, EventArgs e)
+        {
+            ((Principal)this.ParentForm).AbrirForm(new AltaOficina());
         }
 
         private void btn_comision_Click(object sender, EventArgs e)

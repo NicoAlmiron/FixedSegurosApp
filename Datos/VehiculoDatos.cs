@@ -172,16 +172,7 @@ namespace FixedSegurosApp.Datos
                 SqlConnection con = conexion.AbrirConexion();
                 transaccion = con.BeginTransaction();
 
-                string query = "INSERT INTO Vehiculo (dominio, marca, modelo, anio, tipoVehiculo, estadoVTV, numeroChasis, numeroMotor, idCliente) " +
-                               "VALUES (@dominio, @marca, @modelo, @anio, @tipo, @vtv, @chasis, @motor, " +
-                               "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo)); " +
-                               "SELECT CAST(SCOPE_IDENTITY() AS INT);";
-
-                SqlCommand sql = new SqlCommand(query, con, transaccion);
-                CargarParametros(sql, vehiculo);
-                sql.Parameters.AddWithValue("@legajo", legajoCliente);
-
-                id = Convert.ToInt32(sql.ExecuteScalar());
+                id = InsertarVehiculo(con, transaccion, vehiculo, legajoCliente);
 
                 GuardarFotos(con, transaccion, id, fotos);
 
@@ -202,6 +193,21 @@ namespace FixedSegurosApp.Datos
             }
 
             return id;
+        }
+
+        // Inserta el vehículo (Pendiente) usando una conexión y transacción ya abiertas. Devuelve el id nuevo.
+        public static int InsertarVehiculo(SqlConnection con, SqlTransaction transaccion, Vehiculo vehiculo, int legajoCliente)
+        {
+            string query = "INSERT INTO Vehiculo (dominio, marca, modelo, anio, tipoVehiculo, estadoVTV, numeroChasis, numeroMotor, idCliente) " +
+                           "VALUES (@dominio, @marca, @modelo, @anio, @tipo, @vtv, @chasis, @motor, " +
+                           "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo)); " +
+                           "SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+            SqlCommand sql = new SqlCommand(query, con, transaccion);
+            CargarParametros(sql, vehiculo);
+            sql.Parameters.AddWithValue("@legajo", legajoCliente);
+
+            return Convert.ToInt32(sql.ExecuteScalar());
         }
 
         // Modifica el vehículo y reemplaza sus fotos. Vuelve a quedar Pendiente de revisión.
@@ -319,20 +325,7 @@ namespace FixedSegurosApp.Datos
 
             try
             {
-                string query = "UPDATE Vehiculo SET estadoRevision = @estado, observacionRevision = @observacion, " +
-                               "idRevisor = @revisor, fechaRevision = GETDATE() " +
-                               "WHERE idVehiculo = @id AND estadoRevision = 'Pendiente'";
-
-                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
-                sql.Parameters.AddWithValue("@estado", estadoRevision);
-                sql.Parameters.AddWithValue("@observacion", observacion == "" ? (object)DBNull.Value : observacion);
-                sql.Parameters.AddWithValue("@revisor", legajoRevisor);
-                sql.Parameters.AddWithValue("@id", idVehiculo);
-
-                if (sql.ExecuteNonQuery() > 0)
-                {
-                    estado = true;
-                }
+                estado = CambiarRevision(conexion.AbrirConexion(), null, idVehiculo, estadoRevision, observacion, legajoRevisor);
             }
             catch (Exception ex)
             {
@@ -344,6 +337,22 @@ namespace FixedSegurosApp.Datos
             }
 
             return estado;
+        }
+
+        // Lo mismo, usando una conexión y transacción ya abiertas (la usa el alta en oficina)
+        public static bool CambiarRevision(SqlConnection con, SqlTransaction transaccion, int idVehiculo, string estadoRevision, string observacion, int legajoRevisor)
+        {
+            string query = "UPDATE Vehiculo SET estadoRevision = @estado, observacionRevision = @observacion, " +
+                           "idRevisor = @revisor, fechaRevision = GETDATE() " +
+                           "WHERE idVehiculo = @id AND estadoRevision = 'Pendiente'";
+
+            SqlCommand sql = new SqlCommand(query, con, transaccion);
+            sql.Parameters.AddWithValue("@estado", estadoRevision);
+            sql.Parameters.AddWithValue("@observacion", observacion == "" ? (object)DBNull.Value : observacion);
+            sql.Parameters.AddWithValue("@revisor", legajoRevisor);
+            sql.Parameters.AddWithValue("@id", idVehiculo);
+
+            return sql.ExecuteNonQuery() > 0;
         }
 
         // true si el vehículo figura en alguna póliza (vigente o no): en ese caso no se puede eliminar
@@ -378,7 +387,7 @@ namespace FixedSegurosApp.Datos
         }
 
         // Inserta cada foto usando la misma conexión y transacción del vehículo
-        private static void GuardarFotos(SqlConnection con, SqlTransaction transaccion, int idVehiculo, List<FotoVehiculo> fotos)
+        public static void GuardarFotos(SqlConnection con, SqlTransaction transaccion, int idVehiculo, List<FotoVehiculo> fotos)
         {
             foreach (FotoVehiculo foto in fotos)
             {

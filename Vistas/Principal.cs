@@ -41,7 +41,7 @@ namespace FixedSegurosApp.Vistas
             btn_empleados.Visible = perfil == "Administrador";
             btn_vehiculos.Visible = perfil == "Cliente";
             btn_siniestros.Visible = perfil == "Empleado" || perfil == "Cliente";
-            btn_pagos.Visible = perfil == "Cliente";
+            btn_pagos.Visible = perfil == "Empleado" || perfil == "Cliente";
             btn_proveedores.Visible = perfil == "Administrador";
             btn_notificaciones.Visible = perfil == "Empleado" || perfil == "Cliente";
         }
@@ -89,6 +89,10 @@ namespace FixedSegurosApp.Vistas
                 {
                     AbrirForm(new Polizas());
                 }
+            }
+            else if (btn == btn_pagos)
+            {
+                AbrirForm(new Pagos());
             }
             else if (btn == btn_proveedores)
             {

@@ -43,6 +43,12 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Devuelve el cliente con ese DNI, o null si no hay ninguno
+        public static Persona BuscarPorDni(int dni)
+        {
+            return UsuarioDatos.BuscarClientePorDni(dni);
+        }
+
         // ================= Detalle del cliente (empleado / administrador) =================
 
         public static string BuscarObservaciones(int legajo)

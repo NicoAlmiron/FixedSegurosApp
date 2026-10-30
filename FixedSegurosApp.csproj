@@ -84,6 +84,22 @@
     <Compile Include="Vistas\Polizas\Comisiones.Designer.cs">
       <DependentUpon>Comisiones.cs</DependentUpon>
     </Compile>
+    <Compile Include="Datos\AltaOficinaDatos.cs" />
+    <Compile Include="Negocio\AltaOficinaNegocio.cs" />
+    <Compile Include="Vistas\Polizas\AltaOficina.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Polizas\AltaOficina.Designer.cs">
+      <DependentUpon>AltaOficina.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Datos\PagoDatos.cs" />
+    <Compile Include="Negocio\PagoNegocio.cs" />
+    <Compile Include="Vistas\Pagos\Pagos.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Pagos\Pagos.Designer.cs">
+      <DependentUpon>Pagos.cs</DependentUpon>
+    </Compile>
     <Compile Include="Datos\PolizaDatos.cs" />
     <Compile Include="Negocio\PolizaNegocio.cs" />
     <Compile Include="Vistas\Polizas\Polizas.cs">
