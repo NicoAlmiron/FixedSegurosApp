@@ -366,6 +366,7 @@
             this.Controls.Add(this.pnl_cabecera);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(42)))), ((int)(((byte)(56)))));
+            this.ControlBox = false;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::FixedSegurosApp.Properties.Resources.icono_FS;
             this.MaximizeBox = false;

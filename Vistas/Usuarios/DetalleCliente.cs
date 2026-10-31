@@ -40,6 +40,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.Grilla(dgv_historial);
             Estilos.BotonSecundario(btn_volver);
             Estilos.BotonSecundario(btn_guardar_obs);
+            Estilos.BotonSecundario(btn_sin_formulario);
             Estilos.BotonPrincipal(btn_aprobar);
             Estilos.BotonPeligro(btn_rechazar);
 
@@ -104,6 +105,29 @@ namespace FixedSegurosApp.Vistas
             tab_pagos.Text = "Pagos (" + pagos.Count + ")";
             tab_siniestros.Text = "Siniestros (" + siniestros.Count + ")";
             tab_historial.Text = "Historial (" + historial.Count + ")";
+        }
+
+        // ================= Pestaña Siniestros =================
+
+        // El administrador no entra a la pantalla Siniestros: acá ve el formulario que cargó el empleado
+        private void btn_sin_formulario_Click(object sender, EventArgs e)
+        {
+            if (dgv_siniestros.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Elija un reclamo.", "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            Siniestro siniestro = (Siniestro)dgv_siniestros.SelectedRows[0].DataBoundItem;
+            List<AdjuntoSiniestro> formulario = SiniestroNegocio.ListarAdjuntos(siniestro.IdSiniestro, "Formulario");
+
+            if (formulario.Count == 0)
+            {
+                MessageBox.Show("Este reclamo todavía no tiene formulario.", "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            VerFoto.MostrarAdjuntos(formulario, siniestro.ExpedienteTexto);
         }
 
         // ================= Pestaña Vehículos =================

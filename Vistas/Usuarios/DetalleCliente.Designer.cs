@@ -77,6 +77,8 @@
             this.col_pag_estado = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tab_siniestros = new System.Windows.Forms.TabPage();
             this.dgv_siniestros = new System.Windows.Forms.DataGridView();
+            this.pnl_sin_acciones = new System.Windows.Forms.Panel();
+            this.btn_sin_formulario = new System.Windows.Forms.Button();
             this.col_sin_expediente = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_sin_poliza = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.col_sin_fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -567,12 +569,32 @@
             //
             this.tab_siniestros.BackColor = System.Drawing.Color.White;
             this.tab_siniestros.Controls.Add(this.dgv_siniestros);
+            this.tab_siniestros.Controls.Add(this.pnl_sin_acciones);
             this.tab_siniestros.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.tab_siniestros.Location = new System.Drawing.Point(4, 30);
             this.tab_siniestros.Name = "tab_siniestros";
             this.tab_siniestros.Size = new System.Drawing.Size(964, 442);
             this.tab_siniestros.Padding = new System.Windows.Forms.Padding(8);
             this.tab_siniestros.Text = "Siniestros";
+            //
+            // pnl_sin_acciones
+            //
+            this.pnl_sin_acciones.Controls.Add(this.btn_sin_formulario);
+            this.pnl_sin_acciones.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnl_sin_acciones.Location = new System.Drawing.Point(8, 386);
+            this.pnl_sin_acciones.Name = "pnl_sin_acciones";
+            this.pnl_sin_acciones.Size = new System.Drawing.Size(948, 48);
+            this.pnl_sin_acciones.TabIndex = 1;
+            //
+            // btn_sin_formulario
+            //
+            this.btn_sin_formulario.Location = new System.Drawing.Point(0, 10);
+            this.btn_sin_formulario.Name = "btn_sin_formulario";
+            this.btn_sin_formulario.Size = new System.Drawing.Size(130, 34);
+            this.btn_sin_formulario.TabIndex = 0;
+            this.btn_sin_formulario.Text = "Ver formulario";
+            this.btn_sin_formulario.UseVisualStyleBackColor = false;
+            this.btn_sin_formulario.Click += new System.EventHandler(this.btn_sin_formulario_Click);
             //
             // dgv_siniestros
             //
@@ -776,6 +798,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn col_pag_estado;
         private System.Windows.Forms.TabPage tab_siniestros;
         private System.Windows.Forms.DataGridView dgv_siniestros;
+        private System.Windows.Forms.Panel pnl_sin_acciones;
+        private System.Windows.Forms.Button btn_sin_formulario;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_sin_expediente;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_sin_poliza;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_sin_fecha;

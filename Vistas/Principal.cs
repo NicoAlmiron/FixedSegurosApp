@@ -90,6 +90,18 @@ namespace FixedSegurosApp.Vistas
                     AbrirForm(new Polizas());
                 }
             }
+            else if (btn == btn_siniestros)
+            {
+                // el cliente inicia y sigue sus reclamos; el empleado los verifica
+                if (Sesion.UsuarioActual.Perfil == "Cliente")
+                {
+                    AbrirForm(new MisSiniestros());
+                }
+                else
+                {
+                    AbrirForm(new Siniestros());
+                }
+            }
             else if (btn == btn_pagos)
             {
                 AbrirForm(new Pagos());

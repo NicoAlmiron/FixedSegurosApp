@@ -334,7 +334,7 @@ namespace FixedSegurosApp.Negocio
         }
 
         // Montos: saca "$" y los puntos de miles: "$ 45.000,50" -> "45000,50"
-        private static string LimpiarNumero(string texto)
+        public static string LimpiarNumero(string texto)
         {
             return texto.Replace("$", "").Replace(".", "").Trim();
         }

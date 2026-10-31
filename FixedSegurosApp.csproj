@@ -61,7 +61,22 @@
     <Compile Include="Entidades\Poliza.cs" />
     <Compile Include="Entidades\Pago.cs" />
     <Compile Include="Entidades\Siniestro.cs" />
+    <Compile Include="Entidades\AdjuntoSiniestro.cs" />
     <Compile Include="Datos\ClienteDatos.cs" />
+    <Compile Include="Datos\SiniestroDatos.cs" />
+    <Compile Include="Negocio\SiniestroNegocio.cs" />
+    <Compile Include="Vistas\Siniestros\MisSiniestros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Siniestros\MisSiniestros.Designer.cs">
+      <DependentUpon>MisSiniestros.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Siniestros\Siniestros.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Siniestros\Siniestros.Designer.cs">
+      <DependentUpon>Siniestros.cs</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\GrillaFotos.cs" />
     <Compile Include="Vistas\VerFoto.cs">
       <SubType>Form</SubType>

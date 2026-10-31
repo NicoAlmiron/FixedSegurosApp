@@ -13,7 +13,7 @@ namespace FixedSegurosApp.Datos
                                         "po.adicionales, po.fechaInicio, po.fechaVencimiento, po.descuento, po.duracion, po.requisitos, " +
                                         "po.tipoPrima, po.prima, po.formaPago, po.franquicia, po.estado, " +
                                         "p.apellido + ', ' + p.nombre, v.dominio, po.comision, " +
-                                        "(SELECT COUNT(*) FROM Pago WHERE idPoliza = po.nroPoliza AND idArqueo IS NOT NULL) " +
+                                        "(SELECT COUNT(*) FROM Pago WHERE idPoliza = po.nroPoliza AND idArqueo IS NOT NULL), po.idVehiculo " +
                                         "FROM Poliza po " +
                                         "JOIN Proveedor pr ON pr.idProveedor = po.idProveedor " +
                                         "LEFT JOIN Cliente c ON c.idCliente = po.idCliente " +
@@ -395,7 +395,8 @@ namespace FixedSegurosApp.Datos
                 Cliente = leer.IsDBNull(17) ? "" : leer.GetString(17),
                 Dominio = leer.IsDBNull(18) ? "" : leer.GetString(18),
                 Comision = leer.GetDecimal(19),
-                CuotasLiquidadas = leer.GetInt32(20)
+                CuotasLiquidadas = leer.GetInt32(20),
+                IdVehiculo = leer.IsDBNull(21) ? 0 : leer.GetInt32(21)
             };
             return poliza;
         }

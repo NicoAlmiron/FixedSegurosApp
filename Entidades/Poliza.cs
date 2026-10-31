@@ -29,6 +29,7 @@ namespace FixedSegurosApp.Entidades
         public string Estado { get; set; }                  // Ofrecida / Vigente / Baja
         public string Cliente { get; set; }                 // "Apellido, Nombre" (vacío si es ofrecida)
         public string Dominio { get; set; }                 // vacío si es ofrecida
+        public int IdVehiculo { get; set; }                 // 0 si es ofrecida
 
         // ---------- Para mostrar en las grillas ----------
 
