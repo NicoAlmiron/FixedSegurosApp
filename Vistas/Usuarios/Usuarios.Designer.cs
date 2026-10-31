@@ -557,7 +557,7 @@
             this.txt_motivo_baja.Multiline = true;
             this.txt_motivo_baja.Name = "txt_motivo_baja";
             this.txt_motivo_baja.ReadOnly = true;
-            this.txt_motivo_baja.Size = new System.Drawing.Size(344, 60);
+            this.txt_motivo_baja.Size = new System.Drawing.Size(344, 26);
             this.txt_motivo_baja.TabStop = false;
             //
             // pnl_linea_pie

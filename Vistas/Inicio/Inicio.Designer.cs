@@ -304,7 +304,7 @@
             this.pnl_alertas.Controls.Add(this.lbl_cantidad);
             this.pnl_alertas.Location = new System.Drawing.Point(24, 242);
             this.pnl_alertas.Name = "pnl_alertas";
-            this.pnl_alertas.Size = new System.Drawing.Size(972, 464);
+            this.pnl_alertas.Size = new System.Drawing.Size(972, 384);
             this.pnl_alertas.TabIndex = 10;
             //
             // lbl_alertas_titulo
@@ -340,7 +340,7 @@
             this.dgv_alertas.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.col_nro, this.col_cliente, this.col_dominio, this.col_aseguradora, this.col_vence, this.col_alerta });
             this.dgv_alertas.Location = new System.Drawing.Point(1, 50);
             this.dgv_alertas.Name = "dgv_alertas";
-            this.dgv_alertas.Size = new System.Drawing.Size(970, 380);
+            this.dgv_alertas.Size = new System.Drawing.Size(970, 300);
             this.dgv_alertas.TabIndex = 1;
             this.dgv_alertas.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_alertas_CellFormatting);
             this.dgv_alertas.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgv_alertas_DataBindingComplete);
@@ -393,7 +393,7 @@
             this.lbl_cantidad.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_cantidad.AutoSize = true;
             this.lbl_cantidad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_cantidad.Location = new System.Drawing.Point(16, 438);
+            this.lbl_cantidad.Location = new System.Drawing.Point(16, 358);
             this.lbl_cantidad.Name = "lbl_cantidad";
             this.lbl_cantidad.Size = new System.Drawing.Size(110, 15);
             this.lbl_cantidad.Text = "Mostrando 0 pólizas";
@@ -403,7 +403,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1020, 730);
+            this.ClientSize = new System.Drawing.Size(1020, 650);
             this.Controls.Add(this.pnl_alertas);
             this.Controls.Add(this.pnl_aviso);
             this.Controls.Add(this.pnl_tarjeta1);

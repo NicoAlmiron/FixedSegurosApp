@@ -30,7 +30,7 @@
             this.pic_foto.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pic_foto.Location = new System.Drawing.Point(0, 0);
             this.pic_foto.Name = "pic_foto";
-            this.pic_foto.Size = new System.Drawing.Size(900, 640);
+            this.pic_foto.Size = new System.Drawing.Size(900, 584);
             this.pic_foto.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pic_foto.TabStop = false;
             //
@@ -39,7 +39,7 @@
             this.pnl_pie.BackColor = System.Drawing.Color.White;
             this.pnl_pie.Controls.Add(this.btn_cerrar);
             this.pnl_pie.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnl_pie.Location = new System.Drawing.Point(0, 640);
+            this.pnl_pie.Location = new System.Drawing.Point(0, 584);
             this.pnl_pie.Name = "pnl_pie";
             this.pnl_pie.Size = new System.Drawing.Size(900, 56);
             this.pnl_pie.TabIndex = 0;
@@ -59,7 +59,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btn_cerrar;
-            this.ClientSize = new System.Drawing.Size(900, 696);
+            this.ClientSize = new System.Drawing.Size(900, 640);
             this.ControlBox = false;
             this.Controls.Add(this.pic_foto);
             this.Controls.Add(this.pnl_pie);

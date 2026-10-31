@@ -419,7 +419,7 @@
             this.grp_fotos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(58)))), ((int)(((byte)(92)))));
             this.grp_fotos.Location = new System.Drawing.Point(16, 318);
             this.grp_fotos.Name = "grp_fotos";
-            this.grp_fotos.Size = new System.Drawing.Size(344, 244);
+            this.grp_fotos.Size = new System.Drawing.Size(344, 170);
             this.grp_fotos.TabIndex = 9;
             this.grp_fotos.TabStop = false;
             this.grp_fotos.Text = "Fotos del vehículo (clic en cada una para cargarla)";

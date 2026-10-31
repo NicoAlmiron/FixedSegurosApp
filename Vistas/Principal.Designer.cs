@@ -298,7 +298,7 @@
             this.pnl_contenido.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnl_contenido.Location = new System.Drawing.Point(260, 0);
             this.pnl_contenido.Name = "pnl_contenido";
-            this.pnl_contenido.Size = new System.Drawing.Size(1020, 730);
+            this.pnl_contenido.Size = new System.Drawing.Size(1020, 650);
             this.pnl_contenido.TabIndex = 1;
             //
             // Principal
@@ -306,7 +306,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1280, 760);
+            this.ClientSize = new System.Drawing.Size(1280, 680);
             this.Controls.Add(this.pnl_contenido);
             this.Controls.Add(this.pnl_menu);
             this.Controls.Add(this.pnl_estado);

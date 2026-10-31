@@ -534,15 +534,16 @@
             this.txt_requisitos.MaxLength = 200;
             this.txt_requisitos.Multiline = true;
             this.txt_requisitos.Name = "txt_requisitos";
-            this.txt_requisitos.Size = new System.Drawing.Size(344, 60);
+            this.txt_requisitos.Size = new System.Drawing.Size(344, 22);
             this.txt_requisitos.TabIndex = 13;
             //
             // lbl_info
             //
             this.lbl_info.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_info.Location = new System.Drawing.Point(16, 482);
+            this.lbl_info.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.lbl_info.Location = new System.Drawing.Point(16, 433);
             this.lbl_info.Name = "lbl_info";
-            this.lbl_info.Size = new System.Drawing.Size(344, 80);
+            this.lbl_info.Size = new System.Drawing.Size(344, 58);
             this.lbl_info.Text = "Información de la póliza";
             //
             // pnl_linea_pie

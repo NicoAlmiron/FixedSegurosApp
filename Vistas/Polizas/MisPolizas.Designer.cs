@@ -238,7 +238,7 @@
             this.col_of_cuota});
             this.dgv_ofrecidas.Location = new System.Drawing.Point(16, 166);
             this.dgv_ofrecidas.Name = "dgv_ofrecidas";
-            this.dgv_ofrecidas.Size = new System.Drawing.Size(344, 170);
+            this.dgv_ofrecidas.Size = new System.Drawing.Size(344, 120);
             this.dgv_ofrecidas.TabIndex = 2;
             this.dgv_ofrecidas.SelectionChanged += new System.EventHandler(this.dgv_ofrecidas_SelectionChanged);
             //
@@ -267,9 +267,9 @@
             //
             // lbl_oferta
             //
-            this.lbl_oferta.Location = new System.Drawing.Point(16, 348);
+            this.lbl_oferta.Location = new System.Drawing.Point(16, 294);
             this.lbl_oferta.Name = "lbl_oferta";
-            this.lbl_oferta.Size = new System.Drawing.Size(344, 214);
+            this.lbl_oferta.Size = new System.Drawing.Size(344, 190);
             this.lbl_oferta.Text = "Detalle de la póliza elegida";
             //
             // pnl_linea_pie

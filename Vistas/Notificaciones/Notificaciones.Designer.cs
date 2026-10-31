@@ -71,7 +71,7 @@
             this.pnl_lista.Controls.Add(this.lbl_ayuda);
             this.pnl_lista.Location = new System.Drawing.Point(24, 70);
             this.pnl_lista.Name = "pnl_lista";
-            this.pnl_lista.Size = new System.Drawing.Size(584, 636);
+            this.pnl_lista.Size = new System.Drawing.Size(584, 556);
             this.pnl_lista.TabIndex = 1;
             //
             // lbl_filtro
@@ -112,7 +112,7 @@
             this.col_leida});
             this.dgv_notificaciones.Location = new System.Drawing.Point(1, 50);
             this.dgv_notificaciones.Name = "dgv_notificaciones";
-            this.dgv_notificaciones.Size = new System.Drawing.Size(582, 544);
+            this.dgv_notificaciones.Size = new System.Drawing.Size(582, 464);
             this.dgv_notificaciones.TabIndex = 2;
             this.dgv_notificaciones.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_notificaciones_CellFormatting);
             this.dgv_notificaciones.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_notificaciones_CellClick);
@@ -163,7 +163,7 @@
             //
             this.lbl_ayuda.AutoSize = true;
             this.lbl_ayuda.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_ayuda.Location = new System.Drawing.Point(16, 606);
+            this.lbl_ayuda.Location = new System.Drawing.Point(16, 526);
             this.lbl_ayuda.Name = "lbl_ayuda";
             this.lbl_ayuda.Size = new System.Drawing.Size(203, 15);
             this.lbl_ayuda.Text = "Las no leídas se muestran en negrita";
@@ -185,7 +185,7 @@
             this.pnl_detalle.Controls.Add(this.btn_ver);
             this.pnl_detalle.Location = new System.Drawing.Point(620, 70);
             this.pnl_detalle.Name = "pnl_detalle";
-            this.pnl_detalle.Size = new System.Drawing.Size(376, 636);
+            this.pnl_detalle.Size = new System.Drawing.Size(376, 556);
             this.pnl_detalle.TabIndex = 2;
             //
             // lbl_detalle_titulo
@@ -294,14 +294,14 @@
             // pnl_linea_pie
             //
             this.pnl_linea_pie.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(213)))), ((int)(((byte)(221)))), ((int)(((byte)(232)))));
-            this.pnl_linea_pie.Location = new System.Drawing.Point(1, 572);
+            this.pnl_linea_pie.Location = new System.Drawing.Point(1, 492);
             this.pnl_linea_pie.Name = "pnl_linea_pie";
             this.pnl_linea_pie.Size = new System.Drawing.Size(374, 1);
             this.pnl_linea_pie.TabIndex = 21;
             //
             // btn_ver
             //
-            this.btn_ver.Location = new System.Drawing.Point(16, 586);
+            this.btn_ver.Location = new System.Drawing.Point(16, 506);
             this.btn_ver.Name = "btn_ver";
             this.btn_ver.Size = new System.Drawing.Size(200, 34);
             this.btn_ver.TabIndex = 0;
@@ -314,7 +314,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1020, 730);
+            this.ClientSize = new System.Drawing.Size(1020, 650);
             this.Controls.Add(this.pnl_detalle);
             this.Controls.Add(this.pnl_lista);
             this.Controls.Add(this.lbl_titulo);

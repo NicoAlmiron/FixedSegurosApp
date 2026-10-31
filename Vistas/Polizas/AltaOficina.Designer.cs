@@ -126,10 +126,9 @@
             this.pnl_cliente.Controls.Add(this.txt_telefono);
             this.pnl_cliente.Controls.Add(this.lbl_email);
             this.pnl_cliente.Controls.Add(this.txt_email);
-            this.pnl_cliente.Controls.Add(this.lbl_cliente_info);
-            this.pnl_cliente.Location = new System.Drawing.Point(24, 66);
+                       this.pnl_cliente.Location = new System.Drawing.Point(24, 66);
             this.pnl_cliente.Name = "pnl_cliente";
-            this.pnl_cliente.Size = new System.Drawing.Size(290, 590);
+            this.pnl_cliente.Size = new System.Drawing.Size(290, 510);
             this.pnl_cliente.TabIndex = 1;
             //
             // lbl_cliente_titulo
@@ -323,9 +322,9 @@
             // lbl_cliente_info
             //
             this.lbl_cliente_info.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_cliente_info.Location = new System.Drawing.Point(14, 506);
+            this.lbl_cliente_info.Location = new System.Drawing.Point(26, 594);
             this.lbl_cliente_info.Name = "lbl_cliente_info";
-            this.lbl_cliente_info.Size = new System.Drawing.Size(262, 70);
+            this.lbl_cliente_info.Size = new System.Drawing.Size(680, 18);
             this.lbl_cliente_info.Text = "Cliente nuevo";
             //
             // pnl_vehiculo
@@ -353,7 +352,7 @@
             this.pnl_vehiculo.Controls.Add(this.grp_fotos);
             this.pnl_vehiculo.Location = new System.Drawing.Point(326, 66);
             this.pnl_vehiculo.Name = "pnl_vehiculo";
-            this.pnl_vehiculo.Size = new System.Drawing.Size(360, 590);
+            this.pnl_vehiculo.Size = new System.Drawing.Size(360, 510);
             this.pnl_vehiculo.TabIndex = 1;
             //
             // lbl_vehiculo_titulo
@@ -545,7 +544,7 @@
             //
             this.grp_fotos.Location = new System.Drawing.Point(14, 304);
             this.grp_fotos.Name = "grp_fotos";
-            this.grp_fotos.Size = new System.Drawing.Size(332, 226);
+            this.grp_fotos.Size = new System.Drawing.Size(332, 186);
             this.grp_fotos.TabStop = false;
             this.grp_fotos.Text = "Fotos (clic en cada una para cargarla)";
             //
@@ -558,7 +557,7 @@
             this.pnl_poliza.Controls.Add(this.lbl_oferta);
             this.pnl_poliza.Location = new System.Drawing.Point(698, 66);
             this.pnl_poliza.Name = "pnl_poliza";
-            this.pnl_poliza.Size = new System.Drawing.Size(298, 590);
+            this.pnl_poliza.Size = new System.Drawing.Size(298, 510);
             this.pnl_poliza.TabIndex = 1;
             //
             // lbl_poliza_titulo
@@ -623,13 +622,13 @@
             //
             this.lbl_oferta.Location = new System.Drawing.Point(14, 284);
             this.lbl_oferta.Name = "lbl_oferta";
-            this.lbl_oferta.Size = new System.Drawing.Size(270, 292);
+            this.lbl_oferta.Size = new System.Drawing.Size(270, 212);
             this.lbl_oferta.Text = "Detalle de la póliza elegida";
             //
             // btn_limpiar
             //
             this.btn_limpiar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_limpiar.Location = new System.Drawing.Point(726, 666);
+            this.btn_limpiar.Location = new System.Drawing.Point(726, 586);
             this.btn_limpiar.Name = "btn_limpiar";
             this.btn_limpiar.Size = new System.Drawing.Size(110, 34);
             this.btn_limpiar.TabIndex = 21;
@@ -640,7 +639,7 @@
             // btn_crear
             //
             this.btn_crear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_crear.Location = new System.Drawing.Point(846, 666);
+            this.btn_crear.Location = new System.Drawing.Point(846, 586);
             this.btn_crear.Name = "btn_crear";
             this.btn_crear.Size = new System.Drawing.Size(150, 34);
             this.btn_crear.TabIndex = 22;
@@ -653,7 +652,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1020, 730);
+            this.ClientSize = new System.Drawing.Size(1020, 650);
+            this.Controls.Add(this.lbl_cliente_info);
             this.Controls.Add(this.btn_crear);
             this.Controls.Add(this.btn_limpiar);
             this.Controls.Add(this.pnl_poliza);

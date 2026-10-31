@@ -21,7 +21,7 @@ namespace FixedSegurosApp.Vistas
         {
             InitializeComponent();
             dgv_ofrecidas.AutoGenerateColumns = false;
-            casilleros = GrillaFotos.Crear(grp_fotos, 10, 26, 72, 68, casillero_Click);
+            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 72, 54, casillero_Click);
         }
 
         private void AltaOficina_Load(object sender, EventArgs e)

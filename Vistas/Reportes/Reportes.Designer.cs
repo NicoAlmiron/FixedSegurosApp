@@ -356,22 +356,22 @@
             //
             this.chart_1.Location = new System.Drawing.Point(24, 188);
             this.chart_1.Name = "chart_1";
-            this.chart_1.Size = new System.Drawing.Size(480, 236);
+            this.chart_1.Size = new System.Drawing.Size(480, 180);
             this.chart_1.TabIndex = 11;
             //
             // chart_2
             //
             this.chart_2.Location = new System.Drawing.Point(516, 188);
             this.chart_2.Name = "chart_2";
-            this.chart_2.Size = new System.Drawing.Size(480, 236);
+            this.chart_2.Size = new System.Drawing.Size(480, 180);
             this.chart_2.TabIndex = 12;
             //
             // dgv_datos
             //
             this.dgv_datos.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { this.col_grupo, this.col_detalle, this.col_cantidad, this.col_monto });
-            this.dgv_datos.Location = new System.Drawing.Point(24, 432);
+            this.dgv_datos.Location = new System.Drawing.Point(24, 376);
             this.dgv_datos.Name = "dgv_datos";
-            this.dgv_datos.Size = new System.Drawing.Size(972, 252);
+            this.dgv_datos.Size = new System.Drawing.Size(972, 232);
             this.dgv_datos.TabIndex = 13;
             this.dgv_datos.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dgv_datos_DataBindingComplete);
             //
@@ -407,7 +407,7 @@
             //
             this.lbl_nota.AutoSize = true;
             this.lbl_nota.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_nota.Location = new System.Drawing.Point(24, 694);
+            this.lbl_nota.Location = new System.Drawing.Point(24, 616);
             this.lbl_nota.Name = "lbl_nota";
             this.lbl_nota.Size = new System.Drawing.Size(500, 15);
             this.lbl_nota.Text = "Las tarjetas y gráficos marcados Hoy o Histórico no dependen del período elegido.";
@@ -417,7 +417,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
-            this.ClientSize = new System.Drawing.Size(1020, 730);
+            this.ClientSize = new System.Drawing.Size(1020, 650);
             this.Controls.Add(this.lbl_nota);
             this.Controls.Add(this.dgv_datos);
             this.Controls.Add(this.chart_2);

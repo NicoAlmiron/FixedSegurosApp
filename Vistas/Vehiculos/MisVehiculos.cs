@@ -23,7 +23,7 @@ namespace FixedSegurosApp.Vistas
             InitializeComponent();
             dgv_vehiculos.AutoGenerateColumns = false;
             dgv_vehiculos.DataSource = listaVehiculos;
-            casilleros = GrillaFotos.Crear(grp_fotos, 10, 26, 76, 70, casillero_Click);
+            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 76, 52, casillero_Click);
         }
 
         private void MisVehiculos_Load(object sender, EventArgs e)
