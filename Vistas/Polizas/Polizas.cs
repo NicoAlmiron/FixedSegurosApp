@@ -14,12 +14,19 @@ namespace FixedSegurosApp.Vistas
     {
         private BindingList<Poliza> listaPolizas = new BindingList<Poliza>();
         private Poliza polizaSeleccionada;   // null = se está cargando una póliza nueva
+        private int nroInicial;
 
         public Polizas()
         {
             InitializeComponent();
             dgv_polizas.AutoGenerateColumns = false;
             dgv_polizas.DataSource = listaPolizas;
+        }
+
+        // Notificaciones abre la pantalla con la póliza ya buscada
+        public Polizas(int nroPoliza) : this()
+        {
+            nroInicial = nroPoliza;
         }
 
         private void Polizas_Load(object sender, EventArgs e)
@@ -51,7 +58,14 @@ namespace FixedSegurosApp.Vistas
             cb_aseguradora.ValueMember = "IdProveedor";
             cb_aseguradora.DataSource = ProveedorNegocio.ListarProveedores("");
 
-            CargarDatos();
+            if (nroInicial != 0)
+            {
+                txt_buscar.Text = nroInicial.ToString();    // busca solo, con txt_buscar_TextChanged
+            }
+            else
+            {
+                CargarDatos();
+            }
         }
 
         public void CargarDatos()

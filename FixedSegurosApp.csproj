@@ -45,6 +45,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -62,6 +63,43 @@
     <Compile Include="Entidades\Pago.cs" />
     <Compile Include="Entidades\Siniestro.cs" />
     <Compile Include="Entidades\AdjuntoSiniestro.cs" />
+    <Compile Include="Entidades\FilaReporte.cs" />
+    <Compile Include="Entidades\GraficoReporte.cs" />
+    <Compile Include="Entidades\ReporteSeccion.cs" />
+    <Compile Include="Datos\ReporteDatos.cs" />
+    <Compile Include="Negocio\ReporteNegocio.cs" />
+    <Compile Include="Utilidades\Exportar.cs" />
+    <Compile Include="Vistas\Reportes\Reportes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Reportes\Reportes.Designer.cs">
+      <DependentUpon>Reportes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entidades\TarjetaInicio.cs" />
+    <Compile Include="Entidades\AlertaPoliza.cs" />
+    <Compile Include="Datos\InicioDatos.cs" />
+    <Compile Include="Negocio\InicioNegocio.cs" />
+    <Compile Include="Vistas\Inicio\Inicio.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Inicio\Inicio.Designer.cs">
+      <DependentUpon>Inicio.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Inicio\MiCuenta.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Inicio\MiCuenta.Designer.cs">
+      <DependentUpon>MiCuenta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entidades\Notificacion.cs" />
+    <Compile Include="Datos\NotificacionDatos.cs" />
+    <Compile Include="Negocio\NotificacionNegocio.cs" />
+    <Compile Include="Vistas\Notificaciones\Notificaciones.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Notificaciones\Notificaciones.Designer.cs">
+      <DependentUpon>Notificaciones.cs</DependentUpon>
+    </Compile>
     <Compile Include="Datos\ClienteDatos.cs" />
     <Compile Include="Datos\SiniestroDatos.cs" />
     <Compile Include="Negocio\SiniestroNegocio.cs" />
@@ -188,12 +226,6 @@
     </Compile>
     <Compile Include="Vistas\Principal.Designer.cs">
       <DependentUpon>Principal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Vistas\EnConstruccion.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Vistas\EnConstruccion.Designer.cs">
-      <DependentUpon>EnConstruccion.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

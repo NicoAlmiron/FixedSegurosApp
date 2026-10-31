@@ -71,6 +71,7 @@ namespace FixedSegurosApp.Negocio
 
             Sesion.UsuarioActual = usuario;
             AccionDatos.RegistrarAccion(usuario.Legajo, "Usuarios", "Inició sesión", "");
+            NotificacionNegocio.GenerarAvisos();
 
             return true;
         }
@@ -201,6 +202,100 @@ namespace FixedSegurosApp.Negocio
             }
 
             Registrar("Restableció contraseña", usuario.Legajo);
+            return true;
+        }
+
+        // ================= Mi cuenta =================
+
+        // Sigue con la contraseña inicial: los usuarios creados por el administrador o en la oficina arrancan con su DNI
+        public static bool TieneContrasenaInicial()
+        {
+            int dni = Sesion.UsuarioActual.Dni;
+            return UsuarioDatos.BuscarPorCredenciales(dni, HashMD5(dni.ToString())) != null;
+        }
+
+        public static bool CambiarContrasena(string actual, string nueva, string repetir, out string mensaje)
+        {
+            mensaje = "";
+            Persona usuario = Sesion.UsuarioActual;
+
+            if (actual == "" || nueva == "" || repetir == "")
+            {
+                mensaje = "Complete los tres campos.";
+                return false;
+            }
+
+            if (UsuarioDatos.BuscarPorCredenciales(usuario.Dni, HashMD5(actual)) == null)
+            {
+                mensaje = "La contraseña actual no es correcta.";
+                return false;
+            }
+
+            if (nueva.Length < 6)
+            {
+                mensaje = "La contraseña debe tener al menos 6 caracteres.";
+                return false;
+            }
+
+            if (nueva != repetir)
+            {
+                mensaje = "Las contraseñas no coinciden.";
+                return false;
+            }
+
+            if (nueva == actual)
+            {
+                mensaje = "La contraseña nueva debe ser distinta de la actual.";
+                return false;
+            }
+
+            if (nueva == usuario.Dni.ToString())
+            {
+                mensaje = "La contraseña no puede ser su DNI.";
+                return false;
+            }
+
+            if (!UsuarioDatos.CambiarContrasena(usuario.Legajo, HashMD5(nueva)))
+            {
+                mensaje = "No se pudo cambiar la contraseña.";
+                return false;
+            }
+
+            Registrar("Cambió su contraseña", usuario.Legajo);
+            return true;
+        }
+
+        // El cliente corrige sus datos de contacto. Nombre y DNI solo se cambian desde Usuarios.
+        public static bool GuardarMisDatos(string provincia, string ciudad, string direccion, string telefono, string email, out string mensaje)
+        {
+            mensaje = "";
+
+            if (Sesion.UsuarioActual.Perfil != "Cliente")
+            {
+                mensaje = "Solo el cliente puede modificar sus datos desde acá.";
+                return false;
+            }
+
+            Persona usuario = UsuarioDatos.BuscarPorLegajo(Sesion.UsuarioActual.Legajo);
+
+            usuario.Provincia = provincia;
+            usuario.Ciudad = ciudad.Trim();
+            usuario.Direccion = direccion.Trim();
+            usuario.Telefono = telefono.Trim();
+            usuario.Email = email.Trim();
+
+            if (!ValidarDatos(usuario, usuario.Dni.ToString(), out mensaje))
+            {
+                return false;
+            }
+
+            if (!UsuarioDatos.EditarUsuario(usuario))
+            {
+                mensaje = "No se pudieron guardar los cambios.";
+                return false;
+            }
+
+            Registrar("Modificó sus datos", usuario.Legajo);
             return true;
         }
 

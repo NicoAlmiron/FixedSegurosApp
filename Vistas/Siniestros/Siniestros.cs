@@ -13,11 +13,17 @@ namespace FixedSegurosApp.Vistas
     public partial class Siniestros : Form
     {
         private Siniestro siniestroActual;
+        private int idInicial;      // Notificaciones abre la pantalla con el expediente ya elegido
 
         public Siniestros()
         {
             InitializeComponent();
             dgv_siniestros.AutoGenerateColumns = false;
+        }
+
+        public Siniestros(int idSiniestro) : this()
+        {
+            idInicial = idSiniestro;
         }
 
         private void Siniestros_Load(object sender, EventArgs e)
@@ -38,6 +44,11 @@ namespace FixedSegurosApp.Vistas
 
             cb_estado.Items.AddRange(SiniestroNegocio.Estados);
             cb_estado.SelectedIndex = 0;     // al elegirlo se carga la lista
+
+            if (idInicial != 0)
+            {
+                CargarLista(idInicial);
+            }
         }
 
         private void cb_estado_SelectedIndexChanged(object sender, EventArgs e)

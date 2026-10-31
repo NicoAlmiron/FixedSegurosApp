@@ -144,6 +144,7 @@ namespace FixedSegurosApp.Negocio
                 }
 
                 AccionDatos.RegistrarAccion(usuario.Legajo, "Siniestros", "Inició reclamo", "Expediente " + siniestro.ExpedienteTexto);
+                NotificacionNegocio.AvisarSiniestro(siniestro, esEmpleado ? "pasó a En evaluación." : "quedó en estado Pendiente.");
                 return true;
             }
 
@@ -222,6 +223,12 @@ namespace FixedSegurosApp.Negocio
             }
 
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Siniestros", "Guardó observaciones", "Expediente " + siniestro.ExpedienteTexto);
+
+            // solo se avisa si hay algo nuevo para leer
+            if (observaciones.Trim() != "" && observaciones.Trim() != siniestro.Observaciones)
+            {
+                NotificacionNegocio.AvisarSiniestro(siniestro, "tiene una observación nueva.");
+            }
             return true;
         }
 
@@ -246,6 +253,7 @@ namespace FixedSegurosApp.Negocio
             }
 
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Siniestros", "Verificó documentación", "Expediente " + siniestro.ExpedienteTexto);
+            NotificacionNegocio.AvisarSiniestro(siniestro, "pasó a En evaluación.");
             return true;
         }
 
@@ -306,6 +314,7 @@ namespace FixedSegurosApp.Negocio
             }
 
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Siniestros", accion, "Expediente " + siniestro.ExpedienteTexto);
+            NotificacionNegocio.AvisarSiniestro(siniestro, "fue " + resultado + ".");
             return true;
         }
 

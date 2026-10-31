@@ -540,7 +540,7 @@
             this.col_estado});
             this.dgv_reclamos.Location = new System.Drawing.Point(1, 196);
             this.dgv_reclamos.Name = "dgv_reclamos";
-            this.dgv_reclamos.Size = new System.Drawing.Size(374, 268);
+            this.dgv_reclamos.Size = new System.Drawing.Size(374, 236);
             this.dgv_reclamos.TabIndex = 2;
             this.dgv_reclamos.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_reclamos_CellClick);
             this.dgv_reclamos.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_reclamos_CellFormatting);
@@ -580,7 +580,7 @@
             //
             this.pnl_linea_seguimiento.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pnl_linea_seguimiento.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(213)))), ((int)(((byte)(221)))), ((int)(((byte)(232)))));
-            this.pnl_linea_seguimiento.Location = new System.Drawing.Point(1, 472);
+            this.pnl_linea_seguimiento.Location = new System.Drawing.Point(1, 440);
             this.pnl_linea_seguimiento.Name = "pnl_linea_seguimiento";
             this.pnl_linea_seguimiento.Size = new System.Drawing.Size(374, 1);
             this.pnl_linea_seguimiento.TabIndex = 21;
@@ -591,7 +591,7 @@
             this.lbl_seguimiento_titulo.AutoSize = true;
             this.lbl_seguimiento_titulo.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lbl_seguimiento_titulo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(58)))), ((int)(((byte)(92)))));
-            this.lbl_seguimiento_titulo.Location = new System.Drawing.Point(16, 482);
+            this.lbl_seguimiento_titulo.Location = new System.Drawing.Point(16, 450);
             this.lbl_seguimiento_titulo.Name = "lbl_seguimiento_titulo";
             this.lbl_seguimiento_titulo.Size = new System.Drawing.Size(156, 15);
             this.lbl_seguimiento_titulo.Text = "Seguimiento del expediente";
@@ -600,7 +600,7 @@
             //
             this.lbl_paso1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_paso1.AutoSize = true;
-            this.lbl_paso1.Location = new System.Drawing.Point(16, 504);
+            this.lbl_paso1.Location = new System.Drawing.Point(16, 472);
             this.lbl_paso1.Name = "lbl_paso1";
             this.lbl_paso1.Size = new System.Drawing.Size(203, 15);
             this.lbl_paso1.Text = "1. Pendiente: documentación recibida";
@@ -609,7 +609,7 @@
             //
             this.lbl_paso2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_paso2.AutoSize = true;
-            this.lbl_paso2.Location = new System.Drawing.Point(16, 524);
+            this.lbl_paso2.Location = new System.Drawing.Point(16, 492);
             this.lbl_paso2.Name = "lbl_paso2";
             this.lbl_paso2.Size = new System.Drawing.Size(232, 15);
             this.lbl_paso2.Text = "2. En evaluación: a cargo de la aseguradora";
@@ -618,7 +618,7 @@
             //
             this.lbl_paso3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_paso3.AutoSize = true;
-            this.lbl_paso3.Location = new System.Drawing.Point(16, 544);
+            this.lbl_paso3.Location = new System.Drawing.Point(16, 512);
             this.lbl_paso3.Name = "lbl_paso3";
             this.lbl_paso3.Size = new System.Drawing.Size(187, 15);
             this.lbl_paso3.Text = "3. Resultado: Aprobado o Rechazado";
@@ -627,9 +627,9 @@
             //
             this.lbl_observaciones.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_observaciones.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_observaciones.Location = new System.Drawing.Point(16, 566);
+            this.lbl_observaciones.Location = new System.Drawing.Point(16, 534);
             this.lbl_observaciones.Name = "lbl_observaciones";
-            this.lbl_observaciones.Size = new System.Drawing.Size(344, 62);
+            this.lbl_observaciones.Size = new System.Drawing.Size(344, 94);
             //
             // MisSiniestros
             //

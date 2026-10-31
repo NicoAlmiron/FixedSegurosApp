@@ -27,6 +27,7 @@
             this.btn_siniestros = new System.Windows.Forms.Button();
             this.btn_pagos = new System.Windows.Forms.Button();
             this.btn_proveedores = new System.Windows.Forms.Button();
+            this.btn_reportes = new System.Windows.Forms.Button();
             this.btn_notificaciones = new System.Windows.Forms.Button();
             this.pnl_sesion = new System.Windows.Forms.Panel();
             this.btn_cerrar_sesion = new System.Windows.Forms.Button();
@@ -69,6 +70,7 @@
             this.flp_menu.Controls.Add(this.btn_siniestros);
             this.flp_menu.Controls.Add(this.btn_pagos);
             this.flp_menu.Controls.Add(this.btn_proveedores);
+            this.flp_menu.Controls.Add(this.btn_reportes);
             this.flp_menu.Controls.Add(this.btn_notificaciones);
             this.flp_menu.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flp_menu.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
@@ -158,6 +160,16 @@
             this.btn_proveedores.Text = "Proveedores";
             this.btn_proveedores.UseVisualStyleBackColor = false;
             this.btn_proveedores.Click += new System.EventHandler(this.btn_menu_Click);
+            //
+            // btn_reportes
+            //
+            this.btn_reportes.Margin = new System.Windows.Forms.Padding(0);
+            this.btn_reportes.Name = "btn_reportes";
+            this.btn_reportes.Size = new System.Drawing.Size(260, 52);
+            this.btn_reportes.TabIndex = 9;
+            this.btn_reportes.Text = "Reportes";
+            this.btn_reportes.UseVisualStyleBackColor = false;
+            this.btn_reportes.Click += new System.EventHandler(this.btn_menu_Click);
             //
             // btn_notificaciones
             //
@@ -333,6 +345,7 @@
         private System.Windows.Forms.Button btn_siniestros;
         private System.Windows.Forms.Button btn_pagos;
         private System.Windows.Forms.Button btn_proveedores;
+        private System.Windows.Forms.Button btn_reportes;
         private System.Windows.Forms.Button btn_notificaciones;
         private System.Windows.Forms.Panel pnl_sesion;
         private System.Windows.Forms.Button btn_cerrar_sesion;

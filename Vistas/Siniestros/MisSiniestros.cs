@@ -381,6 +381,8 @@ namespace FixedSegurosApp.Vistas
                 MarcarPaso(lbl_paso2, false);
                 MarcarPaso(lbl_paso3, false);
                 lbl_observaciones.Text = "Elija un reclamo para ver su seguimiento.";
+                lbl_observaciones.Font = Estilos.Normal;
+                lbl_observaciones.ForeColor = Estilos.TextoSecundario;
                 return;
             }
 
@@ -397,7 +399,10 @@ namespace FixedSegurosApp.Vistas
                 lbl_paso3.ForeColor = Estilos.ColorEstado(reclamo.Estado);
             }
 
+            // lo que escribió el empleado se destaca: es un mensaje para el cliente
             lbl_observaciones.Text = reclamo.Observaciones == "" ? "" : "Observaciones: " + reclamo.Observaciones;
+            lbl_observaciones.Font = Estilos.Negrita;
+            lbl_observaciones.ForeColor = Estilos.Texto;
         }
 
         private void MarcarPaso(Label paso, bool hecho)

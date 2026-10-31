@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace FixedSegurosApp.Utilidades
 {
@@ -119,6 +120,30 @@ namespace FixedSegurosApp.Utilidades
                 Panel p = (Panel)sender;
                 e.Graphics.DrawRectangle(new Pen(Borde), 0, 0, p.Width - 1, p.Height - 1);
             };
+        }
+
+        // ---------- Gráficos: un eje, grilla suave y sin leyenda (una sola serie, la nombra el título) ----------
+        public static void Grafico(Chart chart)
+        {
+            ChartArea area = new ChartArea();
+
+            area.BackColor = Superficie;
+            area.AxisX.LineColor = Borde;
+            area.AxisX.MajorGrid.Enabled = false;
+            area.AxisX.MajorTickMark.Enabled = false;
+            area.AxisX.LabelStyle.Font = Normal;
+            area.AxisX.LabelStyle.ForeColor = TextoSecundario;
+            area.AxisY.LineColor = Color.Transparent;
+            area.AxisY.MajorGrid.LineColor = Borde;
+            area.AxisY.MajorTickMark.Enabled = false;
+            area.AxisY.LabelStyle.Font = Normal;
+            area.AxisY.LabelStyle.ForeColor = TextoSecundario;
+
+            chart.BackColor = Superficie;
+            chart.BorderlineColor = Borde;
+            chart.BorderlineDashStyle = ChartDashStyle.Solid;
+            chart.ChartAreas.Add(area);
+            chart.Titles.Add(new Title("", Docking.Top, Negrita, NavyPrincipal));
         }
 
         // ---------- Color del texto de cada estado (para las grillas) ----------

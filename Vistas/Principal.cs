@@ -34,6 +34,22 @@ namespace FixedSegurosApp.Vistas
             btn_inicio.PerformClick();
         }
 
+        // Si hay novedades el botón del menú va en negrita y con la cantidad.
+        // Es público para que lo llame la pantalla Notificaciones al leer un aviso.
+        public void ActualizarNotificaciones()
+        {
+            if (Sesion.UsuarioActual.Perfil == "Administrador")
+            {
+                return;
+            }
+
+            int nuevas = NotificacionNegocio.ContarNuevas();
+            bool seleccionado = btn_notificaciones.BackColor == Estilos.NavyOscuro;
+
+            btn_notificaciones.Text = nuevas > 0 ? "Notificaciones (" + nuevas + ")" : "Notificaciones";
+            btn_notificaciones.Font = new System.Drawing.Font("Segoe UI", 10F, nuevas > 0 || seleccionado ? System.Drawing.FontStyle.Bold : System.Drawing.FontStyle.Regular);
+        }
+
         // Muestra solo los modulos que puede ver cada perfil (tabla de la guia visual)
         private void ConfigurarMenu(string perfil)
         {
@@ -43,6 +59,7 @@ namespace FixedSegurosApp.Vistas
             btn_siniestros.Visible = perfil == "Empleado" || perfil == "Cliente";
             btn_pagos.Visible = perfil == "Empleado" || perfil == "Cliente";
             btn_proveedores.Visible = perfil == "Administrador";
+            btn_reportes.Visible = perfil == "Administrador";
             btn_notificaciones.Visible = perfil == "Empleado" || perfil == "Cliente";
         }
 
@@ -56,6 +73,9 @@ namespace FixedSegurosApp.Vistas
             }
             seleccionado.BackColor = Estilos.NavyOscuro;
             seleccionado.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+
+            // el recorrido de arriba le saca la negrita, y se puede haber resuelto algo en la pantalla anterior
+            ActualizarNotificaciones();
         }
 
         // Todos los botones del menu usan este evento
@@ -65,8 +85,11 @@ namespace FixedSegurosApp.Vistas
 
             SeleccionarBoton(btn);
 
-            // Cada etapa va reemplazando EnConstruccion por la pantalla real del modulo
-            if (btn == btn_usuarios)
+            if (btn == btn_inicio)
+            {
+                AbrirForm(new Inicio());
+            }
+            else if (btn == btn_usuarios)
             {
                 AbrirForm(new Usuarios());
             }
@@ -110,9 +133,25 @@ namespace FixedSegurosApp.Vistas
             {
                 AbrirForm(new Proveedores());
             }
-            else
+            else if (btn == btn_reportes)
             {
-                AbrirForm(new EnConstruccion(btn.Text));
+                AbrirForm(new Reportes());
+            }
+            else if (btn == btn_notificaciones)
+            {
+                AbrirForm(new Notificaciones());
+            }
+        }
+
+        // Abre un módulo como si se hubiera tocado su botón del menú (lo usan los accesos de Inicio)
+        public void AbrirModulo(string nombre)
+        {
+            foreach (Button btn in flp_menu.Controls)
+            {
+                if (btn.Text == nombre)
+                {
+                    btn.PerformClick();
+                }
             }
         }
 
