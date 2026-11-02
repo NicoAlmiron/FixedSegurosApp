@@ -6,26 +6,28 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Arma los casilleros de fotos del vehículo (4 arriba y el resto abajo, cada uno con su nombre).
+    // Arma los casilleros de fotos del vehículo (5 por fila, cada uno con su nombre).
     // Se usa en "Mis vehículos" y en "Detalle del cliente".
     internal class GrillaFotos
     {
+        private const int Columnas = 5;
+
         // Nombres cortos para mostrar debajo de cada casillero (mismo orden que VehiculoNegocio.Posiciones)
         public static readonly string[] Nombres =
         {
-            "Frente", "Atrás", "Lat. izquierdo", "Lat. derecho", "Baúl", "Int. delantero", "Motor"
+            "Frente", "Atrás", "Lat. izq.", "Lat. der.", "Baúl", "Int. del.", "Motor", "Tarj. verde", "VTV"
         };
 
         // Crea los casilleros dentro de "contenedor" a partir de (x, y) y los devuelve en orden.
-        // Cada casillero guarda en Tag su número (0 a 6) para saber cuál se tocó en el evento Click.
+        // Cada casillero guarda en Tag su número (0 a 8) para saber cuál se tocó en el evento Click.
         public static PictureBox[] Crear(Control contenedor, int x, int y, int ancho, int alto, EventHandler alHacerClic)
         {
             PictureBox[] casilleros = new PictureBox[Nombres.Length];
 
             for (int i = 0; i < Nombres.Length; i++)
             {
-                int fila = i / 4;
-                int columna = i % 4;
+                int fila = i / Columnas;
+                int columna = i % Columnas;
                 int posX = x + columna * (ancho + 6);
                 int posY = y + fila * (alto + 22);
 
@@ -73,8 +75,8 @@ namespace FixedSegurosApp.Vistas
 
                 if (visible)
                 {
-                    casillero.Left = casilleros[0].Left + (visibles % 4) * (casillero.Width + 6);
-                    casillero.Top = casilleros[0].Top + (visibles / 4) * (casillero.Height + 22);
+                    casillero.Left = casilleros[0].Left + (visibles % Columnas) * (casillero.Width + 6);
+                    casillero.Top = casilleros[0].Top + (visibles / Columnas) * (casillero.Height + 22);
                     nombre.Left = casillero.Left;
                     nombre.Top = casillero.Bottom + 2;
                     visibles++;

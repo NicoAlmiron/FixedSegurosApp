@@ -13,7 +13,9 @@ namespace FixedSegurosApp.Datos
         public static int ContarPolizasVigentes(int legajo)
         {
             return Contar("SELECT COUNT(*) FROM Poliza po JOIN Cliente c ON c.idCliente = po.idCliente " +
-                          "WHERE po.estado = 'Vigente' AND po.fechaVencimiento >= CAST(GETDATE() AS DATE) AND " + deCliente, legajo);
+                          "JOIN Vehiculo v ON v.idVehiculo = po.idVehiculo " +
+                          "WHERE po.estado = 'Vigente' AND po.fechaVencimiento >= CAST(GETDATE() AS DATE) " +
+                          "AND NOT " + VehiculoDatos.Suspendido + " AND " + deCliente, legajo);
         }
 
         public static int ContarPorVencer(int legajo)
@@ -43,7 +45,7 @@ namespace FixedSegurosApp.Datos
 
         public static int ContarVehiculosPendientes()
         {
-            return Contar("SELECT COUNT(*) FROM Vehiculo WHERE estadoRevision = 'Pendiente'", 0);
+            return Contar("SELECT COUNT(*) FROM Vehiculo WHERE estadoRevision = 'Pendiente' OR vigenciaVtvNueva IS NOT NULL", 0);
         }
 
         public static int ContarReclamosAbiertos(int legajo)

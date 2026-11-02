@@ -27,7 +27,7 @@ namespace FixedSegurosApp.Vistas
             dgv_siniestros.AutoGenerateColumns = false;
             dgv_historial.AutoGenerateColumns = false;
 
-            casilleros = GrillaFotos.Crear(pnl_vehiculo, 0, 48, 88, 66, casillero_Click);
+            casilleros = GrillaFotos.Crear(pnl_vehiculo, 0, 48, 70, 62, casillero_Click);
         }
 
         private void DetalleCliente_Load(object sender, EventArgs e)
@@ -177,16 +177,30 @@ namespace FixedSegurosApp.Vistas
             {
                 fotos[foto.Posicion] = foto.Imagen;
             }
+
+            // la VTV renovada se muestra en lugar de la anterior para poder corroborarla
+            if (fotos.ContainsKey(VehiculoNegocio.FotoVtvNueva))
+            {
+                fotos["VTV"] = fotos[VehiculoNegocio.FotoVtvNueva];
+            }
+
             for (int i = 0; i < casilleros.Length; i++)
             {
                 string posicion = VehiculoNegocio.Posiciones[i];
                 casilleros[i].Image = fotos.ContainsKey(posicion) ? Imagenes.AImagen(fotos[posicion]) : null;
             }
 
-            lbl_revision_valor.Text = vehiculo.EstadoRevision;
-            lbl_revision_valor.BackColor = Estilos.ColorEstado(vehiculo.EstadoRevision);
+            string estado = vehiculo.VtvEnRevision ? "VTV por revisar" : vehiculo.EstadoRevision;
+            lbl_revision_valor.Text = estado;
+            lbl_revision_valor.BackColor = Estilos.ColorEstado(estado);
 
-            if (vehiculo.EstadoRevision == "Pendiente")
+            if (vehiculo.VtvEnRevision)
+            {
+                lbl_revision_detalle.Text = "El cliente actualizó la VTV: vigencia actual " + vehiculo.VigenciaVtv.ToString("dd/MM/yyyy") +
+                                            ", nueva " + vehiculo.VigenciaVtvNueva.Value.ToString("dd/MM/yyyy") + ".\n" +
+                                            "Corrobore la fecha con la foto VTV (clic para verla en grande).";
+            }
+            else if (vehiculo.EstadoRevision == "Pendiente")
             {
                 lbl_revision_detalle.Text = "Revise las " + VehiculoNegocio.PosicionesDe(vehiculo.TipoVehiculo).Length + " fotos (clic para verlas en grande) antes de aprobar.";
             }
@@ -197,11 +211,13 @@ namespace FixedSegurosApp.Vistas
                 {
                     lbl_revision_detalle.Text += "\nMotivo: " + vehiculo.ObservacionRevision;
                 }
+                lbl_revision_detalle.Text += "\nVTV vigente hasta el " + vehiculo.VigenciaVtv.ToString("dd/MM/yyyy") + "." +
+                                             (vehiculo.ServicioSuspendido ? " Servicio suspendido." : "");
             }
 
-            // solo se aprueba o rechaza un vehículo pendiente
-            btn_aprobar.Visible = vehiculo.EstadoRevision == "Pendiente";
-            btn_rechazar.Visible = vehiculo.EstadoRevision == "Pendiente";
+            // solo se aprueba o rechaza un vehículo pendiente o una VTV renovada
+            btn_aprobar.Visible = vehiculo.EstadoRevision == "Pendiente" || vehiculo.VtvEnRevision;
+            btn_rechazar.Visible = btn_aprobar.Visible;
         }
 
         private void casillero_Click(object sender, EventArgs e)
@@ -218,6 +234,12 @@ namespace FixedSegurosApp.Vistas
         private void btn_aprobar_Click(object sender, EventArgs e)
         {
             string mensaje;
+
+            if (vehiculoSeleccionado.VtvEnRevision)
+            {
+                AprobarVtv();
+                return;
+            }
 
             DialogResult respuesta = MessageBox.Show("¿Aprobar el vehículo " + vehiculoSeleccionado.Dominio + "?\nLas fotos quedan como registro del estado inicial y el cliente ya no podrá modificarlo.", "Aprobar vehículo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
@@ -237,6 +259,12 @@ namespace FixedSegurosApp.Vistas
         {
             string mensaje;
 
+            if (vehiculoSeleccionado.VtvEnRevision)
+            {
+                RechazarVtv();
+                return;
+            }
+
             string motivo = Microsoft.VisualBasic.Interaction.InputBox(
                 "Va a rechazar el vehículo " + vehiculoSeleccionado.Dominio + ".\n\nIndique el motivo (el cliente lo va a ver para corregirlo):",
                 "Rechazar vehículo");
@@ -248,6 +276,44 @@ namespace FixedSegurosApp.Vistas
             else
             {
                 MessageBox.Show(mensaje, "Rechazar vehículo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        private void AprobarVtv()
+        {
+            string mensaje;
+
+            DialogResult respuesta = MessageBox.Show("¿Aprobar la VTV del vehículo " + vehiculoSeleccionado.Dominio + "?\nLa vigencia pasa al " + vehiculoSeleccionado.VigenciaVtvNueva.Value.ToString("dd/MM/yyyy") + " y, si la póliza estaba suspendida, se reactiva.", "Aprobar VTV", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (respuesta == DialogResult.Yes)
+            {
+                if (VehiculoNegocio.AprobarVtv(vehiculoSeleccionado.IdVehiculo, legajoCliente, out mensaje))
+                {
+                    RefrescarVehiculos();
+                    CargarPestanas();
+                }
+                else
+                {
+                    MessageBox.Show(mensaje, "Aprobar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+        }
+
+        private void RechazarVtv()
+        {
+            string mensaje;
+
+            string motivo = Microsoft.VisualBasic.Interaction.InputBox(
+                "Va a rechazar la VTV del vehículo " + vehiculoSeleccionado.Dominio + ".\n\nIndique el motivo (el cliente lo va a ver para corregirlo):",
+                "Rechazar VTV");
+
+            if (VehiculoNegocio.RechazarVtv(vehiculoSeleccionado.IdVehiculo, legajoCliente, motivo, out mensaje))
+            {
+                RefrescarVehiculos();
+                CargarPestanas();
+            }
+            else
+            {
+                MessageBox.Show(mensaje, "Rechazar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

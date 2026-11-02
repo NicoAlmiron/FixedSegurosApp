@@ -17,6 +17,7 @@ namespace FixedSegurosApp.Entidades
         public string Adicionales { get; set; }
         public DateTime? FechaInicio { get; set; }          // en una ofrecida es la fecha de inicio propuesta
         public DateTime? FechaVencimiento { get; set; }     // se calcula al adquirirla
+        public decimal SumaAsegurada { get; set; }          // monto máximo que cubre la póliza
         public decimal Descuento { get; set; }              // porcentaje
         public int Duracion { get; set; }                   // meses
         public string Requisitos { get; set; }
@@ -30,6 +31,7 @@ namespace FixedSegurosApp.Entidades
         public string Cliente { get; set; }                 // "Apellido, Nombre" (vacío si es ofrecida)
         public string Dominio { get; set; }                 // vacío si es ofrecida
         public int IdVehiculo { get; set; }                 // 0 si es ofrecida
+        public bool Suspendida { get; set; }                // la VTV del vehículo venció y no se renovó a tiempo
 
         // ---------- Para mostrar en las grillas ----------
 
@@ -49,7 +51,8 @@ namespace FixedSegurosApp.Entidades
             get { return Cliente == "" ? "Sin asignar" : Cliente; }
         }
 
-        // Una vigente se muestra "Por vencer" si le quedan 30 días o menos, y "Vencida" si ya pasó la fecha
+        // Una vigente se muestra "Por vencer" si le quedan 30 días o menos, y "Vencida" si ya pasó la fecha.
+        // "Suspendida" no se guarda: sale de la VTV del vehículo y se levanta sola al aprobar la renovación.
         public string EstadoMostrado
         {
             get
@@ -63,6 +66,10 @@ namespace FixedSegurosApp.Entidades
                     if (FechaVencimiento.Value < DateTime.Today)
                     {
                         return "Vencida";
+                    }
+                    if (Suspendida)
+                    {
+                        return "Suspendida";
                     }
                     if (FechaVencimiento.Value <= DateTime.Today.AddDays(30))
                     {

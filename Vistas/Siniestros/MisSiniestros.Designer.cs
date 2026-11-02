@@ -368,8 +368,8 @@
             this.lbl_monto.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbl_monto.Location = new System.Drawing.Point(300, 485);
             this.lbl_monto.Name = "lbl_monto";
-            this.lbl_monto.Size = new System.Drawing.Size(138, 15);
-            this.lbl_monto.Text = "Valor aproximado del daño";
+            this.lbl_monto.Size = new System.Drawing.Size(192, 15);
+            this.lbl_monto.Text = "Valor aproximado del daño (opcional)";
             //
             // txt_monto
             //

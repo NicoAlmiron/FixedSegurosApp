@@ -58,6 +58,8 @@
             this.txt_franquicia = new System.Windows.Forms.TextBox();
             this.lbl_comision = new System.Windows.Forms.Label();
             this.txt_comision = new System.Windows.Forms.TextBox();
+            this.lbl_monto_maximo = new System.Windows.Forms.Label();
+            this.txt_monto_maximo = new System.Windows.Forms.TextBox();
             this.lbl_adicionales = new System.Windows.Forms.Label();
             this.txt_adicionales = new System.Windows.Forms.TextBox();
             this.lbl_requisitos = new System.Windows.Forms.Label();
@@ -255,6 +257,8 @@
             this.pnl_detalle.Controls.Add(this.txt_franquicia);
             this.pnl_detalle.Controls.Add(this.lbl_comision);
             this.pnl_detalle.Controls.Add(this.txt_comision);
+            this.pnl_detalle.Controls.Add(this.lbl_monto_maximo);
+            this.pnl_detalle.Controls.Add(this.txt_monto_maximo);
             this.pnl_detalle.Controls.Add(this.lbl_adicionales);
             this.pnl_detalle.Controls.Add(this.txt_adicionales);
             this.pnl_detalle.Controls.Add(this.lbl_requisitos);
@@ -500,11 +504,29 @@
             this.txt_comision.Size = new System.Drawing.Size(164, 23);
             this.txt_comision.TabIndex = 11;
             //
+            // lbl_monto_maximo
+            //
+            this.lbl_monto_maximo.AutoSize = true;
+            this.lbl_monto_maximo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_monto_maximo.Location = new System.Drawing.Point(196, 336);
+            this.lbl_monto_maximo.Name = "lbl_monto_maximo";
+            this.lbl_monto_maximo.Size = new System.Drawing.Size(133, 15);
+            this.lbl_monto_maximo.Text = "Monto máximo que cubre";
+            //
+            // txt_monto_maximo
+            //
+            this.txt_monto_maximo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_monto_maximo.Location = new System.Drawing.Point(196, 356);
+            this.txt_monto_maximo.MaxLength = 15;
+            this.txt_monto_maximo.Name = "txt_monto_maximo";
+            this.txt_monto_maximo.Size = new System.Drawing.Size(164, 23);
+            this.txt_monto_maximo.TabIndex = 12;
+            //
             // lbl_adicionales
             //
             this.lbl_adicionales.AutoSize = true;
             this.lbl_adicionales.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_adicionales.Location = new System.Drawing.Point(196, 336);
+            this.lbl_adicionales.Location = new System.Drawing.Point(16, 390);
             this.lbl_adicionales.Name = "lbl_adicionales";
             this.lbl_adicionales.Size = new System.Drawing.Size(66, 15);
             this.lbl_adicionales.Text = "Adicionales";
@@ -512,17 +534,17 @@
             // txt_adicionales
             //
             this.txt_adicionales.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_adicionales.Location = new System.Drawing.Point(196, 356);
+            this.txt_adicionales.Location = new System.Drawing.Point(16, 410);
             this.txt_adicionales.MaxLength = 200;
             this.txt_adicionales.Name = "txt_adicionales";
             this.txt_adicionales.Size = new System.Drawing.Size(164, 23);
-            this.txt_adicionales.TabIndex = 12;
+            this.txt_adicionales.TabIndex = 13;
             //
             // lbl_requisitos
             //
             this.lbl_requisitos.AutoSize = true;
             this.lbl_requisitos.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_requisitos.Location = new System.Drawing.Point(16, 390);
+            this.lbl_requisitos.Location = new System.Drawing.Point(196, 390);
             this.lbl_requisitos.Name = "lbl_requisitos";
             this.lbl_requisitos.Size = new System.Drawing.Size(141, 15);
             this.lbl_requisitos.Text = "Condiciones o requisitos";
@@ -530,12 +552,12 @@
             // txt_requisitos
             //
             this.txt_requisitos.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_requisitos.Location = new System.Drawing.Point(16, 410);
+            this.txt_requisitos.Location = new System.Drawing.Point(196, 410);
             this.txt_requisitos.MaxLength = 200;
             this.txt_requisitos.Multiline = true;
             this.txt_requisitos.Name = "txt_requisitos";
-            this.txt_requisitos.Size = new System.Drawing.Size(344, 22);
-            this.txt_requisitos.TabIndex = 13;
+            this.txt_requisitos.Size = new System.Drawing.Size(164, 23);
+            this.txt_requisitos.TabIndex = 14;
             //
             // lbl_info
             //
@@ -561,7 +583,7 @@
             this.btn_descartar.Location = new System.Drawing.Point(124, 586);
             this.btn_descartar.Name = "btn_descartar";
             this.btn_descartar.Size = new System.Drawing.Size(110, 34);
-            this.btn_descartar.TabIndex = 15;
+            this.btn_descartar.TabIndex = 16;
             this.btn_descartar.Text = "Descartar";
             this.btn_descartar.UseVisualStyleBackColor = false;
             this.btn_descartar.Click += new System.EventHandler(this.btn_descartar_Click);
@@ -572,7 +594,7 @@
             this.btn_guardar.Location = new System.Drawing.Point(240, 586);
             this.btn_guardar.Name = "btn_guardar";
             this.btn_guardar.Size = new System.Drawing.Size(120, 34);
-            this.btn_guardar.TabIndex = 14;
+            this.btn_guardar.TabIndex = 15;
             this.btn_guardar.Text = "Guardar cambios";
             this.btn_guardar.UseVisualStyleBackColor = false;
             this.btn_guardar.Click += new System.EventHandler(this.btn_guardar_Click);
@@ -646,6 +668,8 @@
         private System.Windows.Forms.TextBox txt_franquicia;
         private System.Windows.Forms.Label lbl_comision;
         private System.Windows.Forms.TextBox txt_comision;
+        private System.Windows.Forms.Label lbl_monto_maximo;
+        private System.Windows.Forms.TextBox txt_monto_maximo;
         private System.Windows.Forms.Label lbl_adicionales;
         private System.Windows.Forms.TextBox txt_adicionales;
         private System.Windows.Forms.Label lbl_requisitos;

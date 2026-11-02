@@ -160,6 +160,7 @@ namespace FixedSegurosApp.Utilidades
                 case "VTV vigente":
                     return Exito;
                 case "Suspendido":
+                case "Suspendida":
                 case "Por habilitar":
                 case "Pendiente":
                 case "Por vencer":
@@ -171,6 +172,8 @@ namespace FixedSegurosApp.Utilidades
                 case "VTV vencida":
                     return Peligro;
                 case "En evaluación":
+                case "VTV en revisión":
+                case "VTV por revisar":
                 case "Ofrecida":
                     return Informacion;
                 default:

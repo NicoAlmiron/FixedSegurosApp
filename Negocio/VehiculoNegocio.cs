@@ -10,18 +10,22 @@ namespace FixedSegurosApp.Negocio
     internal class VehiculoNegocio
     {
         // Las fotos obligatorias registran el estado del vehículo al comenzar la póliza.
-        // Esta es la lista completa (7): cada casillero de la pantalla es una de estas posiciones.
+        // Esta es la lista completa (9): cada casillero de la pantalla es una de estas posiciones.
         public static readonly string[] Posiciones =
         {
             "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho",
-            "Interior del baúl", "Interior delantero", "Motor (bajo el capot)"
+            "Interior del baúl", "Interior delantero", "Motor (bajo el capot)",
+            "Tarjeta verde", "VTV"
         };
 
-        // Una motocicleta no tiene baúl ni interior: lleva 5 fotos
+        // Una motocicleta no tiene baúl ni interior: lleva 7 fotos
         private static readonly string[] PosicionesMoto =
         {
-            "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho", "Motor (bajo el capot)"
+            "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho", "Motor (bajo el capot)",
+            "Tarjeta verde", "VTV"
         };
+
+        public const string FotoVtvNueva = VehiculoDatos.FotoVtvNueva;
 
         public static string[] PosicionesDe(string tipoVehiculo)
         {
@@ -173,6 +177,54 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // El cliente envía la VTV renovada. Queda en revisión: si se envió antes de vencer el servicio no se suspende.
+        public static bool ActualizarVtv(int idVehiculo, DateTime vigencia, byte[] foto, out string mensaje)
+        {
+            mensaje = "";
+            int legajo = Sesion.UsuarioActual.Legajo;
+
+            Vehiculo vehiculo = VehiculoDatos.BuscarPorId(idVehiculo, legajo);
+
+            if (vehiculo == null)
+            {
+                mensaje = "No se encontró el vehículo.";
+                return false;
+            }
+
+            if (vehiculo.EstadoRevision != "Aprobado")
+            {
+                mensaje = "Mientras el vehículo no esté aprobado, la VTV se corrige desde sus datos.";
+                return false;
+            }
+
+            if (vehiculo.VtvEnRevision)
+            {
+                mensaje = "La VTV ya fue enviada y espera la revisión de un empleado.";
+                return false;
+            }
+
+            if (foto == null)
+            {
+                mensaje = "Adjunte la foto de la VTV renovada.";
+                return false;
+            }
+
+            if (vigencia.Date < DateTime.Today || vigencia.Date <= vehiculo.VigenciaVtv)
+            {
+                mensaje = "La nueva vigencia debe ser posterior a la actual y no puede estar vencida.";
+                return false;
+            }
+
+            if (!VehiculoDatos.EnviarVtv(idVehiculo, vigencia.Date, foto, legajo))
+            {
+                mensaje = "No se pudo enviar la VTV.";
+                return false;
+            }
+
+            Registrar("Actualizó VTV", vehiculo.Dominio);
+            return true;
+        }
+
         // ================= Empleado / Administrador: Detalle del cliente =================
 
         public static List<Vehiculo> ListarVehiculosDeCliente(int legajoCliente)
@@ -227,6 +279,57 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // El empleado corroboró la VTV renovada: se actualiza la vigencia y, si estaba suspendida, se reactiva la póliza
+        public static bool AprobarVtv(int idVehiculo, int legajoCliente, out string mensaje)
+        {
+            Vehiculo vehiculo;
+            if (!PuedeRevisarVtv(idVehiculo, legajoCliente, out vehiculo, out mensaje))
+            {
+                return false;
+            }
+
+            if (!VehiculoDatos.AprobarVtv(idVehiculo, Sesion.UsuarioActual.Legajo))
+            {
+                mensaje = "No se pudo aprobar la VTV.";
+                return false;
+            }
+
+            string aviso = "La VTV del vehículo " + vehiculo.Dominio + " fue aprobada, vigente hasta el " + vehiculo.VigenciaVtvNueva.Value.ToString("dd/MM/yyyy") + ".";
+            if (vehiculo.ServicioSuspendido && vehiculo.NroPoliza != 0)
+            {
+                aviso += " La póliza " + vehiculo.PolizaTexto + " se reactivó.";
+            }
+
+            NotificacionDatos.CrearNotificacionVtv(idVehiculo, vehiculo.NroPoliza, aviso);
+            Registrar("Aprobó VTV", vehiculo.Dominio);
+            return true;
+        }
+
+        public static bool RechazarVtv(int idVehiculo, int legajoCliente, string motivo, out string mensaje)
+        {
+            Vehiculo vehiculo;
+            if (!PuedeRevisarVtv(idVehiculo, legajoCliente, out vehiculo, out mensaje))
+            {
+                return false;
+            }
+
+            if (motivo.Trim() == "")
+            {
+                mensaje = "No se rechazó: debe indicar el motivo para que el cliente sepa qué corregir.";
+                return false;
+            }
+
+            if (!VehiculoDatos.RechazarVtv(idVehiculo, motivo.Trim(), Sesion.UsuarioActual.Legajo))
+            {
+                mensaje = "No se pudo rechazar la VTV.";
+                return false;
+            }
+
+            NotificacionDatos.CrearNotificacionVtv(idVehiculo, vehiculo.NroPoliza, "La VTV del vehículo " + vehiculo.Dominio + " fue rechazada. Motivo: " + motivo.Trim());
+            Registrar("Rechazó VTV", vehiculo.Dominio);
+            return true;
+        }
+
         // ================= Comunes =================
 
         // Las fotos de un vehículo; el legajo asegura que el vehículo sea de ese cliente
@@ -262,6 +365,28 @@ namespace FixedSegurosApp.Negocio
             if (vehiculo.EstadoRevision != "Pendiente")
             {
                 mensaje = "El vehículo ya fue revisado (" + vehiculo.EstadoRevision + ").";
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool PuedeRevisarVtv(int idVehiculo, int legajoCliente, out Vehiculo vehiculo, out string mensaje)
+        {
+            mensaje = "";
+            vehiculo = null;
+
+            if (Sesion.UsuarioActual.Perfil == "Cliente")
+            {
+                mensaje = "Solo un empleado o administrador puede revisar la VTV.";
+                return false;
+            }
+
+            vehiculo = VehiculoDatos.BuscarPorId(idVehiculo, legajoCliente);
+
+            if (vehiculo == null || !vehiculo.VtvEnRevision)
+            {
+                mensaje = "No hay una VTV para revisar.";
                 return false;
             }
 

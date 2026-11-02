@@ -257,8 +257,9 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // La aseguradora aprobó el reclamo: solo desde En evaluación
-        public static bool Aprobar(Siniestro siniestro, string observaciones, out string mensaje)
+        // La aseguradora aprobó el reclamo: solo desde En evaluación.
+        // El empleado puede cargar el valor aproximado del daño; si lo deja vacío queda el que estaba.
+        public static bool Aprobar(Siniestro siniestro, string montoTexto, string observaciones, out string mensaje)
         {
             if (!ValidarObservaciones(observaciones, out mensaje))
             {
@@ -275,6 +276,17 @@ namespace FixedSegurosApp.Negocio
             {
                 mensaje = "Cargue el formulario para poder aprobar el reclamo.";
                 return false;
+            }
+
+            if (montoTexto != "")
+            {
+                decimal monto;
+                if (!LeerMonto(montoTexto, out monto))
+                {
+                    mensaje = "El valor aproximado del daño debe ser un monto mayor a 0.";
+                    return false;
+                }
+                siniestro.MontoReclamado = monto;
             }
 
             return Resolver(siniestro, "Aprobado", "Aprobó reclamo", observaciones, out mensaje);
@@ -307,7 +319,7 @@ namespace FixedSegurosApp.Negocio
         {
             mensaje = "";
 
-            if (!SiniestroDatos.Resolver(siniestro.IdSiniestro, siniestro.Estado, resultado, observaciones.Trim(), Sesion.UsuarioActual.Legajo))
+            if (!SiniestroDatos.Resolver(siniestro.IdSiniestro, siniestro.Estado, resultado, observaciones.Trim(), siniestro.MontoReclamado, Sesion.UsuarioActual.Legajo))
             {
                 mensaje = "No se pudo guardar: el reclamo cambió de estado.";
                 return false;
@@ -339,12 +351,12 @@ namespace FixedSegurosApp.Negocio
             {
                 mensaje = "Ingrese una descripción breve (hasta 450 caracteres).";
             }
-            else
+            else if (montoTexto != "")
             {
                 decimal monto;
-                if (!decimal.TryParse(PolizaNegocio.LimpiarNumero(montoTexto), out monto) || monto <= 0)
+                if (!LeerMonto(montoTexto, out monto))
                 {
-                    mensaje = "Ingrese el valor aproximado del daño.";
+                    mensaje = "El valor aproximado del daño debe ser un monto mayor a 0.";
                 }
                 else
                 {
@@ -353,6 +365,11 @@ namespace FixedSegurosApp.Negocio
             }
 
             return mensaje == "";
+        }
+
+        private static bool LeerMonto(string montoTexto, out decimal monto)
+        {
+            return decimal.TryParse(PolizaNegocio.LimpiarNumero(montoTexto), out monto) && monto > 0;
         }
 
         private static bool ValidarObservaciones(string observaciones, out string mensaje)

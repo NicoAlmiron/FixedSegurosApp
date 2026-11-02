@@ -116,6 +116,12 @@
       <DependentUpon>Siniestros.cs</DependentUpon>
     </Compile>
     <Compile Include="Vistas\GrillaFotos.cs" />
+    <Compile Include="Vistas\Vehiculos\ActualizarVtv.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Vehiculos\ActualizarVtv.Designer.cs">
+      <DependentUpon>ActualizarVtv.cs</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\VerFoto.cs">
       <SubType>Form</SubType>
     </Compile>

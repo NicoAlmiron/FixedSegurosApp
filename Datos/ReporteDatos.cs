@@ -122,11 +122,12 @@ namespace FixedSegurosApp.Datos
         public static List<FilaReporte> PolizasPorEstado()
         {
             return Agrupar("SELECT estado, COUNT(*), 0 FROM (" +
-                           "SELECT CASE WHEN estado = 'Baja' THEN 'Dadas de baja' " +
-                           "WHEN fechaVencimiento < " + hoy + " THEN 'Vencidas' " +
-                           "WHEN fechaVencimiento <= DATEADD(DAY, 30, " + hoy + ") THEN 'Por vencer' " +
+                           "SELECT CASE WHEN po.estado = 'Baja' THEN 'Dadas de baja' " +
+                           "WHEN po.fechaVencimiento < " + hoy + " THEN 'Vencidas' " +
+                           "WHEN " + VehiculoDatos.Suspendido + " THEN 'Suspendidas' " +
+                           "WHEN po.fechaVencimiento <= DATEADD(DAY, 30, " + hoy + ") THEN 'Por vencer' " +
                            "ELSE 'Vigentes' END AS estado " +
-                           "FROM Poliza WHERE idCliente IS NOT NULL) e GROUP BY estado ORDER BY COUNT(*) DESC", DateTime.Today, DateTime.Today, false);
+                           "FROM Poliza po JOIN Vehiculo v ON v.idVehiculo = po.idVehiculo WHERE po.idCliente IS NOT NULL) e GROUP BY estado ORDER BY COUNT(*) DESC", DateTime.Today, DateTime.Today, false);
         }
 
         public static List<FilaReporte> PolizasPorCobertura()

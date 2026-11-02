@@ -15,7 +15,7 @@ namespace FixedSegurosApp.Datos
                                         "JOIN Cliente c ON c.idCliente = n.idCliente " +
                                         "JOIN Persona p ON p.idPersona = c.idPersona ";
 
-        // Crea los avisos que falten de pólizas por vencer y cuotas vencidas.
+        // Crea los avisos que falten de pólizas por vencer, cuotas vencidas y VTV.
         // Si falla no pasa nada: se vuelve a intentar en el próximo inicio de sesión.
         public static void GenerarNotificaciones()
         {
@@ -122,12 +122,14 @@ namespace FixedSegurosApp.Datos
                                "JOIN Persona p ON p.idPersona = c.idPersona " +
                                "WHERE s.estado = 'Pendiente' " +
                                "UNION ALL " +
-                               "SELECT 'Vehículo por evaluar', 'El vehículo ' + v.dominio + ' espera la revisión.', " +
+                               "SELECT 'Vehículo por evaluar', " +
+                               "CASE WHEN v.vigenciaVtvNueva IS NOT NULL THEN 'El vehículo ' + v.dominio + ' actualizó la VTV y espera la revisión.' " +
+                               "ELSE 'El vehículo ' + v.dominio + ' espera la revisión.' END, " +
                                "NULL, p.apellido + ', ' + p.nombre, p.idPersona, 0, 0 " +
                                "FROM Vehiculo v " +
                                "JOIN Cliente c ON c.idCliente = v.idCliente " +
                                "JOIN Persona p ON p.idPersona = c.idPersona " +
-                               "WHERE v.estadoRevision = 'Pendiente' " +
+                               "WHERE v.estadoRevision = 'Pendiente' OR v.vigenciaVtvNueva IS NOT NULL " +
                                "ORDER BY tipo";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
@@ -179,6 +181,40 @@ namespace FixedSegurosApp.Datos
                 sql.Parameters.AddWithValue("@mensaje", mensaje);
                 sql.Parameters.AddWithValue("@tipo", tipo);
                 sql.Parameters.AddWithValue("@nro", nroPoliza);
+
+                if (sql.ExecuteNonQuery() > 0)
+                {
+                    estado = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return estado;
+        }
+
+        // Aviso de la VTV para el dueño del vehículo; nroPoliza 0 si no tiene póliza vigente
+        public static bool CrearNotificacionVtv(int idVehiculo, int nroPoliza, string mensaje)
+        {
+            bool estado = false;
+
+            Conexion conexion = new Conexion();
+
+            try
+            {
+                string query = "INSERT INTO Notificacion (idCliente, mensaje, tipo, nroPoliza) " +
+                               "SELECT idCliente, @mensaje, 'VTV', @nro FROM Vehiculo WHERE idVehiculo = @id";
+
+                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
+                sql.Parameters.AddWithValue("@mensaje", mensaje);
+                sql.Parameters.AddWithValue("@nro", nroPoliza == 0 ? (object)DBNull.Value : nroPoliza);
+                sql.Parameters.AddWithValue("@id", idVehiculo);
 
                 if (sql.ExecuteNonQuery() > 0)
                 {
@@ -270,7 +306,7 @@ namespace FixedSegurosApp.Datos
             try
             {
                 string query = "SELECT (SELECT COUNT(*) FROM Siniestro WHERE estado = 'Pendiente') + " +
-                               "(SELECT COUNT(*) FROM Vehiculo WHERE estadoRevision = 'Pendiente')";
+                               "(SELECT COUNT(*) FROM Vehiculo WHERE estadoRevision = 'Pendiente' OR vigenciaVtvNueva IS NOT NULL)";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
 

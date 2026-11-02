@@ -10,7 +10,7 @@ namespace FixedSegurosApp.Entidades
         public string Modelo { get; set; }
         public int Anio { get; set; }
         public string TipoVehiculo { get; set; }
-        public bool VtvVigente { get; set; }
+        public DateTime VigenciaVtv { get; set; }   // hasta cuándo vale la VTV, inclusive
         public string NumeroChasis { get; set; }
         public string NumeroMotor { get; set; }
         public int NroPoliza { get; set; }          // 0 = sin póliza vigente
@@ -20,6 +20,28 @@ namespace FixedSegurosApp.Entidades
         public string ObservacionRevision { get; set; }     // motivo del rechazo
         public string Revisor { get; set; }                 // "Apellido, Nombre" de quien lo revisó
         public DateTime? FechaRevision { get; set; }
+
+        // Renovación de la VTV: el vehículo sigue aprobado mientras un empleado la revisa
+        public DateTime? VigenciaVtvNueva { get; set; }     // null = no hay nada para revisar
+        public DateTime? FechaEnvioVtv { get; set; }
+        public string ObservacionVtv { get; set; }          // motivo del rechazo de la renovación
+
+        public bool VtvVigente
+        {
+            get { return VigenciaVtv >= DateTime.Today; }
+        }
+
+        public bool VtvEnRevision
+        {
+            get { return VigenciaVtvNueva != null; }
+        }
+
+        // Con la VTV vencida el servicio se suspende, salvo que la renovación se haya enviado antes de vencer.
+        // La misma regla está en VehiculoDatos.Suspendido, para las consultas.
+        public bool ServicioSuspendido
+        {
+            get { return !VtvVigente && (FechaEnvioVtv == null || FechaEnvioVtv.Value.Date > VigenciaVtv); }
+        }
 
         // Para mostrar en la grilla
         public string MarcaYModelo
@@ -40,7 +62,14 @@ namespace FixedSegurosApp.Entidades
 
         public string VtvTexto
         {
-            get { return VtvVigente ? "VTV vigente" : "VTV vencida"; }
+            get
+            {
+                if (VtvEnRevision)
+                {
+                    return "VTV en revisión";
+                }
+                return VtvVigente ? "VTV vigente" : "VTV vencida";
+            }
         }
     }
 }

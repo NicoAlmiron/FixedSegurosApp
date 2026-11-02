@@ -481,7 +481,7 @@
             this.lbl_monto.Location = new System.Drawing.Point(16, 228);
             this.lbl_monto.Name = "lbl_monto";
             this.lbl_monto.Size = new System.Drawing.Size(99, 15);
-            this.lbl_monto.Text = "Monto reclamado";
+            this.lbl_monto.Text = "Valor aproximado del daño";
             //
             // txt_monto
             //

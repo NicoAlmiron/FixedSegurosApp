@@ -13,7 +13,8 @@ namespace FixedSegurosApp.Datos
                                         "po.adicionales, po.fechaInicio, po.fechaVencimiento, po.descuento, po.duracion, po.requisitos, " +
                                         "po.tipoPrima, po.prima, po.formaPago, po.franquicia, po.estado, " +
                                         "p.apellido + ', ' + p.nombre, v.dominio, po.comision, " +
-                                        "(SELECT COUNT(*) FROM Pago WHERE idPoliza = po.nroPoliza AND idArqueo IS NOT NULL), po.idVehiculo " +
+                                        "(SELECT COUNT(*) FROM Pago WHERE idPoliza = po.nroPoliza AND idArqueo IS NOT NULL), po.idVehiculo, po.sumaAsegurada, " +
+                                        "CASE WHEN " + VehiculoDatos.Suspendido + " THEN 1 ELSE 0 END " +
                                         "FROM Poliza po " +
                                         "JOIN Proveedor pr ON pr.idProveedor = po.idProveedor " +
                                         "LEFT JOIN Cliente c ON c.idCliente = po.idCliente " +
@@ -206,9 +207,9 @@ namespace FixedSegurosApp.Datos
 
             try
             {
-                string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, descuento, duracion, requisitos, " +
+                string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, sumaAsegurada, descuento, duracion, requisitos, " +
                                "referente, tipoPrima, prima, formaPago, franquicia, comision, estado, idProveedor) " +
-                               "VALUES (@cobertura, @tipoVehiculo, @adicionales, @inicio, @descuento, @duracion, @requisitos, " +
+                               "VALUES (@cobertura, @tipoVehiculo, @adicionales, @inicio, @sumaAsegurada, @descuento, @duracion, @requisitos, " +
                                "(SELECT idEmpleado FROM Empleado WHERE idPersona = @legajo), " +
                                "@tipoPrima, @prima, @formaPago, @franquicia, @comision, 'Ofrecida', @idProveedor); " +
                                "SELECT CAST(SCOPE_IDENTITY() AS INT);";
@@ -241,7 +242,7 @@ namespace FixedSegurosApp.Datos
             try
             {
                 string query = "UPDATE Poliza SET tipoCobertura = @cobertura, tipoVehiculo = @tipoVehiculo, adicionales = @adicionales, " +
-                               "fechaInicio = @inicio, descuento = @descuento, duracion = @duracion, requisitos = @requisitos, " +
+                               "fechaInicio = @inicio, sumaAsegurada = @sumaAsegurada, descuento = @descuento, duracion = @duracion, requisitos = @requisitos, " +
                                "tipoPrima = @tipoPrima, prima = @prima, formaPago = @formaPago, franquicia = @franquicia, comision = @comision, " +
                                "idProveedor = @idProveedor " +
                                "WHERE nroPoliza = @nro AND estado = 'Ofrecida'";
@@ -394,6 +395,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@tipoVehiculo", poliza.TipoVehiculo);
             sql.Parameters.AddWithValue("@adicionales", poliza.Adicionales == "" ? (object)DBNull.Value : poliza.Adicionales);
             sql.Parameters.AddWithValue("@inicio", poliza.FechaInicio.Value);
+            sql.Parameters.AddWithValue("@sumaAsegurada", poliza.SumaAsegurada);
             sql.Parameters.AddWithValue("@descuento", poliza.Descuento);
             sql.Parameters.AddWithValue("@duracion", poliza.Duracion);
             sql.Parameters.AddWithValue("@requisitos", poliza.Requisitos == "" ? (object)DBNull.Value : poliza.Requisitos);
@@ -441,7 +443,9 @@ namespace FixedSegurosApp.Datos
                 Dominio = leer.IsDBNull(18) ? "" : leer.GetString(18),
                 Comision = leer.GetDecimal(19),
                 CuotasLiquidadas = leer.GetInt32(20),
-                IdVehiculo = leer.IsDBNull(21) ? 0 : leer.GetInt32(21)
+                IdVehiculo = leer.IsDBNull(21) ? 0 : leer.GetInt32(21),
+                SumaAsegurada = leer.GetDecimal(22),
+                Suspendida = leer.GetInt32(23) == 1
             };
             return poliza;
         }

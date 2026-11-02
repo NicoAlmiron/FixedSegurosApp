@@ -395,7 +395,7 @@ namespace FixedSegurosApp.Datos
         }
 
         // Registra el resultado final (Aprobado o Rechazado). Solo si el reclamo sigue en estadoActual.
-        public static bool Resolver(int idSiniestro, string estadoActual, string resultado, string observaciones, int legajoEmpleado)
+        public static bool Resolver(int idSiniestro, string estadoActual, string resultado, string observaciones, decimal monto, int legajoEmpleado)
         {
             bool estado = false;
 
@@ -404,13 +404,14 @@ namespace FixedSegurosApp.Datos
             try
             {
                 string query = "UPDATE Siniestro SET estado = @resultado, resultado = @resultado, fechaResolucion = GETDATE(), " +
-                               "observaciones = @observaciones, " +
+                               "observaciones = @observaciones, montoReclamado = @monto, " +
                                "idEmpleado = (SELECT idEmpleado FROM Empleado WHERE idPersona = @legajo) " +
                                "WHERE idSiniestro = @id AND estado = @estadoActual";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
                 sql.Parameters.AddWithValue("@resultado", resultado);
                 sql.Parameters.AddWithValue("@observaciones", observaciones);
+                sql.Parameters.AddWithValue("@monto", monto);
                 sql.Parameters.AddWithValue("@legajo", legajoEmpleado);
                 sql.Parameters.AddWithValue("@id", idSiniestro);
                 sql.Parameters.AddWithValue("@estadoActual", estadoActual);

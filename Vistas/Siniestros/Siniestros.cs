@@ -42,6 +42,8 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonPrincipal(btn_evaluar);
             Estilos.BotonPrincipal(btn_aprobar);
 
+            Estilos.Placeholder(txt_monto, "Opcional");
+
             cb_estado.Items.AddRange(SiniestroNegocio.Estados);
             cb_estado.SelectedIndex = 0;     // al elegirlo se carga la lista
 
@@ -115,6 +117,7 @@ namespace FixedSegurosApp.Vistas
             lbl_estado.Text = "No hay reclamos para mostrar.";
             lbl_estado.ForeColor = Estilos.TextoSecundario;
             txt_observaciones.ReadOnly = true;
+            PermitirMonto(false);
 
             foreach (CheckBox control in new CheckBox[] { chk_fotos, chk_denuncia, chk_poliza })
             {
@@ -143,7 +146,6 @@ namespace FixedSegurosApp.Vistas
             txt_tipo.Text = siniestro.TipoSiniestro;
             txt_fecha.Text = siniestro.FechaOcurrencia.ToString("dd/MM/yyyy");
             txt_ubicacion.Text = siniestro.Ubicacion;
-            txt_monto.Text = "$ " + siniestro.MontoReclamado.ToString("N2");
             txt_responsable.Text = siniestro.EmpleadoResponsable == "" ? "Sin asignar" : siniestro.EmpleadoResponsable;
             txt_descripcion.Text = siniestro.Descripcion;
 
@@ -175,10 +177,37 @@ namespace FixedSegurosApp.Vistas
             chk_denuncia.Checked = verificado;
             chk_poliza.Checked = verificado;
 
+            MostrarMonto(siniestro);
+
             btn_evaluar.Visible = siniestro.EsPendiente;
             btn_aprobar.Visible = siniestro.Estado == "En evaluación";
             btn_rechazar.Visible = !siniestro.EstaResuelto;
             btn_guardar_observaciones.Visible = !siniestro.EstaResuelto;
+        }
+
+        // El valor aproximado del daño se carga antes de aprobar: solo se edita En evaluación
+        private void MostrarMonto(Siniestro siniestro)
+        {
+            bool editable = siniestro.Estado == "En evaluación";
+            bool cargado = siniestro.MontoReclamado > 0;
+
+            PermitirMonto(editable);
+
+            if (editable)
+            {
+                txt_monto.Text = cargado ? siniestro.MontoReclamado.ToString("0.##") : "";
+            }
+            else
+            {
+                txt_monto.Text = cargado ? "$ " + siniestro.MontoReclamado.ToString("N2") : "Sin cargar";
+            }
+        }
+
+        private void PermitirMonto(bool editable)
+        {
+            txt_monto.ReadOnly = !editable;
+            txt_monto.TabStop = editable;
+            txt_monto.BackColor = editable ? Estilos.Superficie : Estilos.Fondo;
         }
 
         // ================= Documentación =================
@@ -286,7 +315,7 @@ namespace FixedSegurosApp.Vistas
             DialogResult respuesta = MessageBox.Show("¿Registrar que la aseguradora aprobó el expediente " + siniestroActual.ExpedienteTexto + "? No se puede deshacer.", "Aprobar reclamo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
             {
-                if (SiniestroNegocio.Aprobar(siniestroActual, txt_observaciones.Text, out mensaje))
+                if (SiniestroNegocio.Aprobar(siniestroActual, txt_monto.Text.Trim(), txt_observaciones.Text, out mensaje))
                 {
                     CargarLista(id);
                 }

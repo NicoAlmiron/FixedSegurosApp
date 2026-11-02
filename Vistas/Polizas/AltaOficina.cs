@@ -21,7 +21,7 @@ namespace FixedSegurosApp.Vistas
         {
             InitializeComponent();
             dgv_ofrecidas.AutoGenerateColumns = false;
-            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 72, 54, casillero_Click);
+            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 57, 54, casillero_Click);
         }
 
         private void AltaOficina_Load(object sender, EventArgs e)
@@ -160,7 +160,7 @@ namespace FixedSegurosApp.Vistas
                 txt_marca.Clear();
                 txt_modelo.Clear();
                 txt_anio.Clear();
-                cb_vtv.SelectedIndex = 0;
+                dtp_vigencia.Value = DateTime.Today.AddYears(1);
                 txt_chasis.Clear();
                 txt_motor.Clear();
                 fotosActuales = new Dictionary<string, byte[]>();
@@ -175,14 +175,14 @@ namespace FixedSegurosApp.Vistas
                 txt_marca.Text = vehiculo.Marca;
                 txt_modelo.Text = vehiculo.Modelo;
                 txt_anio.Text = vehiculo.Anio.ToString();
-                cb_vtv.Text = vehiculo.VtvVigente ? "Vigente" : "Vencida";
+                dtp_vigencia.Value = vehiculo.VigenciaVtv;
                 txt_chasis.Text = vehiculo.NumeroChasis;
                 txt_motor.Text = vehiculo.NumeroMotor;
             }
 
             // un vehículo que ya tiene el cliente está aprobado: no se toca ni pide fotos
             cb_tipo.Enabled = esNuevo;
-            cb_vtv.Enabled = esNuevo;
+            dtp_vigencia.Enabled = esNuevo;
             txt_dominio.ReadOnly = !esNuevo;
             txt_marca.ReadOnly = !esNuevo;
             txt_modelo.ReadOnly = !esNuevo;
@@ -284,7 +284,7 @@ namespace FixedSegurosApp.Vistas
                 Dominio = txt_dominio.Text.Trim(),
                 Marca = txt_marca.Text.Trim(),
                 Modelo = txt_modelo.Text.Trim(),
-                VtvVigente = cb_vtv.Text == "Vigente",
+                VigenciaVtv = dtp_vigencia.Value.Date,
                 NumeroChasis = txt_chasis.Text.Trim(),
                 NumeroMotor = txt_motor.Text.Trim()
             };

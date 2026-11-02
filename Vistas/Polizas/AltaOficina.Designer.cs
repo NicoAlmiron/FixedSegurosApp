@@ -59,7 +59,7 @@
             this.lbl_anio = new System.Windows.Forms.Label();
             this.txt_anio = new System.Windows.Forms.TextBox();
             this.lbl_vtv = new System.Windows.Forms.Label();
-            this.cb_vtv = new System.Windows.Forms.ComboBox();
+            this.dtp_vigencia = new System.Windows.Forms.DateTimePicker();
             this.lbl_chasis = new System.Windows.Forms.Label();
             this.txt_chasis = new System.Windows.Forms.TextBox();
             this.lbl_motor = new System.Windows.Forms.Label();
@@ -344,7 +344,7 @@
             this.pnl_vehiculo.Controls.Add(this.lbl_anio);
             this.pnl_vehiculo.Controls.Add(this.txt_anio);
             this.pnl_vehiculo.Controls.Add(this.lbl_vtv);
-            this.pnl_vehiculo.Controls.Add(this.cb_vtv);
+            this.pnl_vehiculo.Controls.Add(this.dtp_vigencia);
             this.pnl_vehiculo.Controls.Add(this.lbl_chasis);
             this.pnl_vehiculo.Controls.Add(this.txt_chasis);
             this.pnl_vehiculo.Controls.Add(this.lbl_motor);
@@ -491,18 +491,16 @@
             this.lbl_vtv.Location = new System.Drawing.Point(186, 202);
             this.lbl_vtv.Name = "lbl_vtv";
             this.lbl_vtv.Size = new System.Drawing.Size(60, 15);
-            this.lbl_vtv.Text = "Estado de la VTV";
+            this.lbl_vtv.Text = "Vigencia de la VTV";
             //
-            // cb_vtv
+            // dtp_vigencia
             //
-            this.cb_vtv.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_vtv.Items.AddRange(new object[] {
-            "Vigente",
-            "Vencida"});
-            this.cb_vtv.Location = new System.Drawing.Point(186, 220);
-            this.cb_vtv.Name = "cb_vtv";
-            this.cb_vtv.Size = new System.Drawing.Size(160, 23);
-            this.cb_vtv.TabIndex = 18;
+            this.dtp_vigencia.CustomFormat = "dd/MM/yyyy";
+            this.dtp_vigencia.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtp_vigencia.Location = new System.Drawing.Point(186, 220);
+            this.dtp_vigencia.Name = "dtp_vigencia";
+            this.dtp_vigencia.Size = new System.Drawing.Size(160, 23);
+            this.dtp_vigencia.TabIndex = 18;
             //
             // lbl_chasis
             //
@@ -722,7 +720,7 @@
         private System.Windows.Forms.Label lbl_anio;
         private System.Windows.Forms.TextBox txt_anio;
         private System.Windows.Forms.Label lbl_vtv;
-        private System.Windows.Forms.ComboBox cb_vtv;
+        private System.Windows.Forms.DateTimePicker dtp_vigencia;
         private System.Windows.Forms.Label lbl_chasis;
         private System.Windows.Forms.TextBox txt_chasis;
         private System.Windows.Forms.Label lbl_motor;

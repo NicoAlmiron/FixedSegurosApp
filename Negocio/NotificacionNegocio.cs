@@ -25,10 +25,10 @@ namespace FixedSegurosApp.Negocio
         {
             if (perfil == "Empleado")
             {
-                return new string[] { "Todos", "Siniestro por evaluar", "Vehículo por evaluar", "Por vencer", "Cuota impaga", "Siniestro" };
+                return new string[] { "Todos", "Siniestro por evaluar", "Vehículo por evaluar", "Por vencer", "Cuota impaga", "Siniestro", "VTV" };
             }
 
-            return new string[] { "Todos", "Por vencer", "Cuota impaga", "Siniestro" };
+            return new string[] { "Todos", "Por vencer", "Cuota impaga", "Siniestro", "VTV" };
         }
 
         // soloNuevas: al cliente le deja las no leídas; al empleado, lo pendiente

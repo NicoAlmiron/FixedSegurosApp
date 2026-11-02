@@ -45,6 +45,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.Placeholder(txt_descuento, "10 %");
             Estilos.Placeholder(txt_franquicia, "$ 80000");
             Estilos.Placeholder(txt_comision, "12 %");
+            Estilos.Placeholder(txt_monto_maximo, "$ 5000000");
             Estilos.Placeholder(txt_adicionales, "Cristales, grúa...");
 
             // las ganancias de la empresa solo las ve el Administrador
@@ -119,6 +120,7 @@ namespace FixedSegurosApp.Vistas
             dtp_inicio.Value = poliza.FechaInicio.Value;
             txt_franquicia.Text = poliza.Franquicia.ToString("0.##");
             txt_comision.Text = poliza.Comision.ToString("0.##");
+            txt_monto_maximo.Text = poliza.SumaAsegurada > 0 ? poliza.SumaAsegurada.ToString("0.##") : "";
             txt_adicionales.Text = poliza.Adicionales;
             txt_requisitos.Text = poliza.Requisitos;
 
@@ -133,6 +135,11 @@ namespace FixedSegurosApp.Vistas
                 lbl_info.Text = "Contratada por " + poliza.Cliente + " para el vehículo " + poliza.Dominio + ".\n" +
                                 "Vigencia: " + poliza.FechaInicio.Value.ToString("dd/MM/yyyy") + " al " + poliza.FechaVencimiento.Value.ToString("dd/MM/yyyy") + " · " + cuotas + "\n" +
                                 "Una póliza contratada solo se puede dar de baja.";
+
+                if (poliza.EstadoMostrado == "Suspendida")
+                {
+                    lbl_info.Text = "Suspendida: la VTV del vehículo " + poliza.Dominio + " venció. Se reactiva al aprobar la renovación.\n" + lbl_info.Text;
+                }
 
                 if (Sesion.UsuarioActual.Perfil == "Administrador")
                 {
@@ -162,6 +169,7 @@ namespace FixedSegurosApp.Vistas
             dtp_inicio.Value = DateTime.Today;
             txt_franquicia.Clear();
             txt_comision.Clear();
+            txt_monto_maximo.Clear();
             txt_adicionales.Clear();
             txt_requisitos.Clear();
             lbl_info.Text = "La póliza queda como \"Ofrecida\" hasta que un cliente la contrate para un vehículo aprobado.";
@@ -184,6 +192,7 @@ namespace FixedSegurosApp.Vistas
             dtp_inicio.Enabled = !bloqueado;
             txt_franquicia.ReadOnly = bloqueado;
             txt_comision.ReadOnly = bloqueado;
+            txt_monto_maximo.ReadOnly = bloqueado;
             txt_adicionales.ReadOnly = bloqueado;
             txt_requisitos.ReadOnly = bloqueado;
             btn_guardar.Visible = !bloqueado;
@@ -232,7 +241,7 @@ namespace FixedSegurosApp.Vistas
                 Requisitos = txt_requisitos.Text.Trim()
             };
 
-            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), txt_comision.Text.Trim(), out mensaje))
+            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), txt_comision.Text.Trim(), txt_monto_maximo.Text.Trim(), out mensaje))
             {
                 MessageBox.Show(esNueva ? "Póliza " + poliza.NroTexto + " creada. Ya la pueden contratar los clientes." : "Los cambios se guardaron correctamente.", "Pólizas", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txt_buscar.Clear();   // para que la póliza aparezca aunque hubiera una búsqueda escrita

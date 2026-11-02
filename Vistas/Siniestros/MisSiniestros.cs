@@ -161,7 +161,7 @@ namespace FixedSegurosApp.Vistas
             dtp_fecha.Value = reclamo.FechaOcurrencia;
             txt_ubicacion.Text = reclamo.Ubicacion;
             txt_descripcion.Text = reclamo.Descripcion;
-            txt_monto.Text = reclamo.MontoReclamado.ToString("0.##");
+            txt_monto.Text = reclamo.MontoReclamado > 0 ? reclamo.MontoReclamado.ToString("0.##") : "";
 
             if (editable)
             {

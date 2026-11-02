@@ -22,7 +22,7 @@ namespace FixedSegurosApp.Negocio
 
         // Si poliza.NroPoliza es 0 crea una póliza "Ofrecida"; si no, guarda los cambios (solo de una ofrecida).
         // Los montos llegan como texto ("45000", "$ 45.000", "10 %") y se validan acá.
-        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, out string mensaje)
+        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, string montoMaximoTexto, out string mensaje)
         {
             mensaje = "";
             decimal prima;
@@ -30,6 +30,7 @@ namespace FixedSegurosApp.Negocio
             int duracion;
             decimal franquicia;
             decimal comision;
+            decimal montoMaximo;
 
             if (Sesion.UsuarioActual.Perfil == "Cliente")
             {
@@ -38,9 +39,9 @@ namespace FixedSegurosApp.Negocio
             }
 
             if (poliza.IdProveedor == 0 || poliza.TipoCobertura == "" || poliza.TipoVehiculo == "" || poliza.TipoPrima == "" ||
-                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "" || comisionTexto == "")
+                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "" || comisionTexto == "" || montoMaximoTexto == "")
             {
-                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago, duración y comisión.";
+                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago, duración, comisión y monto máximo.";
                 return false;
             }
 
@@ -80,6 +81,13 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
             poliza.Comision = comision;
+
+            if (!decimal.TryParse(LimpiarNumero(montoMaximoTexto), out montoMaximo) || montoMaximo <= 0)
+            {
+                mensaje = "El monto máximo debe ser un monto mayor a 0.";
+                return false;
+            }
+            poliza.SumaAsegurada = montoMaximo;
 
             if (!int.TryParse(duracionTexto, out duracion) || duracion < 1 || duracion > 60)
             {
@@ -215,6 +223,7 @@ namespace FixedSegurosApp.Negocio
                    (poliza.Descuento > 0 ? " (" + poliza.Descuento.ToString("0.##") + " % de descuento)" : "") + "\n" +
                    poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2") + " · " + poliza.FormaPago + "\n" +
                    "Franquicia: $ " + poliza.Franquicia.ToString("N2") + "\n" +
+                   (poliza.SumaAsegurada > 0 ? "Monto máximo que cubre: $ " + poliza.SumaAsegurada.ToString("N2") + "\n" : "") +
                    "Vigencia: " + inicio.ToString("dd/MM/yyyy") + " al " + inicio.AddMonths(poliza.Duracion).ToString("dd/MM/yyyy") + " (" + poliza.Duracion + " meses)\n" +
                    (poliza.Adicionales != "" ? "Adicionales: " + poliza.Adicionales + "\n" : "") +
                    (poliza.Requisitos != "" ? "Requisitos: " + poliza.Requisitos : "");

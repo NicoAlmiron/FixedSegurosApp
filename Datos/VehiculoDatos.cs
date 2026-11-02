@@ -10,11 +10,18 @@ namespace FixedSegurosApp.Datos
     // Empleados y administradores usan las mismas consultas pasando el legajo del cliente que están mirando.
     internal class VehiculoDatos
     {
+        // Vehículo (alias v) con el servicio suspendido: misma regla que Vehiculo.ServicioSuspendido
+        public const string Suspendido = "(v.vigenciaVtv < CAST(GETDATE() AS DATE) AND (v.fechaEnvioVtv IS NULL OR CAST(v.fechaEnvioVtv AS DATE) > v.vigenciaVtv))";
+
+        // Foto de la VTV que espera la revisión de un empleado
+        public const string FotoVtvNueva = "VTV nueva";
+
         // Columnas que usan ListarVehiculos y BuscarPorId (en el mismo orden que LeerVehiculo).
-        private const string columnas = "SELECT v.idVehiculo, v.dominio, v.marca, v.modelo, v.anio, v.tipoVehiculo, v.estadoVTV, " +
+        private const string columnas = "SELECT v.idVehiculo, v.dominio, v.marca, v.modelo, v.anio, v.tipoVehiculo, v.vigenciaVtv, " +
                                         "v.numeroChasis, v.numeroMotor, " +
                                         "ISNULL((SELECT TOP 1 nroPoliza FROM Poliza WHERE idVehiculo = v.idVehiculo AND estado = 'Vigente'), 0), " +
-                                        "v.estadoRevision, v.observacionRevision, r.apellido + ', ' + r.nombre, v.fechaRevision " +
+                                        "v.estadoRevision, v.observacionRevision, r.apellido + ', ' + r.nombre, v.fechaRevision, " +
+                                        "v.vigenciaVtvNueva, v.fechaEnvioVtv, v.observacionVtv " +
                                         "FROM Vehiculo v " +
                                         "JOIN Cliente c ON c.idCliente = v.idCliente " +
                                         "LEFT JOIN Persona r ON r.idPersona = v.idRevisor ";
@@ -87,7 +94,7 @@ namespace FixedSegurosApp.Datos
             return vehiculo;
         }
 
-        // Las 7 fotos de un vehículo. Se piden aparte porque pesan: solo cuando se elige un vehículo.
+        // Las fotos de un vehículo. Se piden aparte porque pesan: solo cuando se elige un vehículo.
         public static List<FotoVehiculo> ListarFotos(int idVehiculo)
         {
             List<FotoVehiculo> lista = new List<FotoVehiculo>();
@@ -198,8 +205,8 @@ namespace FixedSegurosApp.Datos
         // Inserta el vehículo (Pendiente) usando una conexión y transacción ya abiertas. Devuelve el id nuevo.
         public static int InsertarVehiculo(SqlConnection con, SqlTransaction transaccion, Vehiculo vehiculo, int legajoCliente)
         {
-            string query = "INSERT INTO Vehiculo (dominio, marca, modelo, anio, tipoVehiculo, estadoVTV, numeroChasis, numeroMotor, idCliente) " +
-                           "VALUES (@dominio, @marca, @modelo, @anio, @tipo, @vtv, @chasis, @motor, " +
+            string query = "INSERT INTO Vehiculo (dominio, marca, modelo, anio, tipoVehiculo, vigenciaVtv, numeroChasis, numeroMotor, idCliente) " +
+                           "VALUES (@dominio, @marca, @modelo, @anio, @tipo, @vigencia, @chasis, @motor, " +
                            "(SELECT idCliente FROM Cliente WHERE idPersona = @legajo)); " +
                            "SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
@@ -225,7 +232,7 @@ namespace FixedSegurosApp.Datos
                 transaccion = con.BeginTransaction();
 
                 string query = "UPDATE Vehiculo SET dominio = @dominio, marca = @marca, modelo = @modelo, anio = @anio, " +
-                               "tipoVehiculo = @tipo, estadoVTV = @vtv, numeroChasis = @chasis, numeroMotor = @motor, " +
+                               "tipoVehiculo = @tipo, vigenciaVtv = @vigencia, numeroChasis = @chasis, numeroMotor = @motor, " +
                                "estadoRevision = 'Pendiente', observacionRevision = NULL, idRevisor = NULL, fechaRevision = NULL " +
                                "WHERE idVehiculo = @id AND estadoRevision <> 'Aprobado' " +
                                "AND idCliente = (SELECT idCliente FROM Cliente WHERE idPersona = @legajo)";
@@ -386,6 +393,167 @@ namespace FixedSegurosApp.Datos
             return tiene;
         }
 
+        // El cliente envía la VTV renovada: la vigencia y la foto quedan aparte hasta que un empleado las revise.
+        // Solo vehículos aprobados y sin otra renovación en espera (la condición está en el WHERE).
+        public static bool EnviarVtv(int idVehiculo, DateTime vigencia, byte[] foto, int legajoCliente)
+        {
+            bool estado = false;
+
+            Conexion conexion = new Conexion();
+            SqlTransaction transaccion = null;
+
+            try
+            {
+                SqlConnection con = conexion.AbrirConexion();
+                transaccion = con.BeginTransaction();
+
+                string query = "UPDATE Vehiculo SET vigenciaVtvNueva = @vigencia, fechaEnvioVtv = GETDATE(), observacionVtv = NULL " +
+                               "WHERE idVehiculo = @id AND estadoRevision = 'Aprobado' AND vigenciaVtvNueva IS NULL " +
+                               "AND idCliente = (SELECT idCliente FROM Cliente WHERE idPersona = @legajo)";
+
+                SqlCommand sql = new SqlCommand(query, con, transaccion);
+                sql.Parameters.AddWithValue("@vigencia", vigencia);
+                sql.Parameters.AddWithValue("@id", idVehiculo);
+                sql.Parameters.AddWithValue("@legajo", legajoCliente);
+
+                if (sql.ExecuteNonQuery() > 0)
+                {
+                    List<FotoVehiculo> fotos = new List<FotoVehiculo>();
+                    fotos.Add(new FotoVehiculo() { Posicion = FotoVtvNueva, Imagen = foto });
+                    GuardarFotos(con, transaccion, idVehiculo, fotos);
+
+                    transaccion.Commit();
+                    estado = true;
+                }
+                else
+                {
+                    transaccion.Rollback();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (transaccion != null)
+                {
+                    transaccion.Rollback();
+                }
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return estado;
+        }
+
+        // La renovación aprobada pasa a ser la VTV del vehículo: la foto nueva reemplaza a la anterior
+        public static bool AprobarVtv(int idVehiculo, int legajoRevisor)
+        {
+            bool estado = false;
+
+            Conexion conexion = new Conexion();
+            SqlTransaction transaccion = null;
+
+            try
+            {
+                SqlConnection con = conexion.AbrirConexion();
+                transaccion = con.BeginTransaction();
+
+                string query = "UPDATE Vehiculo SET vigenciaVtv = vigenciaVtvNueva, vigenciaVtvNueva = NULL, fechaEnvioVtv = NULL, " +
+                               "observacionVtv = NULL, idRevisor = @revisor, fechaRevision = GETDATE() " +
+                               "WHERE idVehiculo = @id AND vigenciaVtvNueva IS NOT NULL";
+
+                SqlCommand sql = new SqlCommand(query, con, transaccion);
+                sql.Parameters.AddWithValue("@revisor", legajoRevisor);
+                sql.Parameters.AddWithValue("@id", idVehiculo);
+
+                if (sql.ExecuteNonQuery() > 0)
+                {
+                    query = "DELETE FROM FotoVehiculo WHERE idVehiculo = @id AND posicion = 'VTV'; " +
+                            "UPDATE FotoVehiculo SET posicion = 'VTV' WHERE idVehiculo = @id AND posicion = @nueva";
+
+                    sql = new SqlCommand(query, con, transaccion);
+                    sql.Parameters.AddWithValue("@id", idVehiculo);
+                    sql.Parameters.AddWithValue("@nueva", FotoVtvNueva);
+                    sql.ExecuteNonQuery();
+
+                    transaccion.Commit();
+                    estado = true;
+                }
+                else
+                {
+                    transaccion.Rollback();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (transaccion != null)
+                {
+                    transaccion.Rollback();
+                }
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return estado;
+        }
+
+        // La renovación rechazada se descarta y queda el motivo para el cliente
+        public static bool RechazarVtv(int idVehiculo, string motivo, int legajoRevisor)
+        {
+            bool estado = false;
+
+            Conexion conexion = new Conexion();
+            SqlTransaction transaccion = null;
+
+            try
+            {
+                SqlConnection con = conexion.AbrirConexion();
+                transaccion = con.BeginTransaction();
+
+                string query = "UPDATE Vehiculo SET vigenciaVtvNueva = NULL, fechaEnvioVtv = NULL, observacionVtv = @motivo, " +
+                               "idRevisor = @revisor, fechaRevision = GETDATE() " +
+                               "WHERE idVehiculo = @id AND vigenciaVtvNueva IS NOT NULL";
+
+                SqlCommand sql = new SqlCommand(query, con, transaccion);
+                sql.Parameters.AddWithValue("@motivo", motivo);
+                sql.Parameters.AddWithValue("@revisor", legajoRevisor);
+                sql.Parameters.AddWithValue("@id", idVehiculo);
+
+                if (sql.ExecuteNonQuery() > 0)
+                {
+                    sql = new SqlCommand("DELETE FROM FotoVehiculo WHERE idVehiculo = @id AND posicion = @nueva", con, transaccion);
+                    sql.Parameters.AddWithValue("@id", idVehiculo);
+                    sql.Parameters.AddWithValue("@nueva", FotoVtvNueva);
+                    sql.ExecuteNonQuery();
+
+                    transaccion.Commit();
+                    estado = true;
+                }
+                else
+                {
+                    transaccion.Rollback();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                if (transaccion != null)
+                {
+                    transaccion.Rollback();
+                }
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return estado;
+        }
+
         // Inserta cada foto usando la misma conexión y transacción del vehículo
         public static void GuardarFotos(SqlConnection con, SqlTransaction transaccion, int idVehiculo, List<FotoVehiculo> fotos)
         {
@@ -406,7 +574,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@modelo", vehiculo.Modelo);
             sql.Parameters.AddWithValue("@anio", vehiculo.Anio);
             sql.Parameters.AddWithValue("@tipo", vehiculo.TipoVehiculo);
-            sql.Parameters.AddWithValue("@vtv", vehiculo.VtvVigente);
+            sql.Parameters.AddWithValue("@vigencia", vehiculo.VigenciaVtv);
             sql.Parameters.AddWithValue("@chasis", vehiculo.NumeroChasis);
             sql.Parameters.AddWithValue("@motor", vehiculo.NumeroMotor);
         }
@@ -421,14 +589,17 @@ namespace FixedSegurosApp.Datos
                 Modelo = leer.GetString(3),
                 Anio = leer.GetInt32(4),
                 TipoVehiculo = leer.GetString(5),
-                VtvVigente = leer.GetBoolean(6),
+                VigenciaVtv = leer.GetDateTime(6),
                 NumeroChasis = leer.IsDBNull(7) ? "" : leer.GetString(7),
                 NumeroMotor = leer.IsDBNull(8) ? "" : leer.GetString(8),
                 NroPoliza = leer.GetInt32(9),
                 EstadoRevision = leer.GetString(10),
                 ObservacionRevision = leer.IsDBNull(11) ? "" : leer.GetString(11),
                 Revisor = leer.IsDBNull(12) ? "" : leer.GetString(12),
-                FechaRevision = leer.IsDBNull(13) ? (DateTime?)null : leer.GetDateTime(13)
+                FechaRevision = leer.IsDBNull(13) ? (DateTime?)null : leer.GetDateTime(13),
+                VigenciaVtvNueva = leer.IsDBNull(14) ? (DateTime?)null : leer.GetDateTime(14),
+                FechaEnvioVtv = leer.IsDBNull(15) ? (DateTime?)null : leer.GetDateTime(15),
+                ObservacionVtv = leer.IsDBNull(16) ? "" : leer.GetString(16)
             };
             return vehiculo;
         }

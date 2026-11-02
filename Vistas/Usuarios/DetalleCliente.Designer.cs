@@ -356,7 +356,7 @@
             // lbl_revision_titulo
             //
             this.lbl_revision_titulo.AutoSize = true;
-            this.lbl_revision_titulo.Location = new System.Drawing.Point(0, 240);
+            this.lbl_revision_titulo.Location = new System.Drawing.Point(0, 222);
             this.lbl_revision_titulo.Name = "lbl_revision_titulo";
             this.lbl_revision_titulo.Size = new System.Drawing.Size(55, 15);
             this.lbl_revision_titulo.Text = "Revisión:";
@@ -367,7 +367,7 @@
             this.lbl_revision_valor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(154)))), ((int)(((byte)(103)))), ((int)(((byte)(0)))));
             this.lbl_revision_valor.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lbl_revision_valor.ForeColor = System.Drawing.Color.White;
-            this.lbl_revision_valor.Location = new System.Drawing.Point(62, 238);
+            this.lbl_revision_valor.Location = new System.Drawing.Point(62, 220);
             this.lbl_revision_valor.Name = "lbl_revision_valor";
             this.lbl_revision_valor.Padding = new System.Windows.Forms.Padding(6, 2, 6, 2);
             this.lbl_revision_valor.Size = new System.Drawing.Size(80, 19);
@@ -376,14 +376,14 @@
             // lbl_revision_detalle
             //
             this.lbl_revision_detalle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_revision_detalle.Location = new System.Drawing.Point(0, 264);
+            this.lbl_revision_detalle.Location = new System.Drawing.Point(0, 244);
             this.lbl_revision_detalle.Name = "lbl_revision_detalle";
             this.lbl_revision_detalle.Size = new System.Drawing.Size(380, 54);
             this.lbl_revision_detalle.Text = "Detalle de la revisión";
             //
             // btn_aprobar
             //
-            this.btn_aprobar.Location = new System.Drawing.Point(0, 324);
+            this.btn_aprobar.Location = new System.Drawing.Point(0, 302);
             this.btn_aprobar.Name = "btn_aprobar";
             this.btn_aprobar.Size = new System.Drawing.Size(130, 32);
             this.btn_aprobar.TabIndex = 0;
@@ -393,7 +393,7 @@
             //
             // btn_rechazar
             //
-            this.btn_rechazar.Location = new System.Drawing.Point(138, 324);
+            this.btn_rechazar.Location = new System.Drawing.Point(138, 302);
             this.btn_rechazar.Name = "btn_rechazar";
             this.btn_rechazar.Size = new System.Drawing.Size(130, 32);
             this.btn_rechazar.TabIndex = 1;

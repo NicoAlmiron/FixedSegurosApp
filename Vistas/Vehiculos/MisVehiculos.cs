@@ -23,7 +23,7 @@ namespace FixedSegurosApp.Vistas
             InitializeComponent();
             dgv_vehiculos.AutoGenerateColumns = false;
             dgv_vehiculos.DataSource = listaVehiculos;
-            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 76, 52, casillero_Click);
+            casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 60, 52, casillero_Click);
         }
 
         private void MisVehiculos_Load(object sender, EventArgs e)
@@ -35,6 +35,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonPeligro(btn_eliminar);
             Estilos.BotonSecundario(btn_descartar);
             Estilos.BotonPrincipal(btn_guardar);
+            Estilos.BotonSecundario(btn_actualizar_vtv);
             Estilos.Placeholder(txt_dominio, "AB123CD");
 
             CargarDatos();
@@ -79,7 +80,7 @@ namespace FixedSegurosApp.Vistas
             txt_marca.Text = vehiculo.Marca;
             txt_modelo.Text = vehiculo.Modelo;
             txt_anio.Text = vehiculo.Anio.ToString();
-            cb_vtv.Text = vehiculo.VtvVigente ? "Vigente" : "Vencida";
+            dtp_vigencia.Value = vehiculo.VigenciaVtv;
             txt_chasis.Text = vehiculo.NumeroChasis;
             txt_motor.Text = vehiculo.NumeroMotor;
 
@@ -92,6 +93,7 @@ namespace FixedSegurosApp.Vistas
             MostrarFotos();
 
             MostrarRevision(vehiculo.EstadoRevision, vehiculo.ObservacionRevision);
+            MostrarVtv(vehiculo);
 
             // un vehículo aprobado queda bloqueado: sus fotos son la prueba del estado inicial
             Bloquear(vehiculo.EstadoRevision == "Aprobado");
@@ -107,7 +109,7 @@ namespace FixedSegurosApp.Vistas
             txt_marca.Clear();
             txt_modelo.Clear();
             txt_anio.Clear();
-            cb_vtv.SelectedIndex = 0;
+            dtp_vigencia.Value = DateTime.Today.AddYears(1);
             txt_chasis.Clear();
             txt_motor.Clear();
 
@@ -115,6 +117,7 @@ namespace FixedSegurosApp.Vistas
             MostrarFotos();
 
             MostrarRevision("Nuevo", "");
+            btn_actualizar_vtv.Visible = false;
             Bloquear(false);
         }
 
@@ -123,7 +126,47 @@ namespace FixedSegurosApp.Vistas
         {
             lbl_revision_valor.Text = estado == "Nuevo" ? "Sin enviar" : estado;
             lbl_revision_valor.BackColor = Estilos.ColorEstado(estado);
+            lbl_revision_motivo.ForeColor = Estilos.Peligro;
             lbl_revision_motivo.Text = estado == "Rechazado" ? "Motivo: " + motivo + " Corrija y guarde para enviarlo de nuevo." : "";
+        }
+
+        // Un vehículo aprobado solo cambia su VTV con "Actualizar VTV", que queda en revisión hasta que lo vea un empleado
+        private void MostrarVtv(Vehiculo vehiculo)
+        {
+            btn_actualizar_vtv.Visible = vehiculo.EstadoRevision == "Aprobado" && !vehiculo.VtvEnRevision;
+
+            if (vehiculo.EstadoRevision != "Aprobado")
+            {
+                return;
+            }
+
+            lbl_revision_motivo.ForeColor = Estilos.Peligro;
+
+            if (vehiculo.VtvEnRevision)
+            {
+                lbl_revision_motivo.ForeColor = Estilos.Informacion;
+                lbl_revision_motivo.Text = "VTV en revisión, nueva vigencia " + vehiculo.VigenciaVtvNueva.Value.ToString("dd/MM/yyyy") + ". " +
+                                           (vehiculo.ServicioSuspendido ? "El servicio sigue suspendido hasta que se apruebe." : "El servicio no se suspende mientras tanto.");
+            }
+            else if (vehiculo.ObservacionVtv != "")
+            {
+                lbl_revision_motivo.Text = "VTV rechazada: " + vehiculo.ObservacionVtv;
+            }
+            else if (vehiculo.ServicioSuspendido)
+            {
+                lbl_revision_motivo.Text = "La VTV venció: el servicio está suspendido hasta que la renueve y un empleado la apruebe.";
+            }
+        }
+
+        private void btn_actualizar_vtv_Click(object sender, EventArgs e)
+        {
+            if (new ActualizarVtv(vehiculoSeleccionado).ShowDialog() == DialogResult.OK)
+            {
+                int id = vehiculoSeleccionado.IdVehiculo;
+                CargarDatos();
+                SeleccionarFila(id);
+                MostrarVehiculo(VehiculoNegocio.BuscarMiVehiculo(id));
+            }
         }
 
         // Una motocicleta lleva menos fotos que el resto
@@ -144,7 +187,7 @@ namespace FixedSegurosApp.Vistas
         private void Bloquear(bool bloqueado)
         {
             cb_tipo.Enabled = !bloqueado;
-            cb_vtv.Enabled = !bloqueado;
+            dtp_vigencia.Enabled = !bloqueado;
             txt_dominio.ReadOnly = bloqueado;
             txt_marca.ReadOnly = bloqueado;
             txt_modelo.ReadOnly = bloqueado;
@@ -222,7 +265,7 @@ namespace FixedSegurosApp.Vistas
                 Dominio = txt_dominio.Text.Trim(),
                 Marca = txt_marca.Text.Trim(),
                 Modelo = txt_modelo.Text.Trim(),
-                VtvVigente = cb_vtv.Text == "Vigente",
+                VigenciaVtv = dtp_vigencia.Value.Date,
                 NumeroChasis = txt_chasis.Text.Trim(),
                 NumeroMotor = txt_motor.Text.Trim()
             };
