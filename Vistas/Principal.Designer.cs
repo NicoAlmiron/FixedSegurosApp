@@ -285,11 +285,11 @@
             //
             this.lbl_servidor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lbl_servidor.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_servidor.Location = new System.Drawing.Point(1066, 7);
+            this.lbl_servidor.Location = new System.Drawing.Point(706, 7);
             this.lbl_servidor.Name = "lbl_servidor";
-            this.lbl_servidor.Size = new System.Drawing.Size(200, 15);
+            this.lbl_servidor.Size = new System.Drawing.Size(560, 15);
             this.lbl_servidor.TabIndex = 1;
-            this.lbl_servidor.Text = "Servidor local: conectado";
+            this.lbl_servidor.Text = "Servidor";
             this.lbl_servidor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             //
             // pnl_contenido

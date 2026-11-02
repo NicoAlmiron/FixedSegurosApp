@@ -11,3 +11,6 @@ packages/
 .claude/
 CLAUDE.md
 CLAUDE.local.md
+
+# ---------- Cadena de conexión con contraseña: no se sube ----------
+Datos/Conexion.cs

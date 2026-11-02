@@ -1,4 +1,7 @@
-﻿using System;
+Copiar este contenido en Datos/Conexion.cs y completar los datos de la base.
+Conexion.cs no se sube a GitHub porque tiene la contraseña.
+
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,10 +9,8 @@ namespace FixedSegurosApp.Datos
 {
     internal class Conexion
     {
-        // La cadena de conexión se lee de la variable de entorno FIXEDSEGUROS_BD,
-        // así no queda escrita en el código. Si no existe, usa el SQL Server Express local.
-        private string conString = Environment.GetEnvironmentVariable("FIXEDSEGUROS_BD")
-                                   ?? "Server=localhost\\SQLEXPRESS;Database=fixedsegurosbd;Trusted_Connection=True;";
+        // Base en la nube (somee.com). Este archivo no se sube a GitHub porque tiene la contraseña.
+        private const string conString = "Server=SERVIDOR;Database=fixedsegurosbd;User Id=USUARIO;Password=CONTRASENA;Encrypt=True;TrustServerCertificate=True;";
         private SqlConnection conx;
 
         public Conexion()
@@ -32,6 +33,12 @@ namespace FixedSegurosApp.Datos
             {
                 conx.Close();
             }
+        }
+
+        // El servidor al que se conecta la app, sin usuario ni contraseña
+        public static string NombreServidor()
+        {
+            return new SqlConnectionStringBuilder(conString).DataSource;
         }
 
         // Devuelve true si se puede conectar al servidor

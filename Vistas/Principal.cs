@@ -24,6 +24,10 @@ namespace FixedSegurosApp.Vistas
             MostrarNombreUsuario();
             lbl_estado_perfil.Text = usuario.Perfil;
 
+            bool conectado;
+            lbl_servidor.Text = UsuarioNegocio.TextoServidor(out conectado);
+            lbl_servidor.ForeColor = conectado ? Estilos.TextoSecundario : Estilos.Peligro;
+
             foreach (Button btn in flp_menu.Controls)
             {
                 Estilos.BotonMenu(btn);

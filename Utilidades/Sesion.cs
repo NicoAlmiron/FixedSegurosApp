@@ -5,6 +5,8 @@ namespace FixedSegurosApp.Utilidades
     // Guarda el usuario que inicio sesion para usarlo desde cualquier pantalla
     internal class Sesion
     {
+        public const string Version = "1.2";
+
         public static Persona UsuarioActual { get; set; }
 
         public static void CerrarSesion()

@@ -10,6 +10,14 @@ namespace FixedSegurosApp.Negocio
 {
     internal class UsuarioNegocio
     {
+        // Texto del cartel de la barra inferior: versión del sistema y servidor al que se conecta
+        public static string TextoServidor(out bool conectado)
+        {
+            conectado = Conexion.ProbarConexion();
+
+            return "Versión " + Sesion.Version + "   ·   Servidor: " + Conexion.NombreServidor() + (conectado ? " (conectado)" : " (sin conexión)");
+        }
+
         // ================= Sesion =================
 
         // Valida los datos, busca el usuario y, si todo esta bien, lo guarda en la Sesion.
