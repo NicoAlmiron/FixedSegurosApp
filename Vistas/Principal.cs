@@ -21,7 +21,7 @@ namespace FixedSegurosApp.Vistas
             Persona usuario = Sesion.UsuarioActual;
 
             this.Text = "Fixed Seguros: " + usuario.Perfil;
-            lbl_usuario.Text = usuario.Apellido + ", " + usuario.Nombre;
+            MostrarNombreUsuario();
             lbl_estado_perfil.Text = usuario.Perfil;
 
             foreach (Button btn in flp_menu.Controls)
@@ -32,6 +32,12 @@ namespace FixedSegurosApp.Vistas
             ConfigurarMenu(usuario.Perfil);
 
             btn_inicio.PerformClick();
+        }
+
+        // Es público porque el administrador puede cambiar su nombre desde Mi cuenta
+        public void MostrarNombreUsuario()
+        {
+            lbl_usuario.Text = Sesion.UsuarioActual.Apellido + ", " + Sesion.UsuarioActual.Nombre;
         }
 
         // Si hay novedades el botón del menú va en negrita y con la cantidad.

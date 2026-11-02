@@ -114,6 +114,7 @@ namespace FixedSegurosApp.Vistas
         {
             new MiCuenta().ShowDialog();
             MostrarAvisoContrasena();
+            ((Principal)this.ParentForm).MostrarNombreUsuario();
         }
 
         private void btn_nueva_poliza_Click(object sender, EventArgs e)

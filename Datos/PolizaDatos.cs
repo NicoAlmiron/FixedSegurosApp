@@ -93,6 +93,40 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Las pólizas de un empleado: las que cargó y las que vendió en la oficina
+        public static List<Poliza> ListarPolizasDeEmpleado(int legajoEmpleado)
+        {
+            List<Poliza> lista = new List<Poliza>();
+
+            Conexion conexion = new Conexion();
+
+            try
+            {
+                string query = columnas + "WHERE po.referente = (SELECT idEmpleado FROM Empleado WHERE idPersona = @legajo) ORDER BY po.nroPoliza DESC";
+
+                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
+                sql.Parameters.AddWithValue("@legajo", legajoEmpleado);
+
+                SqlDataReader leer = sql.ExecuteReader();
+
+                while (leer.Read())
+                {
+                    lista.Add(LeerPoliza(leer));
+                }
+                leer.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return lista;
+        }
+
         // Pólizas ofrecidas para un tipo de vehículo, solo de aseguradoras activas
         public static List<Poliza> ListarOfrecidas(string tipoVehiculo)
         {
@@ -369,6 +403,17 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@franquicia", poliza.Franquicia);
             sql.Parameters.AddWithValue("@comision", poliza.Comision);
             sql.Parameters.AddWithValue("@idProveedor", poliza.IdProveedor);
+        }
+
+        // La venta en la oficina queda a nombre del empleado que atendió al cliente
+        public static void AsignarReferente(SqlConnection con, SqlTransaction transaccion, int nroPoliza, int legajoEmpleado)
+        {
+            string query = "UPDATE Poliza SET referente = (SELECT idEmpleado FROM Empleado WHERE idPersona = @legajo) WHERE nroPoliza = @nro";
+
+            SqlCommand sql = new SqlCommand(query, con, transaccion);
+            sql.Parameters.AddWithValue("@legajo", legajoEmpleado);
+            sql.Parameters.AddWithValue("@nro", nroPoliza);
+            sql.ExecuteNonQuery();
         }
 
         private static Poliza LeerPoliza(SqlDataReader leer)

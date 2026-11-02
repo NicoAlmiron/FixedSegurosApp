@@ -29,6 +29,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonPrincipal(btn_habilitar);
             Estilos.BotonPeligro(btn_deshabilitar);
             Estilos.BotonSecundario(btn_descartar);
+            Estilos.BotonSecundario(btn_detalle);
             Estilos.BotonPrincipal(btn_guardar);
             Estilos.Placeholder(txt_buscar, "Buscar por legajo, DNI o apellido");
 
@@ -192,6 +193,28 @@ namespace FixedSegurosApp.Vistas
             if (empleadoSeleccionado != null)
             {
                 MostrarEmpleado(EmpleadoNegocio.BuscarPorLegajo(empleadoSeleccionado.Legajo));
+            }
+        }
+
+        private void btn_detalle_Click(object sender, EventArgs e)
+        {
+            AbrirDetalle();
+        }
+
+        // Doble clic en la fila: abre el detalle del empleado
+        private void dgv_empleados_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                AbrirDetalle();
+            }
+        }
+
+        private void AbrirDetalle()
+        {
+            if (empleadoSeleccionado != null)
+            {
+                ((Principal)this.ParentForm).AbrirForm(new DetalleEmpleado(empleadoSeleccionado.Legajo));
             }
         }
 

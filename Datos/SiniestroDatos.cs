@@ -93,6 +93,40 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Los reclamos que tiene a cargo un empleado (fue el último que actuó)
+        public static List<Siniestro> ListarDeEmpleado(int legajoEmpleado)
+        {
+            List<Siniestro> lista = new List<Siniestro>();
+
+            Conexion conexion = new Conexion();
+
+            try
+            {
+                string query = columnas + "WHERE e.idPersona = @legajo ORDER BY s.idSiniestro DESC";
+
+                SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
+                sql.Parameters.AddWithValue("@legajo", legajoEmpleado);
+
+                SqlDataReader leer = sql.ExecuteReader();
+
+                while (leer.Read())
+                {
+                    lista.Add(LeerSiniestro(leer));
+                }
+                leer.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                conexion.CerrarConexion();
+            }
+
+            return lista;
+        }
+
         // Las fotos o la denuncia de un reclamo, según el tipo
         public static List<AdjuntoSiniestro> ListarAdjuntos(int idSiniestro, string tipo)
         {

@@ -265,18 +265,27 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // El cliente corrige sus datos de contacto. Nombre y DNI solo se cambian desde Usuarios.
-        public static bool GuardarMisDatos(string provincia, string ciudad, string direccion, string telefono, string email, out string mensaje)
+        // El cliente corrige sus datos de contacto; el administrador además su nombre y matrícula.
+        // El DNI no se cambia: es el usuario para iniciar sesión.
+        public static bool GuardarMisDatos(string nombre, string apellido, string provincia, string ciudad, string direccion, string telefono, string email, string matricula, out string mensaje)
         {
             mensaje = "";
+            bool esAdministrador = Sesion.UsuarioActual.Perfil == "Administrador";
 
-            if (Sesion.UsuarioActual.Perfil != "Cliente")
+            if (!esAdministrador && Sesion.UsuarioActual.Perfil != "Cliente")
             {
-                mensaje = "Solo el cliente puede modificar sus datos desde acá.";
+                mensaje = "Sus datos se modifican desde la pantalla Usuarios.";
                 return false;
             }
 
             Persona usuario = UsuarioDatos.BuscarPorLegajo(Sesion.UsuarioActual.Legajo);
+
+            if (esAdministrador)
+            {
+                usuario.Nombre = nombre.Trim();
+                usuario.Apellido = apellido.Trim();
+                usuario.Matricula = matricula;
+            }
 
             usuario.Provincia = provincia;
             usuario.Ciudad = ciudad.Trim();
@@ -294,6 +303,10 @@ namespace FixedSegurosApp.Negocio
                 mensaje = "No se pudieron guardar los cambios.";
                 return false;
             }
+
+            // el menú lateral muestra el nombre de la sesión
+            Sesion.UsuarioActual.Nombre = usuario.Nombre;
+            Sesion.UsuarioActual.Apellido = usuario.Apellido;
 
             Registrar("Modificó sus datos", usuario.Legajo);
             return true;
@@ -351,6 +364,17 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
+            if (usuario.Perfil == "Administrador")
+            {
+                usuario.Matricula = (usuario.Matricula ?? "").Trim();
+
+                if (usuario.Matricula == "" || usuario.Matricula.Length > 50)
+                {
+                    mensaje = "Ingrese la matrícula del administrador (hasta 50 caracteres).";
+                    return false;
+                }
+            }
+
             usuario.Dni = dni;
             return true;
         }
@@ -377,6 +401,15 @@ namespace FixedSegurosApp.Negocio
         private static bool PuedeCambiarEstado(Persona usuario, out string mensaje)
         {
             mensaje = "";
+
+            // se consulta la base: el perfil que llega desde la pantalla podría no ser el real
+            Persona actual = UsuarioDatos.BuscarPorLegajo(usuario.Legajo);
+
+            if (actual != null && actual.Perfil == "Administrador")
+            {
+                mensaje = "No se puede suspender ni dar de baja a un administrador.";
+                return false;
+            }
 
             if (usuario.Legajo == Sesion.UsuarioActual.Legajo)
             {

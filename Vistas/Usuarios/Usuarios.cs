@@ -103,11 +103,19 @@ namespace FixedSegurosApp.Vistas
             txt_fecha_alta.Text = usuario.FechaAlta.ToString("dd/MM/yyyy");
             txt_fecha_baja.Text = usuario.FechaBaja.HasValue ? usuario.FechaBaja.Value.ToString("dd/MM/yyyy") : "";
             txt_motivo_baja.Text = usuario.ObservacionBaja;
+            txt_matricula.Text = usuario.Matricula;
 
             btn_suspender.Text = usuario.Estado == "Suspendido" ? "Reactivar" : "Suspender";
 
             // la baja es definitiva: un usuario dado de baja ya no se puede modificar
             HabilitarAcciones(usuario.Estado != "Baja");
+
+            // a un administrador no se lo puede suspender ni dar de baja
+            if (usuario.Perfil == "Administrador")
+            {
+                btn_suspender.Visible = false;
+                btn_baja.Visible = false;
+            }
 
             // el detalle (vehículos, pólizas, pagos...) solo existe para clientes
             btn_detalle_cliente.Visible = usuario.Perfil == "Cliente";
@@ -145,9 +153,28 @@ namespace FixedSegurosApp.Vistas
             txt_fecha_alta.Text = DateTime.Today.ToString("dd/MM/yyyy");
             txt_fecha_baja.Clear();
             txt_motivo_baja.Clear();
+            txt_matricula.Clear();
             btn_suspender.Text = "Suspender";
             btn_detalle_cliente.Visible = false;
             HabilitarAcciones(true);
+        }
+
+        // La matrícula es solo del administrador y ocupa el lugar del motivo de baja, que él nunca tiene
+        private void cb_perfil_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool esAdministrador = cb_perfil.Text == "Administrador";
+
+            lbl_matricula.Visible = esAdministrador;
+            txt_matricula.Visible = esAdministrador;
+            lbl_motivo_baja.Visible = !esAdministrador;
+            txt_motivo_baja.Visible = !esAdministrador;
+
+            // al cargar uno nuevo los botones dependen del perfil elegido
+            if (usuarioSeleccionado == null)
+            {
+                btn_suspender.Visible = !esAdministrador && !soloLectura;
+                btn_baja.Visible = !esAdministrador && !soloLectura;
+            }
         }
 
         private void SeleccionarFila(int legajo)
@@ -190,7 +217,8 @@ namespace FixedSegurosApp.Vistas
                 Ciudad = txt_ciudad.Text.Trim(),
                 Direccion = txt_direccion.Text.Trim(),
                 Telefono = txt_telefono.Text.Trim(),
-                Email = txt_email.Text.Trim()
+                Email = txt_email.Text.Trim(),
+                Matricula = cb_perfil.Text == "Administrador" ? txt_matricula.Text : null
             };
 
             if (UsuarioNegocio.GuardarUsuario(usuario, txt_dni.Text.Trim(), out mensaje))

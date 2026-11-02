@@ -18,6 +18,22 @@ namespace FixedSegurosApp.Negocio
             return EmpleadoDatos.BuscarPorLegajo(legajo);
         }
 
+        // ================= Detalle del empleado (administrador) =================
+
+        public static List<Poliza> ListarPolizas(int legajo)
+        {
+            return PolizaDatos.ListarPolizasDeEmpleado(legajo);
+        }
+
+        public static List<Siniestro> ListarSiniestros(int legajo)
+        {
+            return SiniestroDatos.ListarDeEmpleado(legajo);
+        }
+
+        public static List<Accion> ListarHistorial(int legajo)
+        {
+            return AccionDatos.ListarAccionesDeUsuario(legajo);
+        }
         // Guarda puesto y fecha de ingreso
         public static bool GuardarEmpleado(Empleado empleado, out string mensaje)
         {

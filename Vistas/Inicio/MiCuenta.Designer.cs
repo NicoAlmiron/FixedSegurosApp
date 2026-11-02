@@ -29,6 +29,12 @@
             this.btn_cambiar = new System.Windows.Forms.Button();
             this.pnl_datos = new System.Windows.Forms.Panel();
             this.lbl_datos_titulo = new System.Windows.Forms.Label();
+            this.lbl_nombre = new System.Windows.Forms.Label();
+            this.txt_nombre = new System.Windows.Forms.TextBox();
+            this.lbl_apellido = new System.Windows.Forms.Label();
+            this.txt_apellido = new System.Windows.Forms.TextBox();
+            this.lbl_matricula = new System.Windows.Forms.Label();
+            this.txt_matricula = new System.Windows.Forms.TextBox();
             this.lbl_telefono = new System.Windows.Forms.Label();
             this.txt_telefono = new System.Windows.Forms.TextBox();
             this.lbl_email = new System.Windows.Forms.Label();
@@ -146,6 +152,12 @@
             // pnl_datos
             //
             this.pnl_datos.Controls.Add(this.lbl_datos_titulo);
+            this.pnl_datos.Controls.Add(this.lbl_nombre);
+            this.pnl_datos.Controls.Add(this.txt_nombre);
+            this.pnl_datos.Controls.Add(this.lbl_apellido);
+            this.pnl_datos.Controls.Add(this.txt_apellido);
+            this.pnl_datos.Controls.Add(this.lbl_matricula);
+            this.pnl_datos.Controls.Add(this.txt_matricula);
             this.pnl_datos.Controls.Add(this.lbl_telefono);
             this.pnl_datos.Controls.Add(this.txt_telefono);
             this.pnl_datos.Controls.Add(this.lbl_email);
@@ -159,7 +171,7 @@
             this.pnl_datos.Controls.Add(this.btn_guardar);
             this.pnl_datos.Location = new System.Drawing.Point(24, 282);
             this.pnl_datos.Name = "pnl_datos";
-            this.pnl_datos.Size = new System.Drawing.Size(472, 264);
+            this.pnl_datos.Size = new System.Drawing.Size(472, 318);
             this.pnl_datos.TabIndex = 1;
             //
             // lbl_datos_titulo
@@ -169,13 +181,64 @@
             this.lbl_datos_titulo.Location = new System.Drawing.Point(14, 12);
             this.lbl_datos_titulo.Name = "lbl_datos_titulo";
             this.lbl_datos_titulo.Size = new System.Drawing.Size(130, 20);
-            this.lbl_datos_titulo.Text = "Datos de contacto";
+            this.lbl_datos_titulo.Text = "Mis datos";
             //
-            // lbl_telefono
+            // lbl_nombre
             //
+            this.lbl_nombre.AutoSize = true;
+            this.lbl_nombre.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_nombre.Location = new System.Drawing.Point(16, 42);
+            this.lbl_nombre.Name = "lbl_nombre";
+            this.lbl_nombre.Size = new System.Drawing.Size(52, 15);
+            this.lbl_nombre.Text = "Nombres";
+            //
+            // txt_nombre
+            //
+            this.txt_nombre.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_nombre.Location = new System.Drawing.Point(16, 60);
+            this.txt_nombre.MaxLength = 50;
+            this.txt_nombre.Name = "txt_nombre";
+            this.txt_nombre.Size = new System.Drawing.Size(212, 23);
+            this.txt_nombre.TabIndex = 0;
+            //
+            // lbl_apellido
+            //
+            this.lbl_apellido.AutoSize = true;
+            this.lbl_apellido.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_apellido.Location = new System.Drawing.Point(244, 42);
+            this.lbl_apellido.Name = "lbl_apellido";
+            this.lbl_apellido.Size = new System.Drawing.Size(52, 15);
+            this.lbl_apellido.Text = "Apellidos";
+            //
+            // txt_apellido
+            //
+            this.txt_apellido.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_apellido.Location = new System.Drawing.Point(244, 60);
+            this.txt_apellido.MaxLength = 50;
+            this.txt_apellido.Name = "txt_apellido";
+            this.txt_apellido.Size = new System.Drawing.Size(212, 23);
+            this.txt_apellido.TabIndex = 1;
+            //
+            // lbl_matricula
+            //
+            this.lbl_matricula.AutoSize = true;
+            this.lbl_matricula.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_matricula.Location = new System.Drawing.Point(244, 200);
+            this.lbl_matricula.Name = "lbl_matricula";
+            this.lbl_matricula.Size = new System.Drawing.Size(58, 15);
+            this.lbl_matricula.Text = "Matrícula";
+            //
+            // txt_matricula
+            //
+            this.txt_matricula.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_matricula.Location = new System.Drawing.Point(244, 218);
+            this.txt_matricula.MaxLength = 50;
+            this.txt_matricula.Name = "txt_matricula";
+            this.txt_matricula.Size = new System.Drawing.Size(212, 23);
+            this.txt_matricula.TabIndex = 7;
             this.lbl_telefono.AutoSize = true;
             this.lbl_telefono.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_telefono.Location = new System.Drawing.Point(16, 42);
+            this.lbl_telefono.Location = new System.Drawing.Point(16, 96);
             this.lbl_telefono.Name = "lbl_telefono";
             this.lbl_telefono.Size = new System.Drawing.Size(55, 15);
             this.lbl_telefono.Text = "Teléfono";
@@ -183,16 +246,16 @@
             // txt_telefono
             //
             this.txt_telefono.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_telefono.Location = new System.Drawing.Point(16, 60);
+            this.txt_telefono.Location = new System.Drawing.Point(16, 114);
             this.txt_telefono.Name = "txt_telefono";
             this.txt_telefono.Size = new System.Drawing.Size(212, 23);
-            this.txt_telefono.TabIndex = 0;
+            this.txt_telefono.TabIndex = 2;
             //
             // lbl_email
             //
             this.lbl_email.AutoSize = true;
             this.lbl_email.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_email.Location = new System.Drawing.Point(244, 42);
+            this.lbl_email.Location = new System.Drawing.Point(244, 96);
             this.lbl_email.Name = "lbl_email";
             this.lbl_email.Size = new System.Drawing.Size(40, 15);
             this.lbl_email.Text = "Email";
@@ -200,16 +263,16 @@
             // txt_email
             //
             this.txt_email.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_email.Location = new System.Drawing.Point(244, 60);
+            this.txt_email.Location = new System.Drawing.Point(244, 114);
             this.txt_email.Name = "txt_email";
             this.txt_email.Size = new System.Drawing.Size(212, 23);
-            this.txt_email.TabIndex = 1;
+            this.txt_email.TabIndex = 3;
             //
             // lbl_provincia
             //
             this.lbl_provincia.AutoSize = true;
             this.lbl_provincia.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_provincia.Location = new System.Drawing.Point(16, 94);
+            this.lbl_provincia.Location = new System.Drawing.Point(16, 148);
             this.lbl_provincia.Name = "lbl_provincia";
             this.lbl_provincia.Size = new System.Drawing.Size(55, 15);
             this.lbl_provincia.Text = "Provincia";
@@ -217,16 +280,16 @@
             // cb_provincia
             //
             this.cb_provincia.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cb_provincia.Location = new System.Drawing.Point(16, 112);
+            this.cb_provincia.Location = new System.Drawing.Point(16, 166);
             this.cb_provincia.Name = "cb_provincia";
             this.cb_provincia.Size = new System.Drawing.Size(212, 23);
-            this.cb_provincia.TabIndex = 2;
+            this.cb_provincia.TabIndex = 4;
             //
             // lbl_ciudad
             //
             this.lbl_ciudad.AutoSize = true;
             this.lbl_ciudad.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_ciudad.Location = new System.Drawing.Point(244, 94);
+            this.lbl_ciudad.Location = new System.Drawing.Point(244, 148);
             this.lbl_ciudad.Name = "lbl_ciudad";
             this.lbl_ciudad.Size = new System.Drawing.Size(45, 15);
             this.lbl_ciudad.Text = "Ciudad";
@@ -234,16 +297,16 @@
             // txt_ciudad
             //
             this.txt_ciudad.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_ciudad.Location = new System.Drawing.Point(244, 112);
+            this.txt_ciudad.Location = new System.Drawing.Point(244, 166);
             this.txt_ciudad.Name = "txt_ciudad";
             this.txt_ciudad.Size = new System.Drawing.Size(212, 23);
-            this.txt_ciudad.TabIndex = 3;
+            this.txt_ciudad.TabIndex = 5;
             //
             // lbl_direccion
             //
             this.lbl_direccion.AutoSize = true;
             this.lbl_direccion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
-            this.lbl_direccion.Location = new System.Drawing.Point(16, 146);
+            this.lbl_direccion.Location = new System.Drawing.Point(16, 200);
             this.lbl_direccion.Name = "lbl_direccion";
             this.lbl_direccion.Size = new System.Drawing.Size(60, 15);
             this.lbl_direccion.Text = "Dirección";
@@ -251,17 +314,17 @@
             // txt_direccion
             //
             this.txt_direccion.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txt_direccion.Location = new System.Drawing.Point(16, 164);
+            this.txt_direccion.Location = new System.Drawing.Point(16, 218);
             this.txt_direccion.Name = "txt_direccion";
-            this.txt_direccion.Size = new System.Drawing.Size(440, 23);
-            this.txt_direccion.TabIndex = 4;
+            this.txt_direccion.Size = new System.Drawing.Size(212, 23);
+            this.txt_direccion.TabIndex = 6;
             //
             // btn_guardar
             //
-            this.btn_guardar.Location = new System.Drawing.Point(296, 212);
+            this.btn_guardar.Location = new System.Drawing.Point(296, 266);
             this.btn_guardar.Name = "btn_guardar";
             this.btn_guardar.Size = new System.Drawing.Size(160, 34);
-            this.btn_guardar.TabIndex = 5;
+            this.btn_guardar.TabIndex = 8;
             this.btn_guardar.Text = "Guardar datos";
             this.btn_guardar.UseVisualStyleBackColor = false;
             this.btn_guardar.Click += new System.EventHandler(this.btn_guardar_Click);
@@ -269,7 +332,7 @@
             // btn_cerrar
             //
             this.btn_cerrar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btn_cerrar.Location = new System.Drawing.Point(388, 558);
+            this.btn_cerrar.Location = new System.Drawing.Point(388, 612);
             this.btn_cerrar.Name = "btn_cerrar";
             this.btn_cerrar.Size = new System.Drawing.Size(108, 34);
             this.btn_cerrar.TabIndex = 2;
@@ -282,7 +345,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.CancelButton = this.btn_cerrar;
-            this.ClientSize = new System.Drawing.Size(520, 606);
+            this.ClientSize = new System.Drawing.Size(520, 660);
             this.ControlBox = false;
             this.Controls.Add(this.btn_cerrar);
             this.Controls.Add(this.pnl_datos);
@@ -322,6 +385,12 @@
         private System.Windows.Forms.Button btn_cambiar;
         private System.Windows.Forms.Panel pnl_datos;
         private System.Windows.Forms.Label lbl_datos_titulo;
+        private System.Windows.Forms.Label lbl_nombre;
+        private System.Windows.Forms.TextBox txt_nombre;
+        private System.Windows.Forms.Label lbl_apellido;
+        private System.Windows.Forms.TextBox txt_apellido;
+        private System.Windows.Forms.Label lbl_matricula;
+        private System.Windows.Forms.TextBox txt_matricula;
         private System.Windows.Forms.Label lbl_telefono;
         private System.Windows.Forms.TextBox txt_telefono;
         private System.Windows.Forms.Label lbl_email;

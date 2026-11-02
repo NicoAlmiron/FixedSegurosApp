@@ -145,11 +145,12 @@ namespace FixedSegurosApp.Datos
             {
                 string query = "SELECT p.idPersona, p.nombre, p.apellido, p.dni, p.fechaNacimiento, " +
                                "d.calle, d.ciudad, d.provincia, c.telefono, c.email, " +
-                               "p.fechaAlta, p.fechaBaja, p.estado, u.perfil, p.observacionBaja " +
+                               "p.fechaAlta, p.fechaBaja, p.estado, u.perfil, p.observacionBaja, a.matriculaAgente " +
                                "FROM Persona p " +
                                "JOIN Direccion d ON d.idDireccion = p.idDireccion " +
                                "JOIN Contacto c ON c.idContacto = p.idContacto " +
                                "JOIN vw_Usuarios u ON u.legajo = p.idPersona " +
+                               "LEFT JOIN Administrador a ON a.idPersona = p.idPersona " +
                                "WHERE p.idPersona = @legajo";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
@@ -175,7 +176,8 @@ namespace FixedSegurosApp.Datos
                         FechaBaja = leer.IsDBNull(11) ? (DateTime?)null : leer.GetDateTime(11),
                         Estado = leer.GetString(12),
                         Perfil = leer.GetString(13),
-                        ObservacionBaja = leer.IsDBNull(14) ? "" : leer.GetString(14)
+                        ObservacionBaja = leer.IsDBNull(14) ? "" : leer.GetString(14),
+                        Matricula = leer.IsDBNull(15) ? "" : leer.GetString(15)
                     };
                 }
                 leer.Close();
@@ -233,6 +235,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@provincia", usuario.Provincia);
             sql.Parameters.AddWithValue("@telefono", usuario.Telefono);
             sql.Parameters.AddWithValue("@email", usuario.Email);
+            sql.Parameters.AddWithValue("@matricula", (object)usuario.Matricula ?? DBNull.Value);
 
             return Convert.ToInt32(sql.ExecuteScalar());
         }
@@ -291,6 +294,7 @@ namespace FixedSegurosApp.Datos
                 sql.Parameters.AddWithValue("@provincia", usuario.Provincia);
                 sql.Parameters.AddWithValue("@telefono", usuario.Telefono);
                 sql.Parameters.AddWithValue("@email", usuario.Email);
+                sql.Parameters.AddWithValue("@matricula", (object)usuario.Matricula ?? DBNull.Value);
 
                 sql.ExecuteNonQuery();
                 estado = true;

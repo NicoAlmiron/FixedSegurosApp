@@ -20,6 +20,7 @@
             System.Windows.Forms.DataGridViewCellStyle estiloLegajo = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle estiloIngreso = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
+            this.btn_detalle = new System.Windows.Forms.Button();
             this.pnl_lista = new System.Windows.Forms.Panel();
             this.txt_buscar = new System.Windows.Forms.TextBox();
             this.btn_habilitar = new System.Windows.Forms.Button();
@@ -69,6 +70,17 @@
             this.lbl_titulo.Size = new System.Drawing.Size(117, 30);
             this.lbl_titulo.TabIndex = 0;
             this.lbl_titulo.Text = "Empleados";
+            //
+            // btn_detalle
+            //
+            this.btn_detalle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_detalle.Location = new System.Drawing.Point(796, 20);
+            this.btn_detalle.Name = "btn_detalle";
+            this.btn_detalle.Size = new System.Drawing.Size(200, 32);
+            this.btn_detalle.TabIndex = 3;
+            this.btn_detalle.Text = "Ver detalle del empleado";
+            this.btn_detalle.UseVisualStyleBackColor = false;
+            this.btn_detalle.Click += new System.EventHandler(this.btn_detalle_Click);
             //
             // pnl_lista
             //
@@ -136,6 +148,7 @@
             this.dgv_empleados.TabIndex = 3;
             this.dgv_empleados.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_empleados_CellFormatting);
             this.dgv_empleados.SelectionChanged += new System.EventHandler(this.dgv_empleados_SelectionChanged);
+            this.dgv_empleados.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_empleados_CellDoubleClick);
             //
             // col_legajo
             //
@@ -431,6 +444,7 @@
             this.ClientSize = new System.Drawing.Size(1020, 730);
             this.Controls.Add(this.pnl_detalle);
             this.Controls.Add(this.pnl_lista);
+            this.Controls.Add(this.btn_detalle);
             this.Controls.Add(this.lbl_titulo);
             this.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(42)))), ((int)(((byte)(56)))));
@@ -453,6 +467,7 @@
         #endregion
 
         private System.Windows.Forms.Label lbl_titulo;
+        private System.Windows.Forms.Button btn_detalle;
         private System.Windows.Forms.Panel pnl_lista;
         private System.Windows.Forms.TextBox txt_buscar;
         private System.Windows.Forms.Button btn_habilitar;

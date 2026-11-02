@@ -181,6 +181,12 @@
     <Compile Include="Vistas\Proveedores\Proveedores.Designer.cs">
       <DependentUpon>Proveedores.cs</DependentUpon>
     </Compile>
+    <Compile Include="Vistas\Empleados\DetalleEmpleado.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Empleados\DetalleEmpleado.Designer.cs">
+      <DependentUpon>DetalleEmpleado.cs</DependentUpon>
+    </Compile>
     <Compile Include="Datos\EmpleadoDatos.cs" />
     <Compile Include="Negocio\EmpleadoNegocio.cs" />
     <Compile Include="Vistas\Empleados\Empleados.cs">

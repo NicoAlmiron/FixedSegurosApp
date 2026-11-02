@@ -38,6 +38,7 @@ namespace FixedSegurosApp.Datos
                 }
 
                 nro = PolizaDatos.InsertarAdquirida(con, transaccion, nroOfrecida, idVehiculo, legajo, inicio, vencimiento, cuotas);
+                PolizaDatos.AsignarReferente(con, transaccion, nro, legajoEmpleado);
 
                 transaccion.Commit();
 

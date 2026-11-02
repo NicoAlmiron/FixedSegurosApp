@@ -20,6 +20,7 @@ namespace FixedSegurosApp.Entidades
         public string Estado { get; set; }          // Activo / Suspendido / Baja
         public string Perfil { get; set; }          // Administrador / Empleado / Cliente
         public string EstadoEmpleado { get; set; }  // solo para empleados: Por habilitar / Habilitado / Deshabilitado
+        public string Matricula { get; set; }       // solo para administradores: matrícula de agente
 
         // Para mostrar en las grillas: "García, María"
         public string ApellidoYNombre

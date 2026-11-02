@@ -64,6 +64,8 @@
             this.lbl_fecha_baja = new System.Windows.Forms.Label();
             this.txt_fecha_baja = new System.Windows.Forms.TextBox();
             this.lbl_motivo_baja = new System.Windows.Forms.Label();
+            this.lbl_matricula = new System.Windows.Forms.Label();
+            this.txt_matricula = new System.Windows.Forms.TextBox();
             this.txt_motivo_baja = new System.Windows.Forms.TextBox();
             this.pnl_linea_pie = new System.Windows.Forms.Panel();
             this.btn_descartar = new System.Windows.Forms.Button();
@@ -267,6 +269,8 @@
             this.pnl_detalle.Controls.Add(this.txt_fecha_alta);
             this.pnl_detalle.Controls.Add(this.lbl_fecha_baja);
             this.pnl_detalle.Controls.Add(this.txt_fecha_baja);
+            this.pnl_detalle.Controls.Add(this.lbl_matricula);
+            this.pnl_detalle.Controls.Add(this.txt_matricula);
             this.pnl_detalle.Controls.Add(this.lbl_motivo_baja);
             this.pnl_detalle.Controls.Add(this.txt_motivo_baja);
             this.pnl_detalle.Controls.Add(this.pnl_linea_pie);
@@ -340,6 +344,7 @@
             this.cb_perfil.Name = "cb_perfil";
             this.cb_perfil.Size = new System.Drawing.Size(164, 23);
             this.cb_perfil.TabIndex = 1;
+            this.cb_perfil.SelectedIndexChanged += new System.EventHandler(this.cb_perfil_SelectedIndexChanged);
             //
             // lbl_nombre
             //
@@ -540,9 +545,28 @@
             this.txt_fecha_baja.Size = new System.Drawing.Size(164, 23);
             this.txt_fecha_baja.TabStop = false;
             //
-            // lbl_motivo_baja
+            // lbl_matricula
             //
-            this.lbl_motivo_baja.AutoSize = true;
+            this.lbl_matricula.AutoSize = true;
+            this.lbl_matricula.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_matricula.Location = new System.Drawing.Point(16, 444);
+            this.lbl_matricula.Name = "lbl_matricula";
+            this.lbl_matricula.Size = new System.Drawing.Size(58, 15);
+            this.lbl_matricula.Text = "Matrícula";
+            this.lbl_matricula.Visible = false;
+            //
+            // txt_matricula
+            //
+            this.txt_matricula.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_matricula.Location = new System.Drawing.Point(16, 464);
+            this.txt_matricula.MaxLength = 50;
+            this.txt_matricula.Name = "txt_matricula";
+            this.txt_matricula.Size = new System.Drawing.Size(344, 23);
+            this.txt_matricula.TabIndex = 30;
+            this.txt_matricula.Visible = false;
+            //
+            // lbl_motivo_baja
+            //            this.lbl_motivo_baja.AutoSize = true;
             this.lbl_motivo_baja.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
             this.lbl_motivo_baja.Location = new System.Drawing.Point(16, 444);
             this.lbl_motivo_baja.Name = "lbl_motivo_baja";
@@ -665,6 +689,8 @@
         private System.Windows.Forms.TextBox txt_fecha_alta;
         private System.Windows.Forms.Label lbl_fecha_baja;
         private System.Windows.Forms.TextBox txt_fecha_baja;
+        private System.Windows.Forms.Label lbl_matricula;
+        private System.Windows.Forms.TextBox txt_matricula;
         private System.Windows.Forms.Label lbl_motivo_baja;
         private System.Windows.Forms.TextBox txt_motivo_baja;
         private System.Windows.Forms.Panel pnl_linea_pie;
