@@ -21,6 +21,7 @@ namespace FixedSegurosApp.Entidades
         public decimal Descuento { get; set; }              // porcentaje
         public int Duracion { get; set; }                   // meses
         public string Requisitos { get; set; }
+        public int AnioMinimo { get; set; }                 // año mínimo del vehículo; 0 = sin límite
         public string TipoPrima { get; set; }               // Mensual / Trimestral / Semestral / Anual
         public decimal Prima { get; set; }                  // monto de cada cuota antes del descuento
         public string FormaPago { get; set; }

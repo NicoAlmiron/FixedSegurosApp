@@ -273,18 +273,12 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // El cliente corrige sus datos de contacto; el administrador además su nombre y matrícula.
+        // Cada usuario corrige sus datos de contacto; el administrador además su nombre y matrícula.
         // El DNI no se cambia: es el usuario para iniciar sesión.
         public static bool GuardarMisDatos(string nombre, string apellido, string provincia, string ciudad, string direccion, string telefono, string email, string matricula, out string mensaje)
         {
             mensaje = "";
             bool esAdministrador = Sesion.UsuarioActual.Perfil == "Administrador";
-
-            if (!esAdministrador && Sesion.UsuarioActual.Perfil != "Cliente")
-            {
-                mensaje = "Sus datos se modifican desde la pantalla Usuarios.";
-                return false;
-            }
 
             Persona usuario = UsuarioDatos.BuscarPorLegajo(Sesion.UsuarioActual.Legajo);
 

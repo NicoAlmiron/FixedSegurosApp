@@ -25,6 +25,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.Grilla(dgv_polizas);
             Estilos.Grilla(dgv_ofrecidas);
             Estilos.BotonPrincipal(btn_adquirir);
+            Estilos.BotonSecundario(btn_descargar);
 
             CargarDatos();
         }
@@ -112,6 +113,36 @@ namespace FixedSegurosApp.Vistas
             else
             {
                 MessageBox.Show(mensaje, "Adquirir póliza", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
+        private void btn_descargar_Click(object sender, EventArgs e)
+        {
+            if (dgv_polizas.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Elija una de sus pólizas.", "Descargar póliza", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            Poliza poliza = (Poliza)dgv_polizas.SelectedRows[0].DataBoundItem;
+
+            SaveFileDialog dialogo = new SaveFileDialog();
+            dialogo.Title = "Descargar póliza";
+            dialogo.Filter = "Archivo PDF|*.pdf";
+            dialogo.FileName = "Poliza_" + poliza.NroTexto + ".pdf";
+
+            if (dialogo.ShowDialog() == DialogResult.OK)
+            {
+                string mensaje;
+
+                if (PolizaNegocio.DescargarPoliza(poliza.NroPoliza, dialogo.FileName, out mensaje))
+                {
+                    MessageBox.Show("Póliza guardada.", "Descargar póliza", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show(mensaje, "Descargar póliza", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             }
         }
 

@@ -30,6 +30,11 @@ namespace FixedSegurosApp.Vistas
             dtp_vigencia.Value = sugerida > vehiculo.VigenciaVtv ? sugerida : vehiculo.VigenciaVtv.AddYears(1);
         }
 
+        private void ActualizarVtv_Load(object sender, EventArgs e)
+        {
+            Estilos.AjustarVentana(this, 440, 312);
+        }
+
         private void btn_foto_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialogo = new OpenFileDialog();

@@ -83,6 +83,7 @@
     <Compile Include="Entidades\ReporteSeccion.cs" />
     <Compile Include="Datos\ReporteDatos.cs" />
     <Compile Include="Negocio\ReporteNegocio.cs" />
+    <Compile Include="Entidades\SeccionDocumento.cs" />
     <Compile Include="Utilidades\Exportar.cs" />
     <Compile Include="Vistas\Reportes\Reportes.cs">
       <SubType>Form</SubType>

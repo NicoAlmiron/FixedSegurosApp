@@ -202,7 +202,8 @@ namespace FixedSegurosApp.Vistas
             }
             else if (vehiculo.EstadoRevision == "Pendiente")
             {
-                lbl_revision_detalle.Text = "Revise las " + VehiculoNegocio.PosicionesDe(vehiculo.TipoVehiculo).Length + " fotos (clic para verlas en grande) antes de aprobar.";
+                lbl_revision_detalle.Text = "Revise las " + VehiculoNegocio.PosicionesDe(vehiculo.TipoVehiculo).Length + " fotos (clic para verlas en grande) antes de aprobar.\n" +
+                                            (vehiculo.VtvVigente ? "VTV vigente hasta el " : "VTV vencida el ") + vehiculo.VigenciaVtv.ToString("dd/MM/yyyy") + ".";
             }
             else
             {

@@ -181,6 +181,15 @@ namespace FixedSegurosApp.Utilidades
             }
         }
 
+        // ---------- Ventanas secundarias ----------
+
+        // Con ControlBox = false Windows descuenta el borde y el área útil queda más chica.
+        // Se llama en el Load de las ventanas con controles en posición fija.
+        public static void AjustarVentana(Form ventana, int ancho, int alto)
+        {
+            ventana.Size += new Size(ancho - ventana.ClientSize.Width, alto - ventana.ClientSize.Height);
+        }
+
         // ---------- Texto de ayuda gris dentro de un TextBox ----------
         // .NET Framework no trae PlaceholderText, por eso se le pide a Windows que lo muestre.
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]

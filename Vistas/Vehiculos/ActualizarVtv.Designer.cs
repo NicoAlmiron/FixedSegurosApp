@@ -140,6 +140,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Fixed Seguros: Actualizar VTV";
+            this.Load += new System.EventHandler(this.ActualizarVtv_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pic_foto)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

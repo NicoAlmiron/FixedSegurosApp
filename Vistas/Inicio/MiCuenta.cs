@@ -6,8 +6,8 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Ventana secundaria: todos cambian su contraseña. El cliente además corrige sus datos de contacto,
-    // y el administrador también su nombre y matrícula.
+    // Ventana secundaria: todos cambian su contraseña y corrigen sus datos de contacto,
+    // y el administrador además su nombre y matrícula.
     public partial class MiCuenta : Form
     {
         public MiCuenta()
@@ -23,27 +23,17 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonPrincipal(btn_guardar);
             Estilos.BotonSecundario(btn_cerrar);
 
-            string perfil = Sesion.UsuarioActual.Perfil;
+            CargarDatos();
 
-            if (perfil == "Administrador")
+            if (Sesion.UsuarioActual.Perfil != "Administrador")
             {
-                CargarDatos();
-            }
-            else if (perfil == "Cliente")
-            {
-                CargarDatos();
                 OcultarDatosDeAdministrador();
             }
-            else
-            {
-                // sin el panel de datos la ventana se acorta y el botón sube
-                pnl_datos.Visible = false;
-                btn_cerrar.Top = pnl_datos.Top;
-                this.ClientSize = new System.Drawing.Size(this.ClientSize.Width, btn_cerrar.Bottom + 14);
-            }
+
+            Estilos.AjustarVentana(this, 520, btn_cerrar.Bottom + 14);
         }
 
-        // El cliente no cambia su nombre ni tiene matrícula: esa fila se saca y el resto sube
+        // Cliente y empleado no cambian su nombre ni tienen matrícula: esa fila se saca y el resto sube
         private void OcultarDatosDeAdministrador()
         {
             int primeraFila = lbl_telefono.Top;
@@ -65,7 +55,6 @@ namespace FixedSegurosApp.Vistas
             txt_direccion.Width = txt_email.Right - txt_direccion.Left;
             pnl_datos.Height -= alto;
             btn_cerrar.Top -= alto;
-            this.ClientSize = new System.Drawing.Size(this.ClientSize.Width, this.ClientSize.Height - alto);
         }
 
         private void CargarDatos()

@@ -22,7 +22,7 @@ namespace FixedSegurosApp.Negocio
 
         // Si poliza.NroPoliza es 0 crea una póliza "Ofrecida"; si no, guarda los cambios (solo de una ofrecida).
         // Los montos llegan como texto ("45000", "$ 45.000", "10 %") y se validan acá.
-        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, string montoMaximoTexto, out string mensaje)
+        public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, string montoMaximoTexto, string anioMinimoTexto, out string mensaje)
         {
             mensaje = "";
             decimal prima;
@@ -31,6 +31,7 @@ namespace FixedSegurosApp.Negocio
             decimal franquicia;
             decimal comision;
             decimal montoMaximo;
+            int anioMinimo;
 
             if (Sesion.UsuarioActual.Perfil == "Cliente")
             {
@@ -39,9 +40,9 @@ namespace FixedSegurosApp.Negocio
             }
 
             if (poliza.IdProveedor == 0 || poliza.TipoCobertura == "" || poliza.TipoVehiculo == "" || poliza.TipoPrima == "" ||
-                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "" || comisionTexto == "" || montoMaximoTexto == "")
+                poliza.FormaPago == "" || primaTexto == "" || duracionTexto == "" || comisionTexto == "")
             {
-                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago, duración, comisión y monto máximo.";
+                mensaje = "Complete aseguradora, cobertura, tipo de vehículo, tipo de prima, prima, forma de pago, duración y comisión.";
                 return false;
             }
 
@@ -82,12 +83,30 @@ namespace FixedSegurosApp.Negocio
             }
             poliza.Comision = comision;
 
+            if (montoMaximoTexto == "")
+            {
+                mensaje = "Ingrese el monto máximo que cubre la póliza.";
+                return false;
+            }
+
             if (!decimal.TryParse(LimpiarNumero(montoMaximoTexto), out montoMaximo) || montoMaximo <= 0)
             {
                 mensaje = "El monto máximo debe ser un monto mayor a 0.";
                 return false;
             }
             poliza.SumaAsegurada = montoMaximo;
+
+            // el año mínimo es opcional: vacío = sin límite
+            if (anioMinimoTexto == "")
+            {
+                anioMinimo = 0;
+            }
+            else if (!int.TryParse(anioMinimoTexto, out anioMinimo) || anioMinimo < 1950 || anioMinimo > DateTime.Today.Year + 1)
+            {
+                mensaje = "El año mínimo debe estar entre 1950 y " + (DateTime.Today.Year + 1) + ".";
+                return false;
+            }
+            poliza.AnioMinimo = anioMinimo;
 
             if (!int.TryParse(duracionTexto, out duracion) || duracion < 1 || duracion > 60)
             {
@@ -226,6 +245,7 @@ namespace FixedSegurosApp.Negocio
                    (poliza.SumaAsegurada > 0 ? "Monto máximo que cubre: $ " + poliza.SumaAsegurada.ToString("N2") + "\n" : "") +
                    "Vigencia: " + inicio.ToString("dd/MM/yyyy") + " al " + inicio.AddMonths(poliza.Duracion).ToString("dd/MM/yyyy") + " (" + poliza.Duracion + " meses)\n" +
                    (poliza.Adicionales != "" ? "Adicionales: " + poliza.Adicionales + "\n" : "") +
+                   (poliza.AnioMinimo > 0 ? "Vehículos del año " + poliza.AnioMinimo + " en adelante\n" : "") +
                    (poliza.Requisitos != "" ? "Requisitos: " + poliza.Requisitos : "");
         }
 
@@ -288,6 +308,12 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
+            if (ofrecida.AnioMinimo > 0 && vehiculo.Anio < ofrecida.AnioMinimo)
+            {
+                mensaje = "Esa póliza es para vehículos del año " + ofrecida.AnioMinimo + " en adelante y el suyo es " + vehiculo.Anio + ".";
+                return false;
+            }
+
             if (vehiculo.TipoVehiculo != ofrecida.TipoVehiculo)
             {
                 mensaje = "Esa póliza es para " + ofrecida.TipoVehiculo + " y su vehículo es " + vehiculo.TipoVehiculo + ".";
@@ -333,6 +359,76 @@ namespace FixedSegurosApp.Negocio
 
             Registrar("Adquirió póliza", "Póliza " + nroNueva.ToString("000000") + " · " + vehiculo.Dominio);
             return true;
+        }
+
+        // Genera el PDF de una póliza del cliente que inició sesión. La póliza se busca entre las suyas,
+        // así nadie descarga la de otro. La comisión no va en el documento: el cliente no la ve.
+        public static bool DescargarPoliza(int nroPoliza, string ruta, out string mensaje)
+        {
+            int legajo = Sesion.UsuarioActual.Legajo;
+            Poliza poliza = null;
+
+            foreach (Poliza propia in PolizaDatos.ListarPolizasDeCliente(legajo))
+            {
+                if (propia.NroPoliza == nroPoliza)
+                {
+                    poliza = propia;
+                }
+            }
+
+            Vehiculo vehiculo = poliza == null ? null : VehiculoDatos.BuscarPorId(poliza.IdVehiculo, legajo);
+            Persona titular = UsuarioDatos.BuscarPorLegajo(legajo);
+
+            if (vehiculo == null || titular == null)
+            {
+                mensaje = "No se encontró la póliza.";
+                return false;
+            }
+
+            if (!Exportar.GuardarPoliza(ruta, poliza.NroTexto, ArmarDocumento(poliza, vehiculo, titular), out mensaje))
+            {
+                return false;
+            }
+
+            Registrar("Descargó póliza", "Póliza " + poliza.NroTexto);
+            return true;
+        }
+
+        private static List<SeccionDocumento> ArmarDocumento(Poliza poliza, Vehiculo vehiculo, Persona titular)
+        {
+            SeccionDocumento datosTitular = new SeccionDocumento() { Titulo = "Titular" };
+            datosTitular.Agregar("Nombre", titular.ApellidoYNombre);
+            datosTitular.Agregar("DNI", titular.Dni.ToString());
+
+            SeccionDocumento datosVehiculo = new SeccionDocumento() { Titulo = "Vehículo asegurado" };
+            datosVehiculo.Agregar("Dominio", vehiculo.Dominio);
+            datosVehiculo.Agregar("Marca y modelo", vehiculo.MarcaYModelo + " (" + vehiculo.Anio + ")");
+            datosVehiculo.Agregar("Tipo", vehiculo.TipoVehiculo);
+            datosVehiculo.Agregar("N° de chasis", vehiculo.NumeroChasis);
+            datosVehiculo.Agregar("N° de motor", vehiculo.NumeroMotor);
+
+            SeccionDocumento cobertura = new SeccionDocumento() { Titulo = "Cobertura" };
+            cobertura.Agregar("Aseguradora", poliza.Aseguradora);
+            cobertura.Agregar("Tipo de cobertura", poliza.TipoCobertura);
+            cobertura.Agregar("Estado", poliza.EstadoMostrado);
+            cobertura.Agregar("Vigencia", poliza.FechaInicio.Value.ToString("dd/MM/yyyy") + " al " + poliza.FechaVencimiento.Value.ToString("dd/MM/yyyy"));
+            cobertura.Agregar("Monto máximo que cubre", poliza.SumaAsegurada > 0 ? "$ " + poliza.SumaAsegurada.ToString("N2") : "Sin informar");
+            cobertura.Agregar("Franquicia", "$ " + poliza.Franquicia.ToString("N2"));
+            if (poliza.Adicionales != "")
+            {
+                cobertura.Agregar("Adicionales", poliza.Adicionales);
+            }
+            if (poliza.Requisitos != "")
+            {
+                cobertura.Agregar("Condiciones", poliza.Requisitos);
+            }
+
+            SeccionDocumento pago = new SeccionDocumento() { Titulo = "Pago" };
+            pago.Agregar("Prima", poliza.TipoPrima);
+            pago.Agregar("Cuotas", poliza.CantidadCuotas + " cuotas de $ " + poliza.MontoCuota.ToString("N2"));
+            pago.Agregar("Forma de pago", poliza.FormaPago);
+
+            return new List<SeccionDocumento>() { datosTitular, datosVehiculo, cobertura, pago };
         }
 
         // ================= Comunes =================

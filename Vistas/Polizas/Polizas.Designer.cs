@@ -52,6 +52,8 @@
             this.txt_descuento = new System.Windows.Forms.TextBox();
             this.lbl_duracion = new System.Windows.Forms.Label();
             this.txt_duracion = new System.Windows.Forms.TextBox();
+            this.lbl_anio_minimo = new System.Windows.Forms.Label();
+            this.txt_anio_minimo = new System.Windows.Forms.TextBox();
             this.lbl_inicio = new System.Windows.Forms.Label();
             this.dtp_inicio = new System.Windows.Forms.DateTimePicker();
             this.lbl_franquicia = new System.Windows.Forms.Label();
@@ -251,6 +253,8 @@
             this.pnl_detalle.Controls.Add(this.txt_descuento);
             this.pnl_detalle.Controls.Add(this.lbl_duracion);
             this.pnl_detalle.Controls.Add(this.txt_duracion);
+            this.pnl_detalle.Controls.Add(this.lbl_anio_minimo);
+            this.pnl_detalle.Controls.Add(this.txt_anio_minimo);
             this.pnl_detalle.Controls.Add(this.lbl_inicio);
             this.pnl_detalle.Controls.Add(this.dtp_inicio);
             this.pnl_detalle.Controls.Add(this.lbl_franquicia);
@@ -447,8 +451,26 @@
             this.txt_duracion.Location = new System.Drawing.Point(196, 248);
             this.txt_duracion.MaxLength = 2;
             this.txt_duracion.Name = "txt_duracion";
-            this.txt_duracion.Size = new System.Drawing.Size(164, 23);
+            this.txt_duracion.Size = new System.Drawing.Size(100, 23);
             this.txt_duracion.TabIndex = 8;
+            //
+            // lbl_anio_minimo
+            //
+            this.lbl_anio_minimo.AutoSize = true;
+            this.lbl_anio_minimo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_anio_minimo.Location = new System.Drawing.Point(304, 228);
+            this.lbl_anio_minimo.Name = "lbl_anio_minimo";
+            this.lbl_anio_minimo.Size = new System.Drawing.Size(68, 15);
+            this.lbl_anio_minimo.Text = "Año mínimo";
+            //
+            // txt_anio_minimo
+            //
+            this.txt_anio_minimo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_anio_minimo.Location = new System.Drawing.Point(304, 248);
+            this.txt_anio_minimo.MaxLength = 4;
+            this.txt_anio_minimo.Name = "txt_anio_minimo";
+            this.txt_anio_minimo.Size = new System.Drawing.Size(56, 23);
+            this.txt_anio_minimo.TabIndex = 8;
             //
             // lbl_inicio
             //
@@ -662,6 +684,8 @@
         private System.Windows.Forms.TextBox txt_descuento;
         private System.Windows.Forms.Label lbl_duracion;
         private System.Windows.Forms.TextBox txt_duracion;
+        private System.Windows.Forms.Label lbl_anio_minimo;
+        private System.Windows.Forms.TextBox txt_anio_minimo;
         private System.Windows.Forms.Label lbl_inicio;
         private System.Windows.Forms.DateTimePicker dtp_inicio;
         private System.Windows.Forms.Label lbl_franquicia;

@@ -45,7 +45,8 @@ namespace FixedSegurosApp.Vistas
             Estilos.Placeholder(txt_descuento, "10 %");
             Estilos.Placeholder(txt_franquicia, "$ 80000");
             Estilos.Placeholder(txt_comision, "12 %");
-            Estilos.Placeholder(txt_monto_maximo, "$ 5000000");
+            Estilos.Placeholder(txt_monto_maximo, "Obligatorio");
+            Estilos.Placeholder(txt_anio_minimo, "Opcional");
             Estilos.Placeholder(txt_adicionales, "Cristales, grúa...");
 
             // las ganancias de la empresa solo las ve el Administrador
@@ -117,6 +118,7 @@ namespace FixedSegurosApp.Vistas
             cb_forma_pago.Text = poliza.FormaPago;
             txt_descuento.Text = poliza.Descuento.ToString("0.##");
             txt_duracion.Text = poliza.Duracion.ToString();
+            txt_anio_minimo.Text = poliza.AnioMinimo > 0 ? poliza.AnioMinimo.ToString() : "";
             dtp_inicio.Value = poliza.FechaInicio.Value;
             txt_franquicia.Text = poliza.Franquicia.ToString("0.##");
             txt_comision.Text = poliza.Comision.ToString("0.##");
@@ -166,6 +168,7 @@ namespace FixedSegurosApp.Vistas
             cb_forma_pago.SelectedIndex = -1;
             txt_descuento.Clear();
             txt_duracion.Clear();
+            txt_anio_minimo.Clear();
             dtp_inicio.Value = DateTime.Today;
             txt_franquicia.Clear();
             txt_comision.Clear();
@@ -189,6 +192,7 @@ namespace FixedSegurosApp.Vistas
             cb_forma_pago.Enabled = !bloqueado;
             txt_descuento.ReadOnly = bloqueado;
             txt_duracion.ReadOnly = bloqueado;
+            txt_anio_minimo.ReadOnly = bloqueado;
             dtp_inicio.Enabled = !bloqueado;
             txt_franquicia.ReadOnly = bloqueado;
             txt_comision.ReadOnly = bloqueado;
@@ -241,7 +245,7 @@ namespace FixedSegurosApp.Vistas
                 Requisitos = txt_requisitos.Text.Trim()
             };
 
-            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), txt_comision.Text.Trim(), txt_monto_maximo.Text.Trim(), out mensaje))
+            if (PolizaNegocio.GuardarPoliza(poliza, txt_prima.Text.Trim(), txt_descuento.Text.Trim(), txt_duracion.Text.Trim(), txt_franquicia.Text.Trim(), txt_comision.Text.Trim(), txt_monto_maximo.Text.Trim(), txt_anio_minimo.Text.Trim(), out mensaje))
             {
                 MessageBox.Show(esNueva ? "Póliza " + poliza.NroTexto + " creada. Ya la pueden contratar los clientes." : "Los cambios se guardaron correctamente.", "Pólizas", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txt_buscar.Clear();   // para que la póliza aparezca aunque hubiera una búsqueda escrita

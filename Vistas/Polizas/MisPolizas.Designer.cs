@@ -21,6 +21,7 @@
             System.Windows.Forms.DataGridViewCellStyle estiloCuota = new System.Windows.Forms.DataGridViewCellStyle();
             this.lbl_titulo = new System.Windows.Forms.Label();
             this.pnl_lista = new System.Windows.Forms.Panel();
+            this.btn_descargar = new System.Windows.Forms.Button();
             this.lbl_lista_titulo = new System.Windows.Forms.Label();
             this.dgv_polizas = new System.Windows.Forms.DataGridView();
             this.col_nro = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -67,6 +68,7 @@
             | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnl_lista.Controls.Add(this.lbl_lista_titulo);
+            this.pnl_lista.Controls.Add(this.btn_descargar);
             this.pnl_lista.Controls.Add(this.dgv_polizas);
             this.pnl_lista.Controls.Add(this.lbl_cantidad);
             this.pnl_lista.Location = new System.Drawing.Point(24, 70);
@@ -156,6 +158,17 @@
             this.lbl_cantidad.Size = new System.Drawing.Size(121, 15);
             this.lbl_cantidad.TabIndex = 2;
             this.lbl_cantidad.Text = "Mostrando 0 pólizas";
+            //
+            // btn_descargar
+            //
+            this.btn_descargar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_descargar.Location = new System.Drawing.Point(424, 13);
+            this.btn_descargar.Name = "btn_descargar";
+            this.btn_descargar.Size = new System.Drawing.Size(144, 32);
+            this.btn_descargar.TabIndex = 3;
+            this.btn_descargar.Text = "Descargar póliza";
+            this.btn_descargar.UseVisualStyleBackColor = false;
+            this.btn_descargar.Click += new System.EventHandler(this.btn_descargar_Click);
             //
             // pnl_detalle
             //
@@ -322,6 +335,7 @@
 
         private System.Windows.Forms.Label lbl_titulo;
         private System.Windows.Forms.Panel pnl_lista;
+        private System.Windows.Forms.Button btn_descargar;
         private System.Windows.Forms.Label lbl_lista_titulo;
         private System.Windows.Forms.DataGridView dgv_polizas;
         private System.Windows.Forms.DataGridViewTextBoxColumn col_nro;
