@@ -97,7 +97,7 @@ namespace FixedSegurosApp.Negocio
 
         public static List<Persona> ListarUsuarios(string buscar)
         {
-            return UsuarioDatos.ListarUsuarios(buscar.Trim());
+            return UsuarioDatos.ListarUsuarios(buscar.Trim(), Sesion.UsuarioActual.Perfil == "Empleado");
         }
 
         public static Persona BuscarPorLegajo(int legajo)

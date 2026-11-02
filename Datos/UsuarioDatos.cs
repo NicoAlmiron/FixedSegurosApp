@@ -87,7 +87,8 @@ namespace FixedSegurosApp.Datos
         }
 
         // Lista para la grilla. Si "buscar" tiene texto, filtra por legajo, DNI o apellido.
-        public static List<Persona> ListarUsuarios(string buscar)
+        // soloClientes: el empleado no ve a otros empleados ni a los administradores
+        public static List<Persona> ListarUsuarios(string buscar, bool soloClientes)
         {
             List<Persona> lista = new List<Persona>();
 
@@ -96,14 +97,16 @@ namespace FixedSegurosApp.Datos
             try
             {
                 string query = "SELECT legajo, nombre, apellido, dni, perfil, estado FROM vw_Usuarios " +
-                               "WHERE @buscar = '' " +
+                               "WHERE (@soloClientes = 0 OR perfil = 'Cliente') " +
+                               "AND (@buscar = '' " +
                                "OR legajo = TRY_CAST(@buscar AS INT) " +
                                "OR CAST(dni AS VARCHAR(10)) LIKE @buscar + '%' " +
-                               "OR apellido LIKE '%' + @buscar + '%' " +
+                               "OR apellido LIKE '%' + @buscar + '%') " +
                                "ORDER BY legajo";
 
                 SqlCommand sql = new SqlCommand(query, conexion.AbrirConexion());
                 sql.Parameters.AddWithValue("@buscar", buscar);
+                sql.Parameters.AddWithValue("@soloClientes", soloClientes);
 
                 SqlDataReader leer = sql.ExecuteReader();
 

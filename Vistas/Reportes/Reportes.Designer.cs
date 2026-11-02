@@ -24,7 +24,6 @@
             this.dtp_hasta = new System.Windows.Forms.DateTimePicker();
             this.btn_consultar = new System.Windows.Forms.Button();
             this.btn_csv = new System.Windows.Forms.Button();
-            this.btn_pdf = new System.Windows.Forms.Button();
             this.tab_secciones = new System.Windows.Forms.TabControl();
             this.tab_general = new System.Windows.Forms.TabPage();
             this.tab_polizas = new System.Windows.Forms.TabPage();
@@ -125,23 +124,13 @@
             //
             // btn_csv
             //
-            this.btn_csv.Location = new System.Drawing.Point(744, 20);
+            this.btn_csv.Location = new System.Drawing.Point(836, 20);
             this.btn_csv.Name = "btn_csv";
-            this.btn_csv.Size = new System.Drawing.Size(122, 32);
+            this.btn_csv.Size = new System.Drawing.Size(160, 32);
             this.btn_csv.TabIndex = 4;
-            this.btn_csv.Text = "Exportar CSV";
+            this.btn_csv.Text = "Exportar a Excel (CSV)";
             this.btn_csv.UseVisualStyleBackColor = false;
             this.btn_csv.Click += new System.EventHandler(this.btn_csv_Click);
-            //
-            // btn_pdf
-            //
-            this.btn_pdf.Location = new System.Drawing.Point(874, 20);
-            this.btn_pdf.Name = "btn_pdf";
-            this.btn_pdf.Size = new System.Drawing.Size(122, 32);
-            this.btn_pdf.TabIndex = 5;
-            this.btn_pdf.Text = "Exportar PDF";
-            this.btn_pdf.UseVisualStyleBackColor = false;
-            this.btn_pdf.Click += new System.EventHandler(this.btn_pdf_Click);
             //
             // tab_secciones
             //
@@ -427,7 +416,6 @@
             this.Controls.Add(this.pnl_tarjeta3);
             this.Controls.Add(this.pnl_tarjeta4);
             this.Controls.Add(this.tab_secciones);
-            this.Controls.Add(this.btn_pdf);
             this.Controls.Add(this.btn_csv);
             this.Controls.Add(this.btn_consultar);
             this.Controls.Add(this.dtp_hasta);
@@ -467,7 +455,6 @@
         private System.Windows.Forms.DateTimePicker dtp_hasta;
         private System.Windows.Forms.Button btn_consultar;
         private System.Windows.Forms.Button btn_csv;
-        private System.Windows.Forms.Button btn_pdf;
         private System.Windows.Forms.TabControl tab_secciones;
         private System.Windows.Forms.TabPage tab_general;
         private System.Windows.Forms.TabPage tab_polizas;

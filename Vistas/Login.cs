@@ -20,6 +20,8 @@ namespace FixedSegurosApp.Vistas
 
             Estilos.Placeholder(txt_dni, "Ingrese su número de documento");
             Estilos.Placeholder(txt_contrasena, "Ingrese su contraseña");
+
+            lbl_version.Text = "Versión " + Sesion.Version;
         }
 
         private void btn_ingresar_Click(object sender, EventArgs e)

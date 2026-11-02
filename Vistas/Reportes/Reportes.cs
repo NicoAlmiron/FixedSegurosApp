@@ -33,7 +33,6 @@ namespace FixedSegurosApp.Vistas
             Estilos.Grafico(chart_2);
             Estilos.BotonPrincipal(btn_consultar);
             Estilos.BotonSecundario(btn_csv);
-            Estilos.BotonSecundario(btn_pdf);
 
             // por defecto, el mes actual
             desde = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
@@ -153,28 +152,6 @@ namespace FixedSegurosApp.Vistas
                 string mensaje;
 
                 if (Exportar.GuardarCsv(dialogo.FileName, seccionActual, TextoPeriodo(), out mensaje))
-                {
-                    MessageBox.Show("Reporte guardado.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(mensaje, "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-            }
-        }
-
-        private void btn_pdf_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog dialogo = new SaveFileDialog();
-            dialogo.Title = "Exportar a PDF";
-            dialogo.Filter = "Archivo PDF|*.pdf";
-            dialogo.FileName = NombreArchivo();
-
-            if (dialogo.ShowDialog() == DialogResult.OK)
-            {
-                string mensaje;
-
-                if (Exportar.GuardarPdf(dialogo.FileName, this, "Reporte " + seccionActual.Titulo, out mensaje))
                 {
                     MessageBox.Show("Reporte guardado.", "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
