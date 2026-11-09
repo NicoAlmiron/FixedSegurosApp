@@ -6,15 +6,17 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Ventana secundaria: todos cambian su contraseña y corrigen sus datos de contacto,
-    // y el administrador además su nombre y matrícula.
+    // Ventana aparte de Mi cuenta: todos cambian su contraseña y corrigen sus datos de contacto,
+    // y el administrador además su nombre y su matrícula
     public partial class MiCuenta : Form
     {
+        // Constructor de la ventana
         public MiCuenta()
         {
             InitializeComponent();
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void MiCuenta_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_contrasena);
@@ -33,7 +35,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.AjustarVentana(this, 520, btn_cerrar.Bottom + 14);
         }
 
-        // Cliente y empleado no cambian su nombre ni tienen matrícula: esa fila se saca y el resto sube
+        // Cliente y empleado no cambian su nombre ni tienen matrícula: saco esa fila y subo el resto
         private void OcultarDatosDeAdministrador()
         {
             int primeraFila = lbl_telefono.Top;
@@ -57,6 +59,7 @@ namespace FixedSegurosApp.Vistas
             btn_cerrar.Top -= alto;
         }
 
+        // Lleno los campos con los datos guardados del usuario
         private void CargarDatos()
         {
             Persona usuario = UsuarioNegocio.BuscarPorLegajo(Sesion.UsuarioActual.Legajo);
@@ -72,6 +75,7 @@ namespace FixedSegurosApp.Vistas
             txt_direccion.Text = usuario.Direccion;
         }
 
+        // Cambio la contraseña (Negocio controla la actual y las reglas de la nueva)
         private void btn_cambiar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -85,10 +89,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Mi cuenta", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Mi cuenta");
             }
         }
 
+        // Guardo los datos de contacto
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -99,7 +104,7 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Mi cuenta", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Mi cuenta");
             }
         }
     }

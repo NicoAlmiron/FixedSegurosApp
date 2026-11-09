@@ -6,17 +6,19 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de Notificaciones: los avisos de los clientes y lo pendiente del empleado.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class NotificacionDatos
     {
-        // Columnas que usan los listados (en el mismo orden que LeerNotificacion)
+        // Columnas que usan los listados (mismo orden que LeerNotificacion)
         private const string columnas = "SELECT n.idNotificacion, n.fechaEnvio, n.mensaje, n.tipo, n.leida, " +
                                         "ISNULL(n.nroPoliza, 0), p.apellido + ', ' + p.nombre, p.idPersona " +
                                         "FROM Notificacion n " +
                                         "JOIN Cliente c ON c.idCliente = n.idCliente " +
                                         "JOIN Persona p ON p.idPersona = c.idPersona ";
 
-        // Crea los avisos que falten de pólizas por vencer, cuotas vencidas y VTV.
-        // Si falla no pasa nada: se vuelve a intentar en el próximo inicio de sesión.
+        // Creo los avisos que falten (pólizas por vencer, cuotas vencidas y VTV) con el procedimiento sp_GenerarNotificaciones.
+        // Si falla no pasa nada: se vuelve a intentar en el próximo inicio de sesión
         public static void GenerarNotificaciones()
         {
             Conexion conexion = new Conexion();
@@ -71,7 +73,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Los avisos de todos los clientes (empleado)
+        // Los avisos de todos los clientes (los ve el empleado)
         public static List<Notificacion> ListarTodas()
         {
             List<Notificacion> lista = new List<Notificacion>();
@@ -104,7 +106,8 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Lo que el empleado tiene para evaluar. No se guarda: al resolverlo deja de aparecer.
+        // Lo que el empleado tiene para evaluar: reclamos pendientes y vehículos o VTV por revisar.
+        // No lo guardo: lo calculo cada vez, así cuando se resuelve deja de aparecer solo
         public static List<Notificacion> ListarPendientes()
         {
             List<Notificacion> lista = new List<Notificacion>();
@@ -164,7 +167,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Crea un aviso para el cliente dueño de la póliza
+        // Creo un aviso para el cliente dueño de la póliza
         public static bool CrearNotificacion(int nroPoliza, string tipo, string mensaje)
         {
             bool estado = false;
@@ -199,7 +202,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Aviso de la VTV para el dueño del vehículo; nroPoliza 0 si no tiene póliza vigente
+        // Aviso de la VTV para el dueño del vehículo; nroPoliza es 0 si no tiene póliza vigente
         public static bool CrearNotificacionVtv(int idVehiculo, int nroPoliza, string mensaje)
         {
             bool estado = false;
@@ -233,7 +236,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // El cliente solo puede marcar las suyas (la condición está en el WHERE)
+        // Marco el aviso como leído. El cliente solo puede marcar los suyos (la condición está en el WHERE)
         public static bool MarcarLeida(int idNotificacion, int legajoCliente)
         {
             bool estado = false;
@@ -268,6 +271,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
+        // Cuántos avisos sin leer tiene el cliente (el número que aparece en el menú)
         public static int ContarSinLeerCliente(int legajoCliente)
         {
             int cantidad = 0;
@@ -297,6 +301,7 @@ namespace FixedSegurosApp.Datos
             return cantidad;
         }
 
+        // Cuántas cosas tiene el empleado para evaluar (el número que aparece en el menú)
         public static int ContarPendientes()
         {
             int cantidad = 0;
@@ -324,6 +329,7 @@ namespace FixedSegurosApp.Datos
             return cantidad;
         }
 
+        // Armo una Notificacion con la fila que estoy leyendo
         private static Notificacion LeerNotificacion(SqlDataReader leer)
         {
             Notificacion notificacion = new Notificacion()

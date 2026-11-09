@@ -5,13 +5,15 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Guardado del "Alta en oficina": cliente, vehículo con fotos y póliza, todo junto.
+    // Uso los mismos métodos de UsuarioDatos, VehiculoDatos y PolizaDatos pero con una sola conexión y una sola transacción
     internal class AltaOficinaDatos
     {
-        // Guarda todo el trámite en una sola transacción: si algo falla no queda nada a medias.
-        // - cliente.Legajo = 0: crea el usuario. Si no, usa ese cliente.
-        // - vehiculo.IdVehiculo = 0: crea el vehículo con sus fotos, ya aprobado por el empleado. Si no, usa ese vehículo.
-        // Devuelve el N° de la póliza nueva, o 0 si no se pudo guardar.
-        public static int Guardar(Persona cliente, string contrasenaHash, Vehiculo vehiculo, List<FotoVehiculo> fotos, int nroOfrecida, DateTime inicio, DateTime vencimiento, List<Pago> cuotas, int legajoEmpleado)
+        // Guardo todo el trámite en una sola transacción: si algo falla no queda nada a medias.
+        // - cliente.Legajo = 0: creo el usuario. Si no, uso ese cliente.
+        // - vehiculo.IdVehiculo = 0: creo el vehículo con sus fotos, ya aprobado por el empleado. Si no, uso ese vehículo.
+        // Devuelvo el N° de la póliza nueva, o 0 si no se pudo guardar
+        public static int Guardar(Persona cliente, string contrasenaHash, string sal, Vehiculo vehiculo, List<FotoVehiculo> fotos, int nroOfrecida, DateTime inicio, DateTime vencimiento, List<Pago> cuotas, int legajoEmpleado)
         {
             int nro = 0;
 
@@ -26,7 +28,7 @@ namespace FixedSegurosApp.Datos
                 int legajo = cliente.Legajo;
                 if (legajo == 0)
                 {
-                    legajo = UsuarioDatos.CrearUsuario(con, transaccion, cliente, contrasenaHash);
+                    legajo = UsuarioDatos.CrearUsuario(con, transaccion, cliente, contrasenaHash, sal);
                 }
 
                 int idVehiculo = vehiculo.IdVehiculo;
@@ -42,7 +44,7 @@ namespace FixedSegurosApp.Datos
 
                 transaccion.Commit();
 
-                // recién acá se confirma: si hubo un error, cliente y vehículo siguen como estaban
+                // recién acá confirmo todo; si hubo un error antes, el catch hace Rollback y cliente y vehículo quedan como estaban
                 cliente.Legajo = legajo;
                 vehiculo.IdVehiculo = idVehiculo;
             }

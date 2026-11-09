@@ -5,8 +5,12 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
+    // Primera pantalla del sistema: inicio de sesión con DNI y contraseña.
+    // Si la base todavía no tiene usuarios, ofrece crear la cuenta del administrador.
     public partial class Login : Form
     {
+        private bool faltaAdministrador;   // true cuando la base está vacía
+
         public Login()
         {
             InitializeComponent();
@@ -22,6 +26,31 @@ namespace FixedSegurosApp.Vistas
             Estilos.Placeholder(txt_contrasena, "Ingrese su contraseña");
 
             lbl_version.Text = "Versión " + Sesion.Version;
+
+            RevisarPrimerUsuario();
+        }
+
+        // Me fijo si ya hay usuarios. Si no hay, cambio el pie para que se cree el administrador
+        private void RevisarPrimerUsuario()
+        {
+            faltaAdministrador = !UsuarioNegocio.HayUsuarios();
+
+            if (faltaAdministrador)
+            {
+                lbl_cliente_nuevo.Text = "Todavía no hay usuarios.";
+                lbl_cliente_nuevo.ForeColor = Estilos.Advertencia;
+                btn_registrarme.Text = "Crear administrador";
+                btn_registrarme.Width = 170;
+                btn_registrarme.Left = txt_dni.Right - btn_registrarme.Width;
+            }
+            else
+            {
+                lbl_cliente_nuevo.Text = "¿Cliente nuevo?";
+                lbl_cliente_nuevo.ForeColor = Estilos.Texto;
+                btn_registrarme.Text = "Registrarme";
+                btn_registrarme.Width = 130;
+                btn_registrarme.Left = txt_dni.Right - btn_registrarme.Width;
+            }
         }
 
         private void btn_ingresar_Click(object sender, EventArgs e)
@@ -42,15 +71,16 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    this.Close();         // cerro la ventana con la X: termina el programa
+                    this.Close();         // cerró la ventana con la X: termina el programa
                 }
             }
             else
             {
-                MessageBox.Show(mensaje, "Iniciar sesión", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Iniciar sesión");
             }
         }
 
+        // Muestro u oculto la contraseña según el casillero
         private void chk_mostrar_CheckedChanged(object sender, EventArgs e)
         {
             txt_contrasena.UseSystemPasswordChar = !chk_mostrar.Checked;
@@ -61,17 +91,20 @@ namespace FixedSegurosApp.Vistas
             MessageBox.Show("Comuníquese con el administrador para que restablezca su contraseña.", "Recuperar contraseña", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // Abro "Crear cuenta". Si falta el administrador, se abre en modo administrador
         private void btn_registrarme_Click(object sender, EventArgs e)
         {
-            Registro registro = new Registro();
+            Registro registro = new Registro(faltaAdministrador);
 
             if (registro.ShowDialog() == DialogResult.OK)
             {
-                // deja cargado el DNI recien registrado para que solo escriba la contraseña
+                // dejo cargado el DNI recién registrado para que solo escriba la contraseña
                 txt_dni.Text = registro.DniRegistrado;
                 txt_contrasena.Clear();
                 txt_contrasena.Focus();
             }
+
+            RevisarPrimerUsuario();
         }
     }
 }

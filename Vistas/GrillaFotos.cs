@@ -6,8 +6,8 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Arma los casilleros de fotos del vehículo (5 por fila, cada uno con su nombre).
-    // Se usa en "Mis vehículos" y en "Detalle del cliente".
+    // Armo los casilleros de fotos del vehículo (5 por fila, cada uno con su nombre).
+    // No los dibujo en el diseñador porque son 9 o 7 y los uso en tres pantallas: Mis vehículos, Detalle del cliente y Alta en oficina
     internal class GrillaFotos
     {
         private const int Columnas = 5;
@@ -18,8 +18,8 @@ namespace FixedSegurosApp.Vistas
             "Frente", "Atrás", "Lat. izq.", "Lat. der.", "Baúl", "Int. del.", "Motor", "Tarj. verde", "VTV"
         };
 
-        // Crea los casilleros dentro de "contenedor" a partir de (x, y) y los devuelve en orden.
-        // Cada casillero guarda en Tag su número (0 a 8) para saber cuál se tocó en el evento Click.
+        // Creo los casilleros dentro de "contenedor" a partir de (x, y) y los devuelvo en orden.
+        // Cada casillero guarda en Tag su número (0 a 8): así en el evento Click sé cuál se tocó
         public static PictureBox[] Crear(Control contenedor, int x, int y, int ancho, int alto, EventHandler alHacerClic)
         {
             PictureBox[] casilleros = new PictureBox[Nombres.Length];
@@ -58,7 +58,7 @@ namespace FixedSegurosApp.Vistas
             return casilleros;
         }
 
-        // Deja visibles solo las fotos que lleva ese tipo de vehículo y las acomoda sin dejar huecos.
+        // Dejo visibles solo las fotos que lleva ese tipo de vehículo y las acomodo sin dejar huecos
         public static void Mostrar(PictureBox[] casilleros, string tipoVehiculo)
         {
             string[] posiciones = VehiculoNegocio.PosicionesDe(tipoVehiculo);

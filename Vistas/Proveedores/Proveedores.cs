@@ -8,12 +8,14 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // ABM de aseguradoras (solo Administrador)
+    // Pantalla Proveedores (solo el administrador): alta, modificación y baja de aseguradoras.
+    // La pantalla solo muestra datos y recibe lo que escribe el usuario: las reglas las controla Negocio.
     public partial class Proveedores : Form
     {
         private BindingList<Proveedor> listaProveedores = new BindingList<Proveedor>();
         private Proveedor proveedorSeleccionado;   // null = se esta cargando una aseguradora nueva
 
+        // Conecto la grilla con la lista
         public Proveedores()
         {
             InitializeComponent();
@@ -21,6 +23,7 @@ namespace FixedSegurosApp.Vistas
             dgv_proveedores.DataSource = listaProveedores;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Proveedores_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -39,11 +42,13 @@ namespace FixedSegurosApp.Vistas
             CargarDatos();
         }
 
+        // Vuelvo a buscar las aseguradoras con el texto del buscador
         public void CargarDatos()
         {
             CargarLista(ProveedorNegocio.ListarProveedores(txt_buscar.Text));
         }
 
+        // Paso el resultado a la lista que muestra la grilla
         private void CargarLista(List<Proveedor> resultado)
         {
             listaProveedores.Clear();
@@ -59,6 +64,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Cuando elijo una aseguradora la muestro a la derecha
         private void dgv_proveedores_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_proveedores.SelectedRows.Count == 0)
@@ -70,6 +76,7 @@ namespace FixedSegurosApp.Vistas
             MostrarProveedor(ProveedorNegocio.BuscarPorId(fila.IdProveedor));
         }
 
+        // Lleno el panel de la derecha con los datos de la aseguradora
         private void MostrarProveedor(Proveedor proveedor)
         {
             proveedorSeleccionado = proveedor;
@@ -93,7 +100,7 @@ namespace FixedSegurosApp.Vistas
             btn_baja.Text = proveedor.Activo ? "Dar de baja" : "Reactivar";
         }
 
-        // Deja el panel de la derecha vacio para cargar una aseguradora nueva
+        // Dejo el panel de la derecha vacío para cargar una aseguradora nueva
         private void LimpiarDetalle()
         {
             proveedorSeleccionado = null;
@@ -111,6 +118,7 @@ namespace FixedSegurosApp.Vistas
             btn_baja.Text = "Dar de baja";
         }
 
+        // Busco la fila de la aseguradora y la dejo elegida
         private void SeleccionarFila(int idProveedor)
         {
             foreach (DataGridViewRow fila in dgv_proveedores.Rows)
@@ -123,11 +131,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Busco mientras se escribe
         private void txt_buscar_TextChanged(object sender, EventArgs e)
         {
             CargarDatos();
         }
 
+        // Botón Nueva aseguradora
         private void btn_nueva_Click(object sender, EventArgs e)
         {
             dgv_proveedores.ClearSelection();
@@ -135,6 +145,7 @@ namespace FixedSegurosApp.Vistas
             txt_nombre.Focus();
         }
 
+        // Guardo la aseguradora (nueva o modificada)
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -163,10 +174,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Proveedores", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Proveedores");
             }
         }
 
+        // Descarto los cambios y vuelvo a mostrar lo guardado
         private void btn_descartar_Click(object sender, EventArgs e)
         {
             if (proveedorSeleccionado != null)
@@ -179,6 +191,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Doy de baja o reactivo la aseguradora, después de confirmar
         private void btn_baja_Click(object sender, EventArgs e)
         {
             if (proveedorSeleccionado == null)
@@ -191,7 +204,7 @@ namespace FixedSegurosApp.Vistas
                 ? "¿Dar de baja a " + proveedorSeleccionado.Nombre + "?\nNo podrá ofrecer pólizas nuevas hasta que se la reactive."
                 : "¿Reactivar a " + proveedorSeleccionado.Nombre + "?";
 
-            DialogResult respuesta = MessageBox.Show(pregunta, "Proveedores", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show(pregunta, "Proveedores", MessageBoxButtons.YesNo, proveedorSeleccionado.Activo ? MessageBoxIcon.Warning : MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
             {
                 if (!ProveedorNegocio.DarDeBajaOReactivar(proveedorSeleccionado))
@@ -204,7 +217,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_proveedores_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

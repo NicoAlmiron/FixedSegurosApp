@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace FixedSegurosApp.Vistas
 {
     // Todo sobre un cliente: datos, observaciones, vehículos (con fotos y revisión), pólizas, pagos, siniestros e historial.
-    // La abren el Administrador y el Empleado desde Usuarios.
+    // La abren el administrador y el empleado desde Usuarios
     public partial class DetalleCliente : Form
     {
         private int legajoCliente;
@@ -16,6 +16,7 @@ namespace FixedSegurosApp.Vistas
         private PictureBox[] casilleros;                                       // las fotos del vehículo elegido
         private Dictionary<string, byte[]> fotos = new Dictionary<string, byte[]>();
 
+        // Recibo el legajo del cliente y armo los casilleros de fotos
         public DetalleCliente(int legajo)
         {
             InitializeComponent();
@@ -30,6 +31,7 @@ namespace FixedSegurosApp.Vistas
             casilleros = GrillaFotos.Crear(pnl_vehiculo, 0, 48, 70, 62, casillero_Click);
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void DetalleCliente_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_cliente);
@@ -51,6 +53,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Tarjeta de arriba =================
 
+        // Lleno la tarjeta de arriba con los datos del cliente
         private void CargarCliente()
         {
             Persona cliente = UsuarioNegocio.BuscarPorLegajo(legajoCliente);
@@ -71,6 +74,7 @@ namespace FixedSegurosApp.Vistas
             txt_observaciones.Text = ClienteNegocio.BuscarObservaciones(legajoCliente);
         }
 
+        // Guardo las observaciones del cliente
         private void btn_guardar_obs_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -82,12 +86,13 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Detalle del cliente", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Detalle del cliente");
             }
         }
 
         // ================= Pestañas =================
 
+        // Cargo las grillas de las pestañas
         private void CargarPestanas()
         {
             List<Poliza> polizas = ClienteNegocio.ListarPolizas(legajoCliente);
@@ -100,7 +105,7 @@ namespace FixedSegurosApp.Vistas
             dgv_siniestros.DataSource = siniestros;
             dgv_historial.DataSource = historial;
 
-            // el título de cada pestaña muestra cuántos registros tiene
+            // en el título de cada pestaña muestro cuántos registros tiene
             tab_polizas.Text = "Pólizas (" + polizas.Count + ")";
             tab_pagos.Text = "Pagos (" + pagos.Count + ")";
             tab_siniestros.Text = "Siniestros (" + siniestros.Count + ")";
@@ -132,6 +137,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Pestaña Vehículos =================
 
+        // Cargo los vehículos del cliente
         private void CargarVehiculos()
         {
             List<Vehiculo> vehiculos = VehiculoNegocio.ListarVehiculosDeCliente(legajoCliente);
@@ -146,6 +152,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Cuando elijo un vehículo muestro sus datos y fotos
         private void dgv_vehiculos_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_vehiculos.SelectedRows.Count == 0)
@@ -157,6 +164,7 @@ namespace FixedSegurosApp.Vistas
             MostrarVehiculo(VehiculoNegocio.BuscarVehiculoDeCliente(fila.IdVehiculo, legajoCliente));
         }
 
+        // Muestro el vehículo, sus fotos, la revisión y la VTV, y habilito Aprobar / Rechazar si corresponde
         private void MostrarVehiculo(Vehiculo vehiculo)
         {
             vehiculoSeleccionado = vehiculo;
@@ -221,6 +229,7 @@ namespace FixedSegurosApp.Vistas
             btn_rechazar.Visible = btn_aprobar.Visible;
         }
 
+        // Clic en una foto: la veo en grande
         private void casillero_Click(object sender, EventArgs e)
         {
             int numero = (int)((PictureBox)sender).Tag;
@@ -232,6 +241,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Apruebo el vehículo pendiente, o la VTV renovada si eso es lo que se está revisando
         private void btn_aprobar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -242,7 +252,7 @@ namespace FixedSegurosApp.Vistas
                 return;
             }
 
-            DialogResult respuesta = MessageBox.Show("¿Aprobar el vehículo " + vehiculoSeleccionado.Dominio + "?\nLas fotos quedan como registro del estado inicial y el cliente ya no podrá modificarlo.", "Aprobar vehículo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show("¿Aprobar el vehículo " + vehiculoSeleccionado.Dominio + "?\nLas fotos quedan como registro del estado inicial y el cliente ya no podrá modificarlo.", "Aprobar vehículo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (respuesta == DialogResult.Yes)
             {
                 if (VehiculoNegocio.Aprobar(vehiculoSeleccionado.IdVehiculo, legajoCliente, out mensaje))
@@ -251,11 +261,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Aprobar vehículo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Aprobar vehículo");
                 }
             }
         }
 
+        // Rechazo el vehículo o la VTV renovada; pido el motivo
         private void btn_rechazar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -276,10 +287,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Rechazar vehículo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Rechazar vehículo");
             }
         }
 
+        // Apruebo la VTV renovada, después de confirmar
         private void AprobarVtv()
         {
             string mensaje;
@@ -294,11 +306,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Aprobar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Aprobar VTV");
                 }
             }
         }
 
+        // Rechazo la VTV renovada con motivo
         private void RechazarVtv()
         {
             string mensaje;
@@ -314,11 +327,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Rechazar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Rechazar VTV");
             }
         }
 
-        // Recarga la grilla de vehículos y vuelve a elegir el mismo
+        // Recargo la grilla de vehículos y vuelvo a elegir el mismo
         private void RefrescarVehiculos()
         {
             int id = vehiculoSeleccionado.IdVehiculo;
@@ -335,7 +348,7 @@ namespace FixedSegurosApp.Vistas
             MostrarVehiculo(VehiculoNegocio.BuscarVehiculoDeCliente(id, legajoCliente));
         }
 
-        // Pinta las columnas de estado (y la VTV) con su color en todas las grillas
+        // Pinto las columnas de estado (y la VTV) con su color en todas las grillas
         private void grilla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             string columna = ((DataGridView)sender).Columns[e.ColumnIndex].Name;
@@ -347,6 +360,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Vuelvo a Usuarios
         private void btn_volver_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Usuarios());

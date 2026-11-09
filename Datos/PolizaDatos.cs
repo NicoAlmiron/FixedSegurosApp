@@ -5,10 +5,12 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de Pólizas: ofrecidas, contratadas, baja y contratación con sus cuotas.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class PolizaDatos
     {
-        // Columnas que usan todas las consultas (en el mismo orden que LeerPoliza).
-        // Cliente y vehículo van con LEFT JOIN porque una póliza ofrecida todavía no los tiene.
+        // Columnas que usan todas las consultas (mismo orden que LeerPoliza).
+        // Cliente y vehículo van con LEFT JOIN porque una póliza ofrecida todavía no los tiene
         private const string columnas = "SELECT po.nroPoliza, po.idProveedor, pr.nombre, pr.activo, po.tipoCobertura, po.tipoVehiculo, " +
                                         "po.adicionales, po.fechaInicio, po.fechaVencimiento, po.descuento, po.duracion, po.requisitos, " +
                                         "po.tipoPrima, po.prima, po.formaPago, po.franquicia, po.estado, " +
@@ -21,7 +23,7 @@ namespace FixedSegurosApp.Datos
                                         "LEFT JOIN Persona p ON p.idPersona = c.idPersona " +
                                         "LEFT JOIN Vehiculo v ON v.idVehiculo = po.idVehiculo ";
 
-        // Todas las pólizas (Admin/Empleado). Busca por N° de póliza, DNI del cliente o dominio.
+        // Todas las pólizas (empleado y administrador). Busco por N° de póliza, DNI del cliente o dominio
         public static List<Poliza> ListarPolizas(string buscar)
         {
             List<Poliza> lista = new List<Poliza>();
@@ -128,7 +130,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Pólizas ofrecidas para un tipo de vehículo, solo de aseguradoras activas
+        // Las pólizas ofrecidas para un tipo de vehículo, solo de aseguradoras activas
         public static List<Poliza> ListarOfrecidas(string tipoVehiculo)
         {
             List<Poliza> lista = new List<Poliza>();
@@ -164,6 +166,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Busco una póliza por su número; null si no existe
         public static Poliza BuscarPorNro(int nroPoliza)
         {
             Poliza poliza = null;
@@ -197,8 +200,8 @@ namespace FixedSegurosApp.Datos
             return poliza;
         }
 
-        // Crea una póliza "Ofrecida". El referente es el empleado que la carga (si la carga el admin queda NULL).
-        // Devuelve el N° de póliza nuevo, o 0 si no se pudo guardar.
+        // Creo una póliza "Ofrecida". El referente es el empleado que la carga (si la carga el administrador queda NULL).
+        // Devuelvo el N° de póliza nuevo, o 0 si no se pudo guardar
         public static int CrearPoliza(Poliza poliza, int legajoReferente)
         {
             int nro = 0;
@@ -232,7 +235,7 @@ namespace FixedSegurosApp.Datos
             return nro;
         }
 
-        // Solo se modifican las pólizas ofrecidas (la condición está en el WHERE)
+        // Modifico una póliza. Solo se pueden modificar las ofrecidas (la condición está en el WHERE)
         public static bool EditarPoliza(Poliza poliza)
         {
             bool estado = false;
@@ -268,8 +271,8 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Pasa la póliza a "Baja" y borra las cuotas que todavía no vencieron ni se pagaron
-        // (las vencidas impagas quedan como deuda). Todo en una transacción.
+        // Paso la póliza a "Baja" y borro las cuotas que todavía no vencieron ni se pagaron
+        // (las vencidas sin pagar quedan como deuda). Todo en una transacción
         public static bool DarDeBaja(int nroPoliza)
         {
             bool estado = false;
@@ -317,8 +320,8 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // El cliente adquiere una póliza ofrecida: se copia como "Vigente" con su cliente y vehículo,
-        // y se guardan sus cuotas en Pago. Todo en una transacción. Devuelve el N° de la póliza nueva, o 0.
+        // El cliente contrata una póliza ofrecida: la copio como "Vigente" con su cliente y vehículo,
+        // y guardo sus cuotas en Pago. Todo en una transacción. Devuelvo el N° de la póliza nueva, o 0
         public static int AdquirirPoliza(int nroOfrecida, int idVehiculo, int legajoCliente, DateTime inicio, DateTime vencimiento, List<Pago> cuotas)
         {
             int nro = 0;
@@ -352,8 +355,8 @@ namespace FixedSegurosApp.Datos
             return nro;
         }
 
-        // Copia la ofrecida como "Vigente" y guarda sus cuotas, usando una conexión y transacción ya abiertas.
-        // Devuelve el N° de la póliza nueva.
+        // Copio la ofrecida como "Vigente" y guardo sus cuotas, con una conexión y transacción que ya vienen abiertas
+        // (así la puede usar también el Alta en oficina). Devuelvo el N° de la póliza nueva
         public static int InsertarAdquirida(SqlConnection con, SqlTransaction transaccion, int nroOfrecida, int idVehiculo, int legajoCliente, DateTime inicio, DateTime vencimiento, List<Pago> cuotas)
         {
             string query = "INSERT INTO Poliza (tipoCobertura, tipoVehiculo, adicionales, fechaInicio, fechaVencimiento, sumaAsegurada, " +
@@ -389,6 +392,7 @@ namespace FixedSegurosApp.Datos
             return nro;
         }
 
+        // Cargo los parámetros que usan el alta y la modificación de la póliza
         private static void CargarParametros(SqlCommand sql, Poliza poliza)
         {
             sql.Parameters.AddWithValue("@cobertura", poliza.TipoCobertura);
@@ -419,6 +423,7 @@ namespace FixedSegurosApp.Datos
             sql.ExecuteNonQuery();
         }
 
+        // Armo una Poliza con la fila que estoy leyendo (las columnas que pueden ser NULL las controlo con IsDBNull)
         private static Poliza LeerPoliza(SqlDataReader leer)
         {
             Poliza poliza = new Poliza()

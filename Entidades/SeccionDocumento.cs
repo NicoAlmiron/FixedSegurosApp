@@ -8,6 +8,7 @@ namespace FixedSegurosApp.Entidades
         public string Titulo { get; set; }
         public List<string[]> Filas { get; set; } = new List<string[]>();
 
+        // Agrego una fila al bloque
         public void Agregar(string dato, string valor)
         {
             Filas.Add(new string[] { dato, valor });

@@ -8,12 +8,13 @@ using System.Text;
 
 namespace FixedSegurosApp.Utilidades
 {
-    // Exporta los reportes a CSV y genera el PDF de la póliza, sin librerías externas.
+    // Exporto los reportes a CSV y armo el PDF de la póliza, sin usar librerías externas
     internal class Exportar
     {
         private const string ImpresoraPdf = "Microsoft Print to PDF";
 
-        // CSV separado por ";" y en UTF-8 con BOM: así Excel respeta las columnas y los acentos
+        // Guardo la sección del reporte en un CSV separado por ";" y en UTF-8 con BOM:
+        // así Excel respeta las columnas y los acentos
         public static bool GuardarCsv(string ruta, ReporteSeccion seccion, string periodo, out string mensaje)
         {
             mensaje = "";
@@ -50,7 +51,7 @@ namespace FixedSegurosApp.Utilidades
             }
         }
 
-        // Cada campo va entre comillas, por si el texto tiene ";"
+        // Armo una línea del CSV: cada campo va entre comillas, por si el texto tiene ";"
         private static string Linea(params string[] campos)
         {
             List<string> partes = new List<string>();
@@ -63,6 +64,7 @@ namespace FixedSegurosApp.Utilidades
             return string.Join(";", partes);
         }
 
+        // Me fijo si Windows tiene instalada la impresora "Microsoft Print to PDF"
         private static bool HayImpresoraPdf()
         {
             foreach (string impresora in PrinterSettings.InstalledPrinters)
@@ -75,8 +77,8 @@ namespace FixedSegurosApp.Utilidades
             return false;
         }
 
-        // Dibuja la póliza en una hoja A4 vertical y la imprime en la impresora de PDF de Windows.
-        // Se dibuja como texto, no como foto, así el PDF se ve nítido y se puede copiar.
+        // Dibujo la póliza en una hoja A4 vertical y la "imprimo" en la impresora de PDF de Windows.
+        // La dibujo como texto y no como foto, así el PDF se ve nítido y se puede copiar
         public static bool GuardarPoliza(string ruta, string numero, List<SeccionDocumento> secciones, out string mensaje)
         {
             mensaje = "";
@@ -119,6 +121,8 @@ namespace FixedSegurosApp.Utilidades
             }
         }
 
+        // Acá dibujo la hoja: Graphics es la hoja y escribo con coordenadas (x, y), como en una pantalla.
+        // La variable y me dice por dónde voy escribiendo; con MeasureString sé cuánto ocupa un texto largo para bajar
         private static void DibujarPoliza(Graphics hoja, Rectangle area, string numero, List<SeccionDocumento> secciones)
         {
             const int columnaValor = 190;

@@ -2,9 +2,9 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Una sola tabla para las pólizas:
-    // - "Ofrecida": la crea un Empleado/Administrador, todavía no tiene cliente ni vehículo.
-    // - "Vigente": la adquirió un cliente para uno de sus vehículos (es una copia de la ofrecida).
+    // Uso una sola tabla para las pólizas, y el estado me dice de qué tipo es:
+    // - "Ofrecida": la carga un empleado o el administrador; todavía no tiene cliente ni vehículo.
+    // - "Vigente": la contrató un cliente para uno de sus vehículos (es una copia de la ofrecida).
     // - "Baja": dada de baja.
     public class Poliza
     {
@@ -34,7 +34,7 @@ namespace FixedSegurosApp.Entidades
         public int IdVehiculo { get; set; }                 // 0 si es ofrecida
         public bool Suspendida { get; set; }                // la VTV del vehículo venció y no se renovó a tiempo
 
-        // ---------- Para mostrar en las grillas ----------
+        // ---------- Propiedades calculadas para mostrar en las grillas ----------
 
         public string NroTexto
         {
@@ -52,8 +52,8 @@ namespace FixedSegurosApp.Entidades
             get { return Cliente == "" ? "Sin asignar" : Cliente; }
         }
 
-        // Una vigente se muestra "Por vencer" si le quedan 30 días o menos, y "Vencida" si ya pasó la fecha.
-        // "Suspendida" no se guarda: sale de la VTV del vehículo y se levanta sola al aprobar la renovación.
+        // Una vigente la muestro "Por vencer" si le quedan 30 días o menos, y "Vencida" si ya pasó la fecha.
+        // "Suspendida" no la guardo: sale de la VTV del vehículo y se levanta sola cuando se aprueba la renovación
         public string EstadoMostrado
         {
             get
@@ -83,7 +83,7 @@ namespace FixedSegurosApp.Entidades
 
         // ---------- Cuotas ----------
 
-        // Cada cuántos meses se paga según el tipo de prima
+        // Cada cuántos meses se paga una cuota según el tipo de prima
         public int MesesPorCuota
         {
             get
@@ -107,7 +107,7 @@ namespace FixedSegurosApp.Entidades
             get { return Duracion / MesesPorCuota; }
         }
 
-        // Prima con el descuento aplicado
+        // El monto de cada cuota con el descuento ya aplicado
         public decimal MontoCuota
         {
             get { return Math.Round(Prima * (100 - Descuento) / 100, 2); }

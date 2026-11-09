@@ -7,12 +7,13 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Todo sobre un empleado (solo Administrador): sus datos, las pólizas que cargó o vendió,
-    // los siniestros que tiene a cargo y su historial. Es solo de consulta.
+    // Todo sobre un empleado (solo el administrador): sus datos, las pólizas que cargó o vendió,
+    // los siniestros que tiene a cargo y su historial. Es solo para consultar
     public partial class DetalleEmpleado : Form
     {
         private int legajoEmpleado;
 
+        // Recibo el legajo del empleado que hay que mostrar
         public DetalleEmpleado(int legajo)
         {
             InitializeComponent();
@@ -23,6 +24,7 @@ namespace FixedSegurosApp.Vistas
             dgv_historial.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void DetalleEmpleado_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_empleado);
@@ -35,6 +37,7 @@ namespace FixedSegurosApp.Vistas
             CargarPestanas();
         }
 
+        // Lleno la tarjeta de arriba con los datos del empleado y la etiqueta de su estado
         private void CargarEmpleado()
         {
             Empleado empleado = EmpleadoNegocio.BuscarPorLegajo(legajoEmpleado);
@@ -57,6 +60,7 @@ namespace FixedSegurosApp.Vistas
             lbl_datos3.Text = datos.Direccion + ", " + datos.Ciudad + ", " + datos.Provincia;
         }
 
+        // Cargo las tres grillas: pólizas, siniestros e historial
         private void CargarPestanas()
         {
             List<Poliza> polizas = EmpleadoNegocio.ListarPolizas(legajoEmpleado);
@@ -67,19 +71,19 @@ namespace FixedSegurosApp.Vistas
             dgv_siniestros.DataSource = siniestros;
             dgv_historial.DataSource = historial;
 
-            // el título de cada pestaña muestra cuántos registros tiene
+            // en el título de cada pestaña muestro cuántos registros tiene
             tab_polizas.Text = "Pólizas (" + polizas.Count + ")";
             tab_siniestros.Text = "Siniestros (" + siniestros.Count + ")";
             tab_historial.Text = "Historial (" + historial.Count + ")";
         }
 
-        // Las grillas son solo de consulta: ninguna fila queda elegida y el color del estado se ve siempre
+        // Las grillas son solo para consultar: dejo ninguna fila elegida, así el color del estado se ve siempre
         private void grilla_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             ((DataGridView)sender).ClearSelection();
         }
 
-        // Pinta las columnas de estado con el color que les corresponde
+        // Pinto las columnas de estado con su color
         private void grilla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             string columna = ((DataGridView)sender).Columns[e.ColumnIndex].Name;
@@ -91,6 +95,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Vuelvo a la pantalla Empleados, dentro de la ventana principal
         private void btn_volver_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Empleados());

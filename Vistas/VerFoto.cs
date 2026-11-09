@@ -9,6 +9,7 @@ namespace FixedSegurosApp.Vistas
     // Ventana para ver una foto en grande
     public partial class VerFoto : Form
     {
+        // Recibo el título y la foto a mostrar
         public VerFoto(string titulo, Image foto)
         {
             InitializeComponent();
@@ -17,7 +18,7 @@ namespace FixedSegurosApp.Vistas
             Estilos.BotonSecundario(btn_cerrar);
         }
 
-        // Abre los adjuntos de un reclamo de a uno: al cerrar una foto aparece la siguiente
+        // Abro los adjuntos de un reclamo de a uno: al cerrar una foto aparece la siguiente
         public static void MostrarAdjuntos(List<AdjuntoSiniestro> adjuntos, string expediente)
         {
             for (int i = 0; i < adjuntos.Count; i++)

@@ -7,25 +7,28 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Pantalla de siniestros del Empleado: arriba los reclamos, abajo la verificación de la documentación
-    // y a la derecha los datos. El empleado verifica, pasa a evaluación y carga el resultado de la aseguradora.
-    // "Nuevo reclamo" abre MisSiniestros para cargar uno en la oficina.
+    // Siniestros del empleado: arriba los reclamos, abajo la verificación de la documentación y a la derecha los datos.
+    // El empleado verifica, pasa a evaluación y carga el resultado de la aseguradora.
+    // "Nuevo reclamo" abre MisSiniestros para cargar uno en la oficina
     public partial class Siniestros : Form
     {
         private Siniestro siniestroActual;
         private int idInicial;      // Notificaciones abre la pantalla con el expediente ya elegido
 
+        // Constructor: preparo la grilla
         public Siniestros()
         {
             InitializeComponent();
             dgv_siniestros.AutoGenerateColumns = false;
         }
 
+        // Notificaciones abre la pantalla con un reclamo ya elegido
         public Siniestros(int idSiniestro) : this()
         {
             idInicial = idSiniestro;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Siniestros_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -53,17 +56,19 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Al cambiar el filtro de estado recargo la lista
         private void cb_estado_SelectedIndexChanged(object sender, EventArgs e)
         {
             CargarLista(0);
         }
 
+        // Abro la carga de un reclamo en la oficina
         private void btn_nuevo_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new MisSiniestros());
         }
 
-        // Carga la lista y deja elegido el reclamo idElegir (el primero si no está)
+        // Cargo la lista y dejo elegido el reclamo idElegir (el primero si no está)
         private void CargarLista(int idElegir)
         {
             List<Siniestro> siniestros = SiniestroNegocio.ListarSiniestros(cb_estado.Text);
@@ -90,6 +95,7 @@ namespace FixedSegurosApp.Vistas
             MostrarSiniestro(siniestros[fila]);
         }
 
+        // Cuando elijo un reclamo lo muestro
         private void dgv_siniestros_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_siniestros.SelectedRows.Count == 0)
@@ -135,6 +141,7 @@ namespace FixedSegurosApp.Vistas
             btn_cargar_formulario.Visible = false;
         }
 
+        // Muestro los datos del reclamo y habilito los botones según su estado
         private void MostrarSiniestro(Siniestro siniestro)
         {
             siniestroActual = siniestro;
@@ -203,6 +210,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Habilito o bloqueo el campo del monto
         private void PermitirMonto(bool editable)
         {
             txt_monto.ReadOnly = !editable;
@@ -212,27 +220,31 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Documentación =================
 
+        // Muestro las fotos del daño
         private void btn_ver_fotos_Click(object sender, EventArgs e)
         {
             MostrarAdjuntos("Foto");
         }
 
+        // Muestro la denuncia
         private void btn_ver_denuncia_Click(object sender, EventArgs e)
         {
             MostrarAdjuntos("Denuncia");
         }
 
+        // Muestro el formulario de la aseguradora
         private void btn_ver_formulario_Click(object sender, EventArgs e)
         {
             MostrarAdjuntos("Formulario");
         }
 
+        // Traigo los adjuntos del tipo pedido y los muestro de a uno
         private void MostrarAdjuntos(string tipo)
         {
             VerFoto.MostrarAdjuntos(SiniestroNegocio.ListarAdjuntos(siniestroActual.IdSiniestro, tipo), siniestroActual.ExpedienteTexto);
         }
 
-        // El formulario se elige y se guarda en el momento; el que había se reemplaza
+        // Elijo el formulario y lo guardo en el momento; el que había se reemplaza
         private void btn_cargar_formulario_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialogo = new OpenFileDialog();
@@ -255,7 +267,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Siniestros");
                     return;
                 }
                 fotos.Add(foto);
@@ -268,12 +280,13 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Siniestros");
             }
         }
 
         // ================= Cambios de estado =================
 
+        // Guardo las observaciones del empleado
         private void btn_guardar_observaciones_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -285,12 +298,13 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Siniestros");
             }
 
             CargarLista(id);
         }
 
+        // Paso el reclamo a evaluación, con los tres controles marcados
         private void btn_evaluar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -303,16 +317,17 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Siniestros");
             }
         }
 
+        // Registro que la aseguradora aprobó el reclamo, después de confirmar
         private void btn_aprobar_Click(object sender, EventArgs e)
         {
             string mensaje;
             int id = siniestroActual.IdSiniestro;
 
-            DialogResult respuesta = MessageBox.Show("¿Registrar que la aseguradora aprobó el expediente " + siniestroActual.ExpedienteTexto + "? No se puede deshacer.", "Aprobar reclamo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show("¿Registrar que la aseguradora aprobó el expediente " + siniestroActual.ExpedienteTexto + "? No se puede deshacer.", "Aprobar reclamo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (respuesta == DialogResult.Yes)
             {
                 if (SiniestroNegocio.Aprobar(siniestroActual, txt_monto.Text.Trim(), txt_observaciones.Text, out mensaje))
@@ -321,17 +336,18 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Aprobar reclamo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Aprobar reclamo");
                 }
             }
         }
 
+        // Rechazo el reclamo con motivo, después de confirmar
         private void btn_rechazar_Click(object sender, EventArgs e)
         {
             string mensaje;
             int id = siniestroActual.IdSiniestro;
 
-            DialogResult respuesta = MessageBox.Show("¿Rechazar el expediente " + siniestroActual.ExpedienteTexto + "? No se puede deshacer.", "Rechazar reclamo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show("¿Rechazar el expediente " + siniestroActual.ExpedienteTexto + "? No se puede deshacer.", "Rechazar reclamo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (respuesta == DialogResult.Yes)
             {
                 if (SiniestroNegocio.Rechazar(siniestroActual, txt_observaciones.Text, out mensaje))
@@ -340,12 +356,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Rechazar reclamo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Rechazar reclamo");
                 }
             }
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_siniestros_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

@@ -6,17 +6,18 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
-    // Las consultas reciben el legajo del cliente: así cada cliente solo ve y modifica SUS vehículos.
+    // Consultas de vehículos y sus fotos. Reciben el legajo del cliente: así cada cliente solo ve y modifica SUS vehículos.
     // Empleados y administradores usan las mismas consultas pasando el legajo del cliente que están mirando.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class VehiculoDatos
     {
-        // Vehículo (alias v) con el servicio suspendido: misma regla que Vehiculo.ServicioSuspendido
+        // Condición SQL de "servicio suspendido" para el vehículo (alias v): la misma regla que Vehiculo.ServicioSuspendido
         public const string Suspendido = "(v.vigenciaVtv < CAST(GETDATE() AS DATE) AND (v.fechaEnvioVtv IS NULL OR CAST(v.fechaEnvioVtv AS DATE) > v.vigenciaVtv))";
 
-        // Foto de la VTV que espera la revisión de un empleado
+        // Nombre de la foto de la VTV nueva, que espera la revisión de un empleado
         public const string FotoVtvNueva = "VTV nueva";
 
-        // Columnas que usan ListarVehiculos y BuscarPorId (en el mismo orden que LeerVehiculo).
+        // Columnas que usan ListarVehiculos y BuscarPorId (mismo orden que LeerVehiculo)
         private const string columnas = "SELECT v.idVehiculo, v.dominio, v.marca, v.modelo, v.anio, v.tipoVehiculo, v.vigenciaVtv, " +
                                         "v.numeroChasis, v.numeroMotor, " +
                                         "ISNULL((SELECT TOP 1 nroPoliza FROM Poliza WHERE idVehiculo = v.idVehiculo AND estado = 'Vigente'), 0), " +
@@ -26,6 +27,7 @@ namespace FixedSegurosApp.Datos
                                         "JOIN Cliente c ON c.idCliente = v.idCliente " +
                                         "LEFT JOIN Persona r ON r.idPersona = v.idRevisor ";
 
+        // Los vehículos de un cliente
         public static List<Vehiculo> ListarVehiculos(int legajoCliente)
         {
             List<Vehiculo> lista = new List<Vehiculo>();
@@ -59,7 +61,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Devuelve null si el vehículo no existe o no es de ese cliente
+        // Busco un vehículo; null si no existe o no es de ese cliente
         public static Vehiculo BuscarPorId(int idVehiculo, int legajoCliente)
         {
             Vehiculo vehiculo = null;
@@ -94,7 +96,7 @@ namespace FixedSegurosApp.Datos
             return vehiculo;
         }
 
-        // Las fotos de un vehículo. Se piden aparte porque pesan: solo cuando se elige un vehículo.
+        // Las fotos de un vehículo. Las pido aparte porque pesan: solo cuando se elige un vehículo
         public static List<FotoVehiculo> ListarFotos(int idVehiculo)
         {
             List<FotoVehiculo> lista = new List<FotoVehiculo>();
@@ -133,7 +135,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Devuelve true si otro vehículo (distinto de idActual) ya tiene ese dominio. Para uno nuevo se pasa 0.
+        // true si otro vehículo (distinto de idActual) ya tiene ese dominio. Para uno nuevo paso 0
         public static bool ExisteDominio(string dominio, int idActual)
         {
             bool existe = false;
@@ -165,8 +167,8 @@ namespace FixedSegurosApp.Datos
             return existe;
         }
 
-        // Guarda el vehículo (queda Pendiente de revisión) y sus fotos en una transacción:
-        // si algo falla no se guarda nada. Devuelve el id nuevo, o 0 si no se pudo guardar.
+        // Guardo el vehículo (queda Pendiente de revisión) y sus fotos en una transacción:
+        // si algo falla no se guarda nada. Devuelvo el id nuevo, o 0 si no se pudo guardar
         public static int CrearVehiculo(Vehiculo vehiculo, List<FotoVehiculo> fotos, int legajoCliente)
         {
             int id = 0;
@@ -202,7 +204,7 @@ namespace FixedSegurosApp.Datos
             return id;
         }
 
-        // Inserta el vehículo (Pendiente) usando una conexión y transacción ya abiertas. Devuelve el id nuevo.
+        // Inserto el vehículo (Pendiente) con una conexión y transacción que ya vienen abiertas. Devuelvo el id nuevo
         public static int InsertarVehiculo(SqlConnection con, SqlTransaction transaccion, Vehiculo vehiculo, int legajoCliente)
         {
             string query = "INSERT INTO Vehiculo (dominio, marca, modelo, anio, tipoVehiculo, vigenciaVtv, numeroChasis, numeroMotor, idCliente) " +
@@ -217,8 +219,8 @@ namespace FixedSegurosApp.Datos
             return Convert.ToInt32(sql.ExecuteScalar());
         }
 
-        // Modifica el vehículo y reemplaza sus fotos. Vuelve a quedar Pendiente de revisión.
-        // No toca vehículos aprobados (la condición está en el WHERE).
+        // Modifico el vehículo y reemplazo sus fotos; vuelve a quedar Pendiente de revisión.
+        // No toco vehículos aprobados (la condición está en el WHERE)
         public static bool EditarVehiculo(Vehiculo vehiculo, List<FotoVehiculo> fotos, int legajoCliente)
         {
             bool estado = false;
@@ -274,7 +276,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Borra las fotos y el vehículo (en una transacción)
+        // Borro las fotos y el vehículo, en una transacción
         public static bool EliminarVehiculo(int idVehiculo, int legajoCliente)
         {
             bool estado = false;
@@ -323,7 +325,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Aprobado o Rechazado por un empleado / administrador. Solo se revisan los que están Pendientes.
+        // Aprobado o Rechazado por un empleado o administrador. Solo reviso los que están Pendientes
         public static bool CambiarRevision(int idVehiculo, string estadoRevision, string observacion, int legajoRevisor)
         {
             bool estado = false;
@@ -346,7 +348,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Lo mismo, usando una conexión y transacción ya abiertas (la usa el alta en oficina)
+        // Lo mismo, con una conexión y transacción que ya vienen abiertas (lo usa el Alta en oficina)
         public static bool CambiarRevision(SqlConnection con, SqlTransaction transaccion, int idVehiculo, string estadoRevision, string observacion, int legajoRevisor)
         {
             string query = "UPDATE Vehiculo SET estadoRevision = @estado, observacionRevision = @observacion, " +
@@ -393,8 +395,8 @@ namespace FixedSegurosApp.Datos
             return tiene;
         }
 
-        // El cliente envía la VTV renovada: la vigencia y la foto quedan aparte hasta que un empleado las revise.
-        // Solo vehículos aprobados y sin otra renovación en espera (la condición está en el WHERE).
+        // El cliente manda la VTV renovada: la vigencia y la foto quedan aparte hasta que un empleado las revise.
+        // Solo vehículos aprobados y sin otra renovación en espera (la condición está en el WHERE)
         public static bool EnviarVtv(int idVehiculo, DateTime vigencia, byte[] foto, int legajoCliente)
         {
             bool estado = false;
@@ -501,7 +503,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // La renovación rechazada se descarta y queda el motivo para el cliente
+        // La renovación rechazada se descarta y queda el motivo para que lo vea el cliente
         public static bool RechazarVtv(int idVehiculo, string motivo, int legajoRevisor)
         {
             bool estado = false;
@@ -554,7 +556,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Inserta cada foto usando la misma conexión y transacción del vehículo
+        // Inserto cada foto con la misma conexión y transacción del vehículo. El tamaño -1 del parámetro significa VARBINARY(MAX)
         public static void GuardarFotos(SqlConnection con, SqlTransaction transaccion, int idVehiculo, List<FotoVehiculo> fotos)
         {
             foreach (FotoVehiculo foto in fotos)
@@ -567,6 +569,7 @@ namespace FixedSegurosApp.Datos
             }
         }
 
+        // Parámetros comunes del alta y la modificación del vehículo
         private static void CargarParametros(SqlCommand sql, Vehiculo vehiculo)
         {
             sql.Parameters.AddWithValue("@dominio", vehiculo.Dominio);
@@ -579,6 +582,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@motor", vehiculo.NumeroMotor);
         }
 
+        // Armo un Vehiculo con la fila que estoy leyendo
         private static Vehiculo LeerVehiculo(SqlDataReader leer)
         {
             Vehiculo vehiculo = new Vehiculo()

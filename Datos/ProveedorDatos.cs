@@ -6,16 +6,19 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de Proveedores (aseguradoras). Alta y modificación van por procedimientos almacenados
+    // porque tocan tres tablas: Proveedor, Direccion y Contacto.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class ProveedorDatos
     {
-        // Columnas que usan ListarProveedores y BuscarPorId (en el mismo orden que LeerProveedor)
+        // Columnas que usan ListarProveedores y BuscarPorId (mismo orden que LeerProveedor)
         private const string columnas = "SELECT pr.idProveedor, pr.nombre, pr.registroSSN, pr.cuit, pr.tiposSeguro, " +
                                         "c.telefono, c.email, c.sitioWeb, d.calle, d.ciudad, d.provincia, pr.fechaAlta, pr.activo " +
                                         "FROM Proveedor pr " +
                                         "JOIN Direccion d ON d.idDireccion = pr.idDireccion " +
                                         "JOIN Contacto c ON c.idContacto = pr.idContacto ";
 
-        // Lista para la grilla. Si "buscar" tiene texto, filtra por nombre, CUIT o registro SSN.
+        // Lista para la grilla. Si "buscar" tiene texto, filtro por nombre, CUIT o registro SSN
         public static List<Proveedor> ListarProveedores(string buscar)
         {
             List<Proveedor> lista = new List<Proveedor>();
@@ -54,6 +57,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Busco una aseguradora por id; null si no existe
         public static Proveedor BuscarPorId(int idProveedor)
         {
             Proveedor proveedor = null;
@@ -87,7 +91,7 @@ namespace FixedSegurosApp.Datos
             return proveedor;
         }
 
-        // Devuelve true si otra aseguradora (distinta de idActual) ya tiene ese CUIT. Para una nueva se pasa 0.
+        // true si otra aseguradora (distinta de idActual) ya tiene ese CUIT. Para una nueva paso 0
         public static bool ExisteCuit(string cuit, int idActual)
         {
             bool existe = false;
@@ -119,7 +123,7 @@ namespace FixedSegurosApp.Datos
             return existe;
         }
 
-        // Alta con sp_CrearProveedor. Devuelve el id nuevo, o 0 si no se pudo guardar.
+        // Alta con sp_CrearProveedor. Devuelvo el id nuevo, o 0 si no se pudo guardar
         public static int CrearProveedor(Proveedor proveedor)
         {
             int id = 0;
@@ -146,7 +150,7 @@ namespace FixedSegurosApp.Datos
             return id;
         }
 
-        // Modificacion con sp_EditarProveedor
+        // Modificación con sp_EditarProveedor
         public static bool EditarProveedor(Proveedor proveedor)
         {
             bool estado = false;
@@ -175,7 +179,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Activa (true) o da de baja (false) a la aseguradora
+        // Activo (true) o doy de baja (false) a la aseguradora; la baja es reversible
         public static bool CambiarActivo(int idProveedor, bool activo)
         {
             bool estado = false;
@@ -207,7 +211,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Parametros comunes de sp_CrearProveedor y sp_EditarProveedor
+        // Parámetros comunes de sp_CrearProveedor y sp_EditarProveedor
         private static void CargarParametros(SqlCommand sql, Proveedor proveedor)
         {
             sql.Parameters.AddWithValue("@nombre", proveedor.Nombre);
@@ -222,7 +226,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@sitioWeb", proveedor.SitioWeb);
         }
 
-        // Arma un Proveedor con la fila actual del lector
+        // Armo un Proveedor con la fila que estoy leyendo
         private static Proveedor LeerProveedor(SqlDataReader leer)
         {
             Proveedor proveedor = new Proveedor()

@@ -2,8 +2,8 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Reclamo que inicia un cliente sobre una de sus pólizas.
-    // Pendiente -> En evaluación -> Aprobado / Rechazado (desde Pendiente también se puede rechazar).
+    // Un reclamo que hace un cliente sobre una de sus pólizas.
+    // Recorrido: Pendiente -> En evaluación -> Aprobado / Rechazado (desde Pendiente también se puede rechazar)
     public class Siniestro
     {
         public int IdSiniestro { get; set; }        // N° de expediente
@@ -37,7 +37,7 @@ namespace FixedSegurosApp.Entidades
             get { return NroPoliza.ToString("000000"); }
         }
 
-        // Solo un reclamo que todavía no se revisó se puede corregir
+        // El cliente solo puede corregir un reclamo que todavía no se revisó
         public bool EsPendiente
         {
             get { return Estado == "Pendiente"; }

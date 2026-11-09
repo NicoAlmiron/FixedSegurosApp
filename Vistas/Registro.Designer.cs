@@ -46,6 +46,8 @@
             this.txt_contrasena = new System.Windows.Forms.TextBox();
             this.lbl_repetir = new System.Windows.Forms.Label();
             this.txt_repetir = new System.Windows.Forms.TextBox();
+            this.lbl_matricula = new System.Windows.Forms.Label();
+            this.txt_matricula = new System.Windows.Forms.TextBox();
             this.pnl_cabecera.SuspendLayout();
             this.pnl_pie.SuspendLayout();
             this.SuspendLayout();
@@ -332,6 +334,27 @@
             this.txt_repetir.TabIndex = 10;
             this.txt_repetir.UseSystemPasswordChar = true;
             //
+            // lbl_matricula
+            //
+            this.lbl_matricula.AutoSize = true;
+            this.lbl_matricula.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(91)))), ((int)(((byte)(107)))), ((int)(((byte)(127)))));
+            this.lbl_matricula.Location = new System.Drawing.Point(32, 484);
+            this.lbl_matricula.Name = "lbl_matricula";
+            this.lbl_matricula.Size = new System.Drawing.Size(183, 15);
+            this.lbl_matricula.Text = "Matrícula de agente productor";
+            this.lbl_matricula.Visible = false;
+            //
+            // txt_matricula
+            //
+            this.txt_matricula.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txt_matricula.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txt_matricula.Location = new System.Drawing.Point(32, 506);
+            this.txt_matricula.MaxLength = 50;
+            this.txt_matricula.Name = "txt_matricula";
+            this.txt_matricula.Size = new System.Drawing.Size(496, 25);
+            this.txt_matricula.TabIndex = 11;
+            this.txt_matricula.Visible = false;
+            //
             // Registro
             //
             this.AcceptButton = this.btn_registrarme;
@@ -340,6 +363,8 @@
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(246)))), ((int)(((byte)(250)))));
             this.CancelButton = this.btn_cancelar;
             this.ClientSize = new System.Drawing.Size(560, 580);
+            this.Controls.Add(this.txt_matricula);
+            this.Controls.Add(this.lbl_matricula);
             this.Controls.Add(this.txt_repetir);
             this.Controls.Add(this.lbl_repetir);
             this.Controls.Add(this.txt_contrasena);
@@ -414,5 +439,7 @@
         private System.Windows.Forms.TextBox txt_contrasena;
         private System.Windows.Forms.Label lbl_repetir;
         private System.Windows.Forms.TextBox txt_repetir;
+        private System.Windows.Forms.Label lbl_matricula;
+        private System.Windows.Forms.TextBox txt_matricula;
     }
 }

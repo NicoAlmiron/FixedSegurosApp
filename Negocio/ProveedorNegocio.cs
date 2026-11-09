@@ -5,19 +5,23 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de Proveedores (aseguradoras), solo el administrador.
+    // Negocio valida lo que llega de la pantalla, aplica las reglas, llama a Datos y registra la acción en el historial. No escribe SQL.
     internal class ProveedorNegocio
     {
+        // Lista para la grilla con el texto de búsqueda
         public static List<Proveedor> ListarProveedores(string buscar)
         {
             return ProveedorDatos.ListarProveedores(buscar.Trim());
         }
 
+        // Una aseguradora por id
         public static Proveedor BuscarPorId(int idProveedor)
         {
             return ProveedorDatos.BuscarPorId(idProveedor);
         }
 
-        // Si proveedor.IdProveedor es 0 la crea; si no, guarda los cambios.
+        // Si proveedor.IdProveedor es 0 la creo; si no, guardo los cambios. Antes valido todos los datos
         public static bool GuardarProveedor(Proveedor proveedor, out string mensaje)
         {
             mensaje = "";
@@ -30,7 +34,7 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            // CUIT: 11 números, con o sin guiones. Se guarda siempre como 30-12345678-9
+            // CUIT: 11 números, con o sin guiones. Lo guardo siempre como 30-12345678-9
             string cuitNumeros = proveedor.Cuit.Replace("-", "");
             if (cuitNumeros.Length != 11 || !SoloNumeros(cuitNumeros))
             {
@@ -84,7 +88,7 @@ namespace FixedSegurosApp.Negocio
         }
 
         // Activa -> Inactiva (dar de baja) o Inactiva -> Activa (reactivar).
-        // Una aseguradora inactiva no puede ofrecer pólizas nuevas.
+        // Una aseguradora inactiva no puede ofrecer pólizas nuevas
         public static bool DarDeBajaOReactivar(Proveedor proveedor)
         {
             bool nuevoEstado = !proveedor.Activo;
@@ -98,11 +102,13 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Dejo la acción en el historial, en el módulo Proveedores
         private static void Registrar(string accion, string nombre)
         {
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Proveedores", accion, nombre);
         }
 
+        // true si el texto tiene solo dígitos
         private static bool SoloNumeros(string texto)
         {
             foreach (char c in texto)

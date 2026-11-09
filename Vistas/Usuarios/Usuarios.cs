@@ -8,12 +8,15 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
+    // Pantalla Usuarios: el administrador crea, modifica, suspende, da de baja y restablece contraseñas.
+    // El empleado solo ve los clientes, sin poder modificarlos
     public partial class Usuarios : Form
     {
         private BindingList<Persona> listaUsuarios = new BindingList<Persona>();
         private Persona usuarioSeleccionado;   // null = se esta cargando un usuario nuevo
         private bool soloLectura;              // el Empleado solo puede consultar
 
+        // Conecto la grilla con la lista
         public Usuarios()
         {
             InitializeComponent();
@@ -21,6 +24,7 @@ namespace FixedSegurosApp.Vistas
             dgv_usuarios.DataSource = listaUsuarios;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Usuarios_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -48,11 +52,13 @@ namespace FixedSegurosApp.Vistas
             CargarDatos();
         }
 
+        // Vuelvo a buscar los usuarios con el texto del buscador
         public void CargarDatos()
         {
             CargarLista(UsuarioNegocio.ListarUsuarios(txt_buscar.Text));
         }
 
+        // Paso el resultado a la lista que muestra la grilla
         private void CargarLista(List<Persona> resultado)
         {
             listaUsuarios.Clear();
@@ -68,7 +74,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Al elegir una fila se muestran sus datos a la derecha
+        // Cuando elijo una fila muestro sus datos a la derecha
         private void dgv_usuarios_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_usuarios.SelectedRows.Count == 0)
@@ -80,6 +86,7 @@ namespace FixedSegurosApp.Vistas
             MostrarUsuario(UsuarioNegocio.BuscarPorLegajo(fila.Legajo));
         }
 
+        // Lleno el panel de la derecha con el usuario y muestro solo los botones que corresponden
         private void MostrarUsuario(Persona usuario)
         {
             usuarioSeleccionado = usuario;
@@ -121,7 +128,7 @@ namespace FixedSegurosApp.Vistas
             btn_detalle_cliente.Visible = usuario.Perfil == "Cliente";
         }
 
-        // Muestra u oculta los botones que modifican al usuario (el Empleado nunca los ve)
+        // Muestro u oculto los botones que modifican al usuario (el empleado nunca los ve)
         private void HabilitarAcciones(bool habilitar)
         {
             bool mostrar = habilitar && !soloLectura;
@@ -133,7 +140,7 @@ namespace FixedSegurosApp.Vistas
             btn_guardar.Visible = mostrar;
         }
 
-        // Deja el panel de la derecha vacio para cargar un usuario nuevo
+        // Dejo el panel de la derecha vacío para cargar un usuario nuevo
         private void LimpiarDetalle()
         {
             usuarioSeleccionado = null;
@@ -177,6 +184,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Busco la fila del legajo y la dejo elegida
         private void SeleccionarFila(int legajo)
         {
             foreach (DataGridViewRow fila in dgv_usuarios.Rows)
@@ -189,11 +197,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Busco mientras se escribe
         private void txt_buscar_TextChanged(object sender, EventArgs e)
         {
             CargarDatos();
         }
 
+        // Botón Nuevo usuario
         private void btn_nuevo_Click(object sender, EventArgs e)
         {
             dgv_usuarios.ClearSelection();
@@ -201,6 +211,7 @@ namespace FixedSegurosApp.Vistas
             txt_nombre.Focus();
         }
 
+        // Guardo el usuario (nuevo o modificado). Uno nuevo arranca con su DNI como contraseña
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -237,10 +248,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Usuarios");
             }
         }
 
+        // Descarto los cambios y vuelvo a mostrar lo guardado
         private void btn_descartar_Click(object sender, EventArgs e)
         {
             if (usuarioSeleccionado != null)
@@ -253,6 +265,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Suspendo o reactivo al usuario, después de confirmar
         private void btn_suspender_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -265,12 +278,12 @@ namespace FixedSegurosApp.Vistas
 
             string accion = usuarioSeleccionado.Estado == "Suspendido" ? "reactivar" : "suspender";
 
-            DialogResult respuesta = MessageBox.Show("¿Está seguro que quiere " + accion + " a " + usuarioSeleccionado.ApellidoYNombre + "?", "Usuarios", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show("¿Está seguro que quiere " + accion + " a " + usuarioSeleccionado.ApellidoYNombre + "?", "Usuarios", MessageBoxButtons.YesNo, accion == "suspender" ? MessageBoxIcon.Warning : MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
             {
                 if (!UsuarioNegocio.SuspenderOReactivar(usuarioSeleccionado, out mensaje))
                 {
-                    MessageBox.Show(mensaje, "Usuarios", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Usuarios");
                 }
                 int legajo = usuarioSeleccionado.Legajo;
                 CargarDatos();
@@ -278,6 +291,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Doy de baja al usuario: pido el motivo, que es obligatorio
         private void btn_baja_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -288,14 +302,14 @@ namespace FixedSegurosApp.Vistas
                 return;
             }
 
-            // InputBox: ventanita para escribir un texto (si se cancela devuelve "")
+            // InputBox (de Visual Basic): ventanita para escribir un texto; si se cancela devuelve ""
             string motivo = Microsoft.VisualBasic.Interaction.InputBox(
                 "Va a dar de baja a " + usuarioSeleccionado.ApellidoYNombre + ". Esta acción no se puede revertir.\n\nIndique el motivo de la baja:",
                 "Dar de baja");
 
             if (!UsuarioNegocio.DarDeBaja(usuarioSeleccionado, motivo, out mensaje))
             {
-                MessageBox.Show(mensaje, "Dar de baja", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Dar de baja");
                 return;
             }
 
@@ -304,6 +318,7 @@ namespace FixedSegurosApp.Vistas
             SeleccionarFila(legajo);
         }
 
+        // Restablezco la contraseña: vuelve a ser el DNI del usuario
         private void btn_restablecer_Click(object sender, EventArgs e)
         {
             if (usuarioSeleccionado == null)
@@ -322,17 +337,18 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Restablecer contraseña", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Restablecer contraseña");
                 }
             }
         }
 
+        // Abro el detalle del cliente elegido
         private void btn_detalle_cliente_Click(object sender, EventArgs e)
         {
             AbrirDetalleCliente();
         }
 
-        // Doble clic en la fila de un cliente: abre su detalle
+        // Con doble clic en la fila de un cliente también abro su detalle
         private void dgv_usuarios_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -341,6 +357,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro el detalle dentro de la ventana principal (solo para clientes)
         private void AbrirDetalleCliente()
         {
             if (usuarioSeleccionado == null || usuarioSeleccionado.Perfil != "Cliente")
@@ -350,13 +367,14 @@ namespace FixedSegurosApp.Vistas
             ((Principal)this.ParentForm).AbrirForm(new DetalleCliente(usuarioSeleccionado.Legajo));
         }
 
+        // Abro el historial de acciones
         private void btn_historial_Click(object sender, EventArgs e)
         {
             // ParentForm es la ventana Principal que contiene a esta pantalla
             ((Principal)this.ParentForm).AbrirForm(new HistorialAcciones());
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_usuarios_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)
@@ -374,7 +392,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // El Empleado puede ver los usuarios pero no modificarlos
+        // El empleado puede ver los usuarios pero no modificarlos: bloqueo los campos y oculto los botones
         private void ModoSoloLectura()
         {
             btn_nuevo.Visible = false;

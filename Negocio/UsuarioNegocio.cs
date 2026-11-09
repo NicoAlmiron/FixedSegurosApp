@@ -8,9 +8,11 @@ using System.Text;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de usuarios: inicio de sesión, contraseñas, la pantalla Usuarios, Mi cuenta y el historial.
+    // Negocio valida lo que llega de la pantalla, aplica las reglas, llama a Datos y registra la acción en el historial. No escribe SQL.
     internal class UsuarioNegocio
     {
-        // Texto del cartel de la barra inferior: versión del sistema y servidor al que se conecta
+        // Texto del cartel de la barra inferior: la versión del sistema y el servidor al que se conecta
         public static string TextoServidor(out bool conectado)
         {
             conectado = Conexion.ProbarConexion();
@@ -18,10 +20,10 @@ namespace FixedSegurosApp.Negocio
             return "Versión " + Sesion.Version + "   ·   Servidor: " + Conexion.NombreServidor() + (conectado ? " (conectado)" : " (sin conexión)");
         }
 
-        // ================= Sesion =================
+        // ================= Sesión =================
 
-        // Valida los datos, busca el usuario y, si todo esta bien, lo guarda en la Sesion.
-        // Devuelve true si pudo ingresar; si no, en "mensaje" queda el motivo.
+        // Controlo los datos, busco al usuario y, si está todo bien, lo guardo en la Sesion.
+        // Devuelvo true si pudo entrar; si no, en "mensaje" queda el motivo
         public static bool IniciarSesion(string dniTexto, string contrasena, out string mensaje)
         {
             mensaje = "";
@@ -45,7 +47,7 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            Persona usuario = UsuarioDatos.BuscarPorCredenciales(dni, HashMD5(contrasena));
+            Persona usuario = Autenticar(dni, contrasena);
 
             if (usuario == null)
             {
@@ -84,6 +86,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Registro la salida en el historial y borro la sesión
         public static void CerrarSesion()
         {
             if (Sesion.UsuarioActual != null)
@@ -95,18 +98,20 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Pantalla Usuarios =================
 
+        // Lista para la grilla. El empleado solo ve clientes
         public static List<Persona> ListarUsuarios(string buscar)
         {
             return UsuarioDatos.ListarUsuarios(buscar.Trim(), Sesion.UsuarioActual.Perfil == "Empleado");
         }
 
+        // Todos los datos de un usuario
         public static Persona BuscarPorLegajo(int legajo)
         {
             return UsuarioDatos.BuscarPorLegajo(legajo);
         }
 
-        // Si usuario.Legajo es 0 lo crea; si no, guarda los cambios.
-        // Un usuario nuevo tiene como contraseña inicial su DNI.
+        // Si usuario.Legajo es 0 lo creo; si no, guardo los cambios.
+        // Un usuario nuevo tiene como contraseña inicial su DNI (guardada como hash con su sal)
         public static bool GuardarUsuario(Persona usuario, string dniTexto, out string mensaje)
         {
             if (!ValidarDatos(usuario, dniTexto, out mensaje))
@@ -116,7 +121,8 @@ namespace FixedSegurosApp.Negocio
 
             if (usuario.Legajo == 0)
             {
-                usuario.Legajo = UsuarioDatos.CrearUsuario(usuario, HashMD5(usuario.Dni.ToString()));
+                string sal = GenerarSal();
+                usuario.Legajo = UsuarioDatos.CrearUsuario(usuario, HashConSal(usuario.Dni.ToString(), sal), sal);
 
                 if (usuario.Legajo == 0)
                 {
@@ -146,7 +152,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Activo -> Suspendido, Suspendido -> Activo
+        // Activo -> Suspendido o Suspendido -> Activo
         public static bool SuspenderOReactivar(Persona usuario, out string mensaje)
         {
             if (!PuedeCambiarEstado(usuario, out mensaje))
@@ -168,7 +174,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Baja definitiva: guarda la fecha de baja y el motivo. No se puede revertir.
+        // Baja definitiva: guardo la fecha de baja y el motivo. No se puede revertir
         public static bool DarDeBaja(Persona usuario, string motivo, out string mensaje)
         {
             if (!PuedeCambiarEstado(usuario, out mensaje))
@@ -192,7 +198,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // La contraseña vuelve a ser el DNI del usuario
+        // La contraseña vuelve a ser el DNI del usuario, con una sal nueva
         public static bool RestablecerContrasena(Persona usuario, out string mensaje)
         {
             mensaje = "";
@@ -203,7 +209,8 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            if (!UsuarioDatos.CambiarContrasena(usuario.Legajo, HashMD5(usuario.Dni.ToString())))
+            string sal = GenerarSal();
+            if (!UsuarioDatos.CambiarContrasena(usuario.Legajo, HashConSal(usuario.Dni.ToString(), sal), sal))
             {
                 mensaje = "No se pudo restablecer la contraseña.";
                 return false;
@@ -215,13 +222,14 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Mi cuenta =================
 
-        // Sigue con la contraseña inicial: los usuarios creados por el administrador o en la oficina arrancan con su DNI
+        // true si sigue con la contraseña inicial: los usuarios creados por el administrador o en la oficina arrancan con su DNI
         public static bool TieneContrasenaInicial()
         {
             int dni = Sesion.UsuarioActual.Dni;
-            return UsuarioDatos.BuscarPorCredenciales(dni, HashMD5(dni.ToString())) != null;
+            return Autenticar(dni, dni.ToString()) != null;
         }
 
+        // Cambio la contraseña de quien inició sesión: controlo la actual y las reglas de la nueva (mínimo 6, distinta, no el DNI)
         public static bool CambiarContrasena(string actual, string nueva, string repetir, out string mensaje)
         {
             mensaje = "";
@@ -233,7 +241,7 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            if (UsuarioDatos.BuscarPorCredenciales(usuario.Dni, HashMD5(actual)) == null)
+            if (Autenticar(usuario.Dni, actual) == null)
             {
                 mensaje = "La contraseña actual no es correcta.";
                 return false;
@@ -263,7 +271,8 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            if (!UsuarioDatos.CambiarContrasena(usuario.Legajo, HashMD5(nueva)))
+            string sal = GenerarSal();
+            if (!UsuarioDatos.CambiarContrasena(usuario.Legajo, HashConSal(nueva, sal), sal))
             {
                 mensaje = "No se pudo cambiar la contraseña.";
                 return false;
@@ -273,8 +282,8 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Cada usuario corrige sus datos de contacto; el administrador además su nombre y matrícula.
-        // El DNI no se cambia: es el usuario para iniciar sesión.
+        // Cada usuario corrige sus datos de contacto; el administrador además su nombre y su matrícula.
+        // El DNI no se cambia: es el usuario para iniciar sesión
         public static bool GuardarMisDatos(string nombre, string apellido, string provincia, string ciudad, string direccion, string telefono, string email, string matricula, out string mensaje)
         {
             mensaje = "";
@@ -306,7 +315,7 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            // el menú lateral muestra el nombre de la sesión
+            // actualizo la sesión, porque el menú lateral muestra el nombre
             Sesion.UsuarioActual.Nombre = usuario.Nombre;
             Sesion.UsuarioActual.Apellido = usuario.Apellido;
 
@@ -316,14 +325,15 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Historial de acciones =================
 
+        // Historial de acciones con los filtros de la pantalla
         public static List<Accion> ListarAcciones(string usuario, string modulo, DateTime desde, DateTime hasta)
         {
             return AccionDatos.ListarAcciones(usuario.Trim(), modulo, desde, hasta);
         }
 
-        // ================= Validaciones (las usa tambien el Registro de clientes) =================
+        // ================= Validaciones (las usa también el Registro) =================
 
-        // Controla los datos personales y, si estan bien, carga el DNI en "usuario".
+        // Controlo los datos personales y, si están bien, cargo el DNI en "usuario"
         public static bool ValidarDatos(Persona usuario, string dniTexto, out string mensaje)
         {
             mensaje = "";
@@ -381,30 +391,70 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Convierte la contraseña en un texto de 32 caracteres (hash MD5).
-        // Asi en la base nunca se guarda la contraseña real.
-        public static string HashMD5(string texto)
-        {
-            MD5 md5 = MD5.Create();
-            byte[] bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(texto));
+        // ================= Contraseñas con hash y sal ================
 
-            StringBuilder hash = new StringBuilder();
-            foreach (byte b in bytes)
+        private const int Vueltas = 10000;   // PBKDF2 repite el cálculo 10.000 veces: así adivinar por fuerza bruta es muy lento
+
+        // Genero 16 bytes al azar y los paso a texto (Base64) para guardarlos en la base
+        public static string GenerarSal()
+        {
+            byte[] sal = new byte[16];
+
+            using (RNGCryptoServiceProvider azar = new RNGCryptoServiceProvider())
             {
-                hash.Append(b.ToString("x2"));
+                azar.GetBytes(sal);
             }
 
-            return hash.ToString();
+            return Convert.ToBase64String(sal);
+        }
+
+        // Calculo el hash de la contraseña mezclada con la sal (PBKDF2 con SHA-256) y lo devuelvo como texto
+        public static string HashConSal(string contrasena, string sal)
+        {
+            using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(contrasena, Convert.FromBase64String(sal), Vueltas, HashAlgorithmName.SHA256))
+            {
+                return Convert.ToBase64String(pbkdf2.GetBytes(32));
+            }
+        }
+
+        // Para saber si la contraseña es correcta vuelvo a calcular el hash con la sal guardada y comparo
+        public static bool VerificarContrasena(string contrasena, string hashGuardado, string sal)
+        {
+            return HashConSal(contrasena, sal) == hashGuardado;
+        }
+
+        // Busco al usuario por DNI y controlo la contraseña. Si no existe o la contraseña no coincide, devuelvo null
+        private static Persona Autenticar(int dni, string contrasena)
+        {
+            string hashGuardado;
+            string sal;
+            Persona usuario = UsuarioDatos.BuscarParaLogin(dni, out hashGuardado, out sal);
+
+            if (usuario == null || !VerificarContrasena(contrasena, hashGuardado, sal))
+            {
+                return null;
+            }
+
+            return usuario;
+        }
+
+        // ================= Primer usuario =================
+
+        // Si la base está vacía, el primero que se registra es el administrador.
+        // Si no hay conexión (ContarUsuarios devuelve -1) digo que sí hay, para no ofrecer crear un administrador de más.
+        public static bool HayUsuarios()
+        {
+            return UsuarioDatos.ContarUsuarios() != 0;
         }
 
         // ================= Auxiliares =================
 
-        // No se puede suspender ni dar de baja a uno mismo ni a alguien ya dado de baja
+        // No se puede suspender ni dar de baja a un administrador, a uno mismo ni a alguien ya dado de baja
         private static bool PuedeCambiarEstado(Persona usuario, out string mensaje)
         {
             mensaje = "";
 
-            // se consulta la base: el perfil que llega desde la pantalla podría no ser el real
+            // consulto la base: el perfil que llega desde la pantalla podría no ser el real
             Persona actual = UsuarioDatos.BuscarPorLegajo(usuario.Legajo);
 
             if (actual != null && actual.Perfil == "Administrador")
@@ -428,18 +478,20 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Consulta la base (y no la pantalla) para saber el estado real del usuario
+        // Consulto la base (y no la pantalla) para saber el estado real del usuario
         private static bool EstaDadoDeBaja(int legajo)
         {
             Persona actual = UsuarioDatos.BuscarPorLegajo(legajo);
             return actual != null && actual.Estado == "Baja";
         }
 
+        // Dejo la acción en el historial, en el módulo Usuarios
         private static void Registrar(string accion, int legajo)
         {
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Usuarios", accion, "Legajo " + legajo.ToString("0000"));
         }
 
+        // true si el texto tiene solo dígitos
         private static bool SoloNumeros(string texto)
         {
             foreach (char c in texto)

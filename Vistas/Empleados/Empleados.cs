@@ -8,12 +8,14 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Habilitar / deshabilitar empleados (solo Administrador)
+    // Pantalla Empleados (solo el administrador): puesto, fecha de ingreso y habilitación.
+    // La pantalla solo muestra datos y recibe lo que escribe el usuario: las reglas las controla Negocio.
     public partial class Empleados : Form
     {
         private BindingList<Empleado> listaEmpleados = new BindingList<Empleado>();
         private Empleado empleadoSeleccionado;
 
+        // Conecto la grilla con la lista: cuando cambia la lista, la grilla se actualiza sola
         public Empleados()
         {
             InitializeComponent();
@@ -21,6 +23,7 @@ namespace FixedSegurosApp.Vistas
             dgv_empleados.DataSource = listaEmpleados;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Empleados_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -36,11 +39,13 @@ namespace FixedSegurosApp.Vistas
             CargarDatos();
         }
 
+        // Vuelvo a buscar los empleados con el texto del buscador
         public void CargarDatos()
         {
             CargarLista(EmpleadoNegocio.ListarEmpleados(txt_buscar.Text));
         }
 
+        // Paso el resultado a la lista que muestra la grilla
         private void CargarLista(List<Empleado> resultado)
         {
             listaEmpleados.Clear();
@@ -51,6 +56,7 @@ namespace FixedSegurosApp.Vistas
             lbl_cantidad.Text = "Mostrando " + listaEmpleados.Count + " empleados";
         }
 
+        // Cuando elijo una fila, muestro sus datos a la derecha
         private void dgv_empleados_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_empleados.SelectedRows.Count == 0)
@@ -62,6 +68,7 @@ namespace FixedSegurosApp.Vistas
             MostrarEmpleado(EmpleadoNegocio.BuscarPorLegajo(fila.Legajo));
         }
 
+        // Lleno el panel de la derecha con los datos del empleado
         private void MostrarEmpleado(Empleado empleado)
         {
             empleadoSeleccionado = empleado;
@@ -90,6 +97,7 @@ namespace FixedSegurosApp.Vistas
             btn_guardar.Visible = modificable;
         }
 
+        // Busco la fila del legajo en la grilla y la dejo elegida
         private void SeleccionarFila(int legajo)
         {
             foreach (DataGridViewRow fila in dgv_empleados.Rows)
@@ -102,7 +110,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Recarga la grilla y vuelve a dejar elegido al mismo empleado
+        // Recargo la grilla y vuelvo a dejar elegido al mismo empleado
         private void Refrescar()
         {
             int legajo = empleadoSeleccionado.Legajo;
@@ -110,11 +118,13 @@ namespace FixedSegurosApp.Vistas
             SeleccionarFila(legajo);
         }
 
+        // Busco mientras se escribe
         private void txt_buscar_TextChanged(object sender, EventArgs e)
         {
             CargarDatos();
         }
 
+        // Habilito al empleado elegido: desde ahora puede iniciar sesión
         private void btn_habilitar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -132,10 +142,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Empleados");
             }
         }
 
+        // Deshabilito al empleado elegido (pido confirmación porque le quita el acceso)
         private void btn_deshabilitar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -155,11 +166,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Empleados");
                 }
             }
         }
 
+        // Guardo puesto y fecha de ingreso
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -184,10 +196,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Empleados", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Empleados");
             }
         }
 
+        // Descarto lo que se cambió y vuelvo a mostrar lo guardado
         private void btn_descartar_Click(object sender, EventArgs e)
         {
             if (empleadoSeleccionado != null)
@@ -196,12 +209,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro el detalle del empleado elegido
         private void btn_detalle_Click(object sender, EventArgs e)
         {
             AbrirDetalle();
         }
 
-        // Doble clic en la fila: abre el detalle del empleado
+        // Con doble clic en la fila también abro el detalle
         private void dgv_empleados_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -210,6 +224,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro el detalle dentro de la ventana principal
         private void AbrirDetalle()
         {
             if (empleadoSeleccionado != null)
@@ -218,7 +233,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_empleados_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

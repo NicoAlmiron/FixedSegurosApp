@@ -1,6 +1,6 @@
 ﻿namespace FixedSegurosApp.Entidades
 {
-    // Una fila de la tabla de Reportes: también es una barra de un gráfico
+    // Una fila de la tabla de Reportes. Cada fila es también una barra de un gráfico
     public class FilaReporte
     {
         public string Grupo { get; set; }       // título del gráfico al que pertenece

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de Siniestros: el cliente (o el empleado en la oficina) carga el reclamo,
+    // y el empleado lo verifica, lo pasa a la aseguradora y registra el resultado
     internal class SiniestroNegocio
     {
         public const int MaximoFotos = 5;
@@ -21,15 +23,16 @@ namespace FixedSegurosApp.Negocio
             "Todos", "Pendiente", "En evaluación", "Aprobado", "Rechazado"
         };
 
-        // ================= Cargar un reclamo (Cliente, o Empleado en la oficina) =================
+        // ================= Cargar un reclamo (cliente, o empleado en la oficina) =================
 
+        // Los reclamos de un cliente
         public static List<Siniestro> ListarReclamosDe(int legajoCliente)
         {
             return SiniestroDatos.ListarDeCliente(legajoCliente);
         }
 
-        // Las pólizas del cliente que pueden recibir un reclamo nuevo.
-        // Al corregir un reclamo (nroActual) se agrega su póliza aunque ya no esté vigente.
+        // Las pólizas del cliente que pueden recibir un reclamo nuevo (vigentes y sin suspender).
+        // Al corregir un reclamo (nroActual) agrego su póliza aunque ya no esté vigente
         public static List<Poliza> ListarPolizasParaReclamo(int legajoCliente, int nroActual)
         {
             List<Poliza> lista = new List<Poliza>();
@@ -51,10 +54,10 @@ namespace FixedSegurosApp.Negocio
             return VehiculoDatos.BuscarPorId(poliza.IdVehiculo, legajoCliente);
         }
 
-        // Si siniestro.IdSiniestro es 0 inicia el reclamo; si no, guarda la corrección.
+        // Si siniestro.IdSiniestro es 0 inicio el reclamo; si no, guardo la corrección.
         // fotosNuevas y denunciaNueva vienen vacías si el cliente no eligió otras.
         // El cliente deja el reclamo Pendiente. El empleado lo carga con el cliente en la oficina y ya vio
-        // la documentación, por eso pasa directo a En evaluación y queda como responsable.
+        // la documentación, por eso pasa directo a En evaluación y queda como responsable
         public static bool GuardarReclamo(Siniestro siniestro, int legajoCliente, string montoTexto, List<byte[]> fotosNuevas, byte[] denunciaNueva, out string mensaje)
         {
             Persona usuario = Sesion.UsuarioActual;
@@ -150,7 +153,7 @@ namespace FixedSegurosApp.Negocio
 
             if (!SiniestroDatos.EditarSiniestro(siniestro, adjuntos, legajoCliente))
             {
-                mensaje = "No se pudo guardar: el reclamo ya no está Pendiente.";
+                mensaje = "El reclamo ya no está Pendiente: no se guardaron los cambios.";
                 return false;
             }
 
@@ -158,14 +161,15 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // ================= Revisión del Empleado =================
+        // ================= Revisión del empleado =================
 
+        // Todos los reclamos, filtrados por estado
         public static List<Siniestro> ListarSiniestros(string estado)
         {
             return SiniestroDatos.ListarSiniestros(estado);
         }
 
-        // El formulario solo lo ven el empleado y el administrador
+        // Los adjuntos de un reclamo. El formulario solo lo ven el empleado y el administrador
         public static List<AdjuntoSiniestro> ListarAdjuntos(int idSiniestro, string tipo)
         {
             if (tipo == "Formulario" && Sesion.UsuarioActual.Perfil == "Cliente")
@@ -176,7 +180,7 @@ namespace FixedSegurosApp.Negocio
             return SiniestroDatos.ListarAdjuntos(idSiniestro, tipo);
         }
 
-        // El empleado carga el formulario cuando el reclamo está En evaluación. Reemplaza al anterior.
+        // El empleado carga el formulario cuando el reclamo está En evaluación; reemplaza al anterior
         public static bool CargarFormulario(Siniestro siniestro, List<byte[]> fotos, out string mensaje)
         {
             mensaje = "";
@@ -201,7 +205,7 @@ namespace FixedSegurosApp.Negocio
 
             if (!SiniestroDatos.GuardarFormulario(siniestro.IdSiniestro, formulario, Sesion.UsuarioActual.Legajo))
             {
-                mensaje = "No se pudo guardar: el reclamo ya no está En evaluación.";
+                mensaje = "El reclamo ya no está En evaluación: no se guardaron los cambios.";
                 return false;
             }
 
@@ -209,6 +213,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Guardo las observaciones del empleado; el cliente las ve en el seguimiento
         public static bool GuardarObservaciones(Siniestro siniestro, string observaciones, out string mensaje)
         {
             if (!ValidarObservaciones(observaciones, out mensaje))
@@ -224,7 +229,7 @@ namespace FixedSegurosApp.Negocio
 
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Siniestros", "Guardó observaciones", "Expediente " + siniestro.ExpedienteTexto);
 
-            // solo se avisa si hay algo nuevo para leer
+            // solo le aviso al cliente si hay algo nuevo para leer
             if (observaciones.Trim() != "" && observaciones.Trim() != siniestro.Observaciones)
             {
                 NotificacionNegocio.AvisarSiniestro(siniestro, "tiene una observación nueva.");
@@ -232,7 +237,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Los tres controles de la guía son obligatorios para que el reclamo pase a la aseguradora
+        // Los tres controles (fotos legibles, denuncia recibida, datos de la póliza) son obligatorios para pasar el reclamo a la aseguradora
         public static bool PasarAEvaluacion(Siniestro siniestro, bool fotosLegibles, bool denunciaRecibida, bool polizaCoincide, string observaciones, out string mensaje)
         {
             if (!ValidarObservaciones(observaciones, out mensaje))
@@ -248,7 +253,7 @@ namespace FixedSegurosApp.Negocio
 
             if (!SiniestroDatos.PasarAEvaluacion(siniestro.IdSiniestro, observaciones.Trim(), Sesion.UsuarioActual.Legajo))
             {
-                mensaje = "No se pudo pasar a evaluación: el reclamo ya no está Pendiente.";
+                mensaje = "El reclamo ya no está Pendiente: no se puede pasar a evaluación.";
                 return false;
             }
 
@@ -257,8 +262,8 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // La aseguradora aprobó el reclamo: solo desde En evaluación.
-        // El empleado puede cargar el valor aproximado del daño; si lo deja vacío queda el que estaba.
+        // La aseguradora aprobó el reclamo: solo desde En evaluación y con formulario.
+        // El empleado puede cargar el valor aproximado del daño; si lo deja vacío queda el que estaba
         public static bool Aprobar(Siniestro siniestro, string montoTexto, string observaciones, out string mensaje)
         {
             if (!ValidarObservaciones(observaciones, out mensaje))
@@ -292,7 +297,7 @@ namespace FixedSegurosApp.Negocio
             return Resolver(siniestro, "Aprobado", "Aprobó reclamo", observaciones, out mensaje);
         }
 
-        // Se rechaza con motivo obligatorio, en revisión (Pendiente) o por la aseguradora (En evaluación)
+        // Rechazo con motivo obligatorio, en la revisión (Pendiente) o por la aseguradora (En evaluación)
         public static bool Rechazar(Siniestro siniestro, string observaciones, out string mensaje)
         {
             if (!ValidarObservaciones(observaciones, out mensaje))
@@ -315,13 +320,14 @@ namespace FixedSegurosApp.Negocio
             return Resolver(siniestro, "Rechazado", "Rechazó reclamo", observaciones, out mensaje);
         }
 
+        // Guardo el resultado final, aviso al cliente y lo registro en el historial
         private static bool Resolver(Siniestro siniestro, string resultado, string accion, string observaciones, out string mensaje)
         {
             mensaje = "";
 
             if (!SiniestroDatos.Resolver(siniestro.IdSiniestro, siniestro.Estado, resultado, observaciones.Trim(), siniestro.MontoReclamado, Sesion.UsuarioActual.Legajo))
             {
-                mensaje = "No se pudo guardar: el reclamo cambió de estado.";
+                mensaje = "El reclamo cambió de estado: no se guardaron los cambios.";
                 return false;
             }
 
@@ -332,6 +338,7 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Validaciones =================
 
+        // Controlo el tipo, la ubicación (hasta 100), la descripción (hasta 450) y, si lo escribieron, el monto
         private static bool ValidarDatos(Siniestro siniestro, string montoTexto, out string mensaje)
         {
             mensaje = "";
@@ -367,11 +374,13 @@ namespace FixedSegurosApp.Negocio
             return mensaje == "";
         }
 
+        // Convierto el monto escrito en número; tiene que ser mayor a 0
         private static bool LeerMonto(string montoTexto, out decimal monto)
         {
             return decimal.TryParse(PolizaNegocio.LimpiarNumero(montoTexto), out monto) && monto > 0;
         }
 
+        // Las observaciones pueden tener hasta 200 caracteres
         private static bool ValidarObservaciones(string observaciones, out string mensaje)
         {
             mensaje = "";
@@ -385,11 +394,13 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Una póliza recibe reclamos si está Vigente o Por vencer (vencida, suspendida o de baja, no)
         private static bool EstaVigente(Poliza poliza)
         {
             return poliza.EstadoMostrado == "Vigente" || poliza.EstadoMostrado == "Por vencer";
         }
 
+        // Busco la póliza entre las del cliente, así nadie reclama sobre una póliza ajena
         private static Poliza BuscarPolizaDelCliente(int nroPoliza, int legajo)
         {
             foreach (Poliza poliza in PolizaDatos.ListarPolizasDeCliente(legajo))

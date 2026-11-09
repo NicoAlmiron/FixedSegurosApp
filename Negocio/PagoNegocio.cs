@@ -6,29 +6,33 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
-    // El cliente paga sus cuotas desde la app; el empleado las cobra en la oficina (ahí se acepta efectivo)
+    // Reglas de Pagos. El cliente ve las pantallas de pago (todavía simuladas);
+    // el empleado cobra en la oficina, y solo el efectivo registra el pago
     internal class PagoNegocio
     {
+        // Lo guardo como constante para no escribir el texto a mano en cada lugar
         public const string Efectivo = "Efectivo";
 
-        // Métodos de pago que existen
+        // Los métodos de pago que existen
         public static readonly string[] Metodos =
         {
             "Débito automático", "Tarjeta de crédito", "Transferencia bancaria", Efectivo
         };
 
+        // Las pólizas del cliente, para el combo de Pagos
         public static List<Poliza> ListarPolizasDe(int legajoCliente)
         {
             return PolizaDatos.ListarPolizasDeCliente(legajoCliente);
         }
 
+        // Las cuotas de la póliza elegida
         public static List<Pago> ListarCuotas(int nroPoliza, int legajoCliente)
         {
             return PagoDatos.ListarCuotas(nroPoliza, legajoCliente);
         }
 
-        // Métodos que puede usar quien inició sesión para esa póliza. El efectivo solo se cobra en la oficina:
-        // un cliente nunca lo ve, y si la póliza es solo en efectivo la lista queda vacía.
+        // Los métodos que puede usar quien inició sesión para esa póliza. El efectivo solo se cobra en la oficina:
+        // un cliente nunca lo ve, y si la póliza es solo en efectivo la lista queda vacía
         public static List<string> MetodosDe(Poliza poliza)
         {
             List<string> lista = new List<string>();
@@ -47,7 +51,7 @@ namespace FixedSegurosApp.Negocio
         }
 
         // La primera cuota sin pagar, o null si están todas pagadas.
-        // Las cuotas se pagan en orden: esta es la única que se puede pagar.
+        // Las cuotas se pagan en orden: esta es la única que se puede pagar
         public static Pago ProximaCuota(List<Pago> cuotas)
         {
             foreach (Pago cuota in cuotas)
@@ -60,7 +64,7 @@ namespace FixedSegurosApp.Negocio
             return null;
         }
 
-        // Verifica el pago y lo registra. El N° de operación es el idPago de la cuota.
+        // Controlo el pago y lo registro. El N° de operación es el idPago de la cuota
         public static bool Pagar(Poliza poliza, int idPago, string metodoPago, int legajoCliente, out string mensaje)
         {
             mensaje = "";
@@ -79,7 +83,7 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            // se vuelven a leer las cuotas: el legajo asegura que la póliza sea de ese cliente
+            // vuelvo a leer las cuotas de la base: con el legajo me aseguro de que la póliza sea de ese cliente
             List<Pago> cuotas = ListarCuotas(poliza.NroPoliza, legajoCliente);
             Pago proxima = ProximaCuota(cuotas);
 
@@ -103,6 +107,26 @@ namespace FixedSegurosApp.Negocio
 
             AccionDatos.RegistrarAccion(usuario.Legajo, "Pagos", "Registró pago", "Cuota " + proxima.Cuota + ", póliza " + poliza.NroTexto + " · " + metodoPago);
             return true;
+        }
+
+        // Cobro en la oficina: el empleado escribe lo que le dio el cliente, y tiene que alcanzar para la cuota
+        public static bool CobrarEnEfectivo(Poliza poliza, Pago cuota, decimal recibido, int legajoCliente, out string mensaje)
+        {
+            mensaje = "";
+
+            if (Sesion.UsuarioActual.Perfil != "Empleado")
+            {
+                mensaje = "Solo un empleado puede cobrar en efectivo.";
+                return false;
+            }
+
+            if (recibido < cuota.Monto)
+            {
+                mensaje = "El monto recibido no alcanza para pagar la cuota.";
+                return false;
+            }
+
+            return Pagar(poliza, cuota.IdPago, Efectivo, legajoCliente, out mensaje);
         }
     }
 }

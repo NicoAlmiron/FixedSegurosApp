@@ -5,11 +5,14 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
-    // Consultas de la pantalla Inicio. Con legajo = 0 cuentan todo; con un legajo, solo lo de ese cliente.
+    // Consultas de la pantalla Inicio. Con legajo = 0 cuento todo (empleado y administrador);
+    // con un legajo cuento solo lo de ese cliente
     internal class InicioDatos
     {
+        // Condición que agrego a las consultas: si el legajo es 0 no filtra, si no, solo ese cliente
         private const string deCliente = "(@legajo = 0 OR c.idPersona = @legajo)";
 
+        // Pólizas vigentes (todas, o las del cliente)
         public static int ContarPolizasVigentes(int legajo)
         {
             return Contar("SELECT COUNT(*) FROM Poliza po JOIN Cliente c ON c.idCliente = po.idCliente " +
@@ -18,6 +21,7 @@ namespace FixedSegurosApp.Datos
                           "AND NOT " + VehiculoDatos.Suspendido + " AND " + deCliente, legajo);
         }
 
+        // Pólizas vigentes que vencen en los próximos 30 días
         public static int ContarPorVencer(int legajo)
         {
             return Contar("SELECT COUNT(*) FROM Poliza po JOIN Cliente c ON c.idCliente = po.idCliente " +
@@ -25,6 +29,7 @@ namespace FixedSegurosApp.Datos
                           "AND po.fechaVencimiento <= DATEADD(DAY, 30, CAST(GETDATE() AS DATE)) AND " + deCliente, legajo);
         }
 
+        // Cuotas vencidas que todavía no se pagaron
         public static int ContarCuotasImpagas(int legajo)
         {
             return Contar("SELECT COUNT(*) FROM Pago pa " +
@@ -33,21 +38,25 @@ namespace FixedSegurosApp.Datos
                           "WHERE pa.estadoPago = 0 AND pa.fechaVencimiento < CAST(GETDATE() AS DATE) AND " + deCliente, legajo);
         }
 
+        // Aseguradoras activas
         public static int ContarAseguradoras()
         {
             return Contar("SELECT COUNT(*) FROM Proveedor WHERE activo = 1", 0);
         }
 
+        // Reclamos que esperan que un empleado los revise
         public static int ContarSiniestrosPendientes()
         {
             return Contar("SELECT COUNT(*) FROM Siniestro WHERE estado = 'Pendiente'", 0);
         }
 
+        // Vehículos y renovaciones de VTV que esperan la revisión de un empleado
         public static int ContarVehiculosPendientes()
         {
             return Contar("SELECT COUNT(*) FROM Vehiculo WHERE estadoRevision = 'Pendiente' OR vigenciaVtvNueva IS NOT NULL", 0);
         }
 
+        // Reclamos del cliente que todavía no se resolvieron
         public static int ContarReclamosAbiertos(int legajo)
         {
             return Contar("SELECT COUNT(*) FROM Siniestro s " +
@@ -98,8 +107,8 @@ namespace FixedSegurosApp.Datos
             return cuota;
         }
 
-        // Pólizas vigentes que vencen en 30 días o menos, o con cuotas vencidas sin pagar.
-        // Las dadas de baja también entran si deben cuotas. idProveedor = 0 trae todas las aseguradoras.
+        // Pólizas vigentes que vencen en 30 días o menos, o que tienen cuotas vencidas sin pagar.
+        // Las dadas de baja también aparecen si deben cuotas. idProveedor = 0 trae todas las aseguradoras
         public static List<AlertaPoliza> ListarAlertas(int legajo, int idProveedor)
         {
             List<AlertaPoliza> lista = new List<AlertaPoliza>();
@@ -156,6 +165,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Ejecuto una consulta COUNT con el parámetro @legajo y devuelvo el número
         private static int Contar(string query, int legajo)
         {
             int cantidad = 0;

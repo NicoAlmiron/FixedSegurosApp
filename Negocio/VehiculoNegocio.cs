@@ -7,10 +7,12 @@ using System.Text.RegularExpressions;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de vehículos: "Mis vehículos" del cliente, la revisión del empleado y la renovación de la VTV.
+    // Negocio valida lo que llega de la pantalla, aplica las reglas, llama a Datos y registra la acción en el historial. No escribe SQL.
     internal class VehiculoNegocio
     {
         // Las fotos obligatorias registran el estado del vehículo al comenzar la póliza.
-        // Esta es la lista completa (9): cada casillero de la pantalla es una de estas posiciones.
+        // Esta es la lista completa (9): cada casillero de la pantalla es una de estas posiciones
         public static readonly string[] Posiciones =
         {
             "Frente", "Atrás", "Lateral izquierdo", "Lateral derecho",
@@ -27,6 +29,7 @@ namespace FixedSegurosApp.Negocio
 
         public const string FotoVtvNueva = VehiculoDatos.FotoVtvNueva;
 
+        // Las fotos que lleva cada tipo de vehículo
         public static string[] PosicionesDe(string tipoVehiculo)
         {
             return tipoVehiculo == "Motocicleta" ? PosicionesMoto : Posiciones;
@@ -34,23 +37,25 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Cliente: "Mis vehículos" =================
 
+        // Los vehículos del cliente que inició sesión
         public static List<Vehiculo> ListarMisVehiculos()
         {
             return VehiculoDatos.ListarVehiculos(Sesion.UsuarioActual.Legajo);
         }
 
+        // Uno de sus vehículos
         public static Vehiculo BuscarMiVehiculo(int idVehiculo)
         {
             return VehiculoDatos.BuscarPorId(idVehiculo, Sesion.UsuarioActual.Legajo);
         }
 
-        // Controla que la foto elegida sirva (legible y liviana) y la devuelve lista para guardar
+        // Controlo que la foto elegida sirva (legible y liviana) y la devuelvo lista para guardar
         public static byte[] PrepararFoto(string ruta, out string mensaje)
         {
             return Imagenes.PrepararFoto(ruta, out mensaje);
         }
 
-        // Si vehiculo.IdVehiculo es 0 lo crea; si no, guarda los cambios. En ambos casos queda Pendiente de revisión.
+        // Si vehiculo.IdVehiculo es 0 lo creo; si no, guardo los cambios. En los dos casos queda Pendiente de revisión
         public static bool GuardarVehiculo(Vehiculo vehiculo, string anioTexto, List<FotoVehiculo> fotos, out string mensaje)
         {
             int legajo = Sesion.UsuarioActual.Legajo;
@@ -102,7 +107,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Valida los datos y las fotos de un vehículo. Si está todo bien deja el dominio normalizado y el año cargado.
+        // Controlo los datos y las fotos. Si está todo bien dejo el dominio normalizado y el año cargado
         public static bool ValidarVehiculo(Vehiculo vehiculo, string anioTexto, List<FotoVehiculo> fotos, out string mensaje)
         {
             mensaje = "";
@@ -114,14 +119,14 @@ namespace FixedSegurosApp.Negocio
                 return false;
             }
 
-            // Chasis y motor son obligatorios: el empleado los compara con las fotos antes de aprobar
+            // chasis y motor son obligatorios: el empleado los compara con las fotos antes de aprobar
             if (vehiculo.NumeroChasis == "" || vehiculo.NumeroMotor == "")
             {
                 mensaje = "Complete el número de chasis y el número de motor.";
                 return false;
             }
 
-            // Dominio: se guarda en mayúsculas y sin espacios ni guiones
+            // el dominio lo guardo en mayúsculas y sin espacios ni guiones
             vehiculo.Dominio = vehiculo.Dominio.ToUpper().Replace(" ", "").Replace("-", "");
             if (!DominioValido(vehiculo.Dominio))
             {
@@ -136,7 +141,7 @@ namespace FixedSegurosApp.Negocio
             }
             vehiculo.Anio = anio;
 
-            // Fotos obligatorias según el tipo de vehículo
+            // controlo las fotos obligatorias según el tipo de vehículo
             string[] posiciones = PosicionesDe(vehiculo.TipoVehiculo);
             foreach (string posicion in posiciones)
             {
@@ -177,7 +182,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // El cliente envía la VTV renovada. Queda en revisión: si se envió antes de vencer el servicio no se suspende.
+        // El cliente manda la VTV renovada. Queda en revisión: si la mandó antes de que venza, el servicio no se suspende
         public static bool ActualizarVtv(int idVehiculo, DateTime vigencia, byte[] foto, out string mensaje)
         {
             mensaje = "";
@@ -225,18 +230,21 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // ================= Empleado / Administrador: Detalle del cliente =================
+        // ================= Empleado y administrador: Detalle del cliente =================
 
+        // Los vehículos de un cliente
         public static List<Vehiculo> ListarVehiculosDeCliente(int legajoCliente)
         {
             return VehiculoDatos.ListarVehiculos(legajoCliente);
         }
 
+        // Un vehículo de un cliente
         public static Vehiculo BuscarVehiculoDeCliente(int idVehiculo, int legajoCliente)
         {
             return VehiculoDatos.BuscarPorId(idVehiculo, legajoCliente);
         }
 
+        // Apruebo el vehículo: desde ahora puede tener póliza y el cliente ya no lo puede cambiar
         public static bool Aprobar(int idVehiculo, int legajoCliente, out string mensaje)
         {
             Vehiculo vehiculo;
@@ -255,6 +263,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Rechazo el vehículo con motivo obligatorio; el cliente lo ve, corrige y vuelve a Pendiente
         public static bool Rechazar(int idVehiculo, int legajoCliente, string motivo, out string mensaje)
         {
             Vehiculo vehiculo;
@@ -305,6 +314,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Rechazo la VTV renovada con motivo obligatorio
         public static bool RechazarVtv(int idVehiculo, int legajoCliente, string motivo, out string mensaje)
         {
             Vehiculo vehiculo;
@@ -332,7 +342,7 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Comunes =================
 
-        // Las fotos de un vehículo; el legajo asegura que el vehículo sea de ese cliente
+        // Las fotos de un vehículo; con el legajo me aseguro de que sea de ese cliente
         public static List<FotoVehiculo> ListarFotos(int idVehiculo, int legajoCliente)
         {
             if (VehiculoDatos.BuscarPorId(idVehiculo, legajoCliente) == null)
@@ -371,6 +381,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Solo empleados y administradores revisan, y solo si hay una VTV nueva esperando
         private static bool PuedeRevisarVtv(int idVehiculo, int legajoCliente, out Vehiculo vehiculo, out string mensaje)
         {
             mensaje = "";
@@ -393,7 +404,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Si el cliente cambió el tipo de vehículo, pueden quedar fotos que ese tipo no lleva
+        // Si el cliente cambió el tipo de vehículo, saco las fotos que ese tipo no lleva
         public static List<FotoVehiculo> QuitarFotosDeMas(List<FotoVehiculo> fotos, string[] posiciones)
         {
             List<FotoVehiculo> lista = new List<FotoVehiculo>();
@@ -408,6 +419,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
+        // true si la lista tiene la foto de esa posición
         private static bool TieneFoto(List<FotoVehiculo> fotos, string posicion)
         {
             foreach (FotoVehiculo foto in fotos)
@@ -426,6 +438,7 @@ namespace FixedSegurosApp.Negocio
             return Regex.IsMatch(dominio, "^([A-Z]{2}[0-9]{3}[A-Z]{2}|[A-Z]{3}[0-9]{3}|[A-Z][0-9]{3}[A-Z]{3}|[0-9]{3}[A-Z]{3})$");
         }
 
+        // Dejo la acción en el historial, en el módulo Vehículos
         private static void Registrar(string accion, string dominio)
         {
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Vehículos", accion, "Dominio " + dominio);

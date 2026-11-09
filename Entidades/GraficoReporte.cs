@@ -2,7 +2,7 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Datos de un gráfico de barras de Reportes
+    // Los datos de un gráfico de barras de Reportes: título, filas (una por barra) y cómo dibujarlo
     public class GraficoReporte
     {
         public string Titulo { get; set; }

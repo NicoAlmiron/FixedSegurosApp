@@ -2,9 +2,9 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Aviso para un cliente: "Leida" indica si él lo vio.
-    // Lo pendiente del empleado (siniestros y vehículos por evaluar) usa la misma clase pero no se guarda:
-    // se calcula en el momento y no tiene IdNotificacion.
+    // Un aviso para un cliente; "Leida" dice si él ya lo abrió.
+    // Lo pendiente del empleado (siniestros y vehículos por evaluar) usa esta misma clase pero no lo guardo:
+    // lo calculo en el momento, por eso no tiene IdNotificacion
     public class Notificacion
     {
         public int IdNotificacion { get; set; }     // 0 si es un pendiente del empleado

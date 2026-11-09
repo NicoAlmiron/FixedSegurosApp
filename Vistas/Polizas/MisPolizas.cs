@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Pantalla de pólizas del Cliente: a la izquierda sus pólizas, a la derecha contratar una nueva
-    // eligiendo uno de sus vehículos aprobados y una de las pólizas ofrecidas para ese tipo de vehículo.
+    // Pólizas del cliente: a la izquierda las suyas; a la derecha contrata una nueva
+    // eligiendo uno de sus vehículos aprobados y una de las pólizas ofrecidas para ese tipo
     public partial class MisPolizas : Form
     {
+        // Constructor: preparo las grillas
         public MisPolizas()
         {
             InitializeComponent();
@@ -18,6 +19,7 @@ namespace FixedSegurosApp.Vistas
             dgv_ofrecidas.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void MisPolizas_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -30,6 +32,7 @@ namespace FixedSegurosApp.Vistas
             CargarDatos();
         }
 
+        // Cargo sus pólizas y los vehículos que puede asegurar
         private void CargarDatos()
         {
             List<Poliza> polizas = PolizaNegocio.ListarMisPolizas();
@@ -50,7 +53,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Al elegir un vehículo se muestran las pólizas ofrecidas para su tipo
+        // Al elegir un vehículo muestro las pólizas ofrecidas para su tipo
         private void cb_vehiculo_SelectedIndexChanged(object sender, EventArgs e)
         {
             Vehiculo vehiculo = cb_vehiculo.SelectedItem as Vehiculo;
@@ -83,6 +86,7 @@ namespace FixedSegurosApp.Vistas
             btn_adquirir.Enabled = true;
         }
 
+        // Contrato la póliza elegida para el vehículo, después de confirmar
         private void btn_adquirir_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -112,10 +116,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Adquirir póliza", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Adquirir póliza");
             }
         }
 
+        // Descargo el PDF de la póliza elegida: pregunto dónde guardarlo y Negocio lo genera
         private void btn_descargar_Click(object sender, EventArgs e)
         {
             if (dgv_polizas.SelectedRows.Count == 0)
@@ -141,12 +146,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Descargar póliza", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Descargar póliza");
                 }
             }
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void grilla_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

@@ -6,22 +6,26 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de Pólizas: las ofrecidas (empleado y administrador), la contratación del cliente y el PDF.
+    // Negocio valida lo que llega de la pantalla, aplica las reglas, llama a Datos y registra la acción en el historial. No escribe SQL.
     internal class PolizaNegocio
     {
-        // ================= Admin / Empleado =================
+        // ================= Administrador y empleado =================
 
+        // Todas las pólizas, con el texto de búsqueda
         public static List<Poliza> ListarPolizas(string buscar)
         {
             return PolizaDatos.ListarPolizas(buscar.Trim());
         }
 
+        // Una póliza por número
         public static Poliza BuscarPorNro(int nroPoliza)
         {
             return PolizaDatos.BuscarPorNro(nroPoliza);
         }
 
-        // Si poliza.NroPoliza es 0 crea una póliza "Ofrecida"; si no, guarda los cambios (solo de una ofrecida).
-        // Los montos llegan como texto ("45000", "$ 45.000", "10 %") y se validan acá.
+        // Si poliza.NroPoliza es 0 creo una póliza "Ofrecida"; si no, guardo los cambios (solo de una ofrecida).
+        // Los montos llegan como texto ("45000", "$ 45.000", "10 %") y los valido acá
         public static bool GuardarPoliza(Poliza poliza, string primaTexto, string descuentoTexto, string duracionTexto, string franquiciaTexto, string comisionTexto, string montoMaximoTexto, string anioMinimoTexto, out string mensaje)
         {
             mensaje = "";
@@ -161,8 +165,8 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Una ofrecida dada de baja ya no se puede adquirir; una vigente pierde la cobertura
-        // y se borran sus cuotas futuras sin pagar.
+        // Una ofrecida dada de baja ya no se puede contratar; una vigente pierde la cobertura
+        // y se borran sus cuotas futuras sin pagar
         public static bool DarDeBaja(Poliza poliza, out string mensaje)
         {
             mensaje = "";
@@ -191,17 +195,19 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Cliente =================
 
+        // Las pólizas del cliente que inició sesión
         public static List<Poliza> ListarMisPolizas()
         {
             return PolizaDatos.ListarPolizasDeCliente(Sesion.UsuarioActual.Legajo);
         }
 
-        // Vehículos del cliente que pueden adquirir una póliza: aprobados y sin póliza vigente
+        // Los vehículos del cliente que pueden contratar una póliza: aprobados y sin póliza vigente
         public static List<Vehiculo> ListarVehiculosAsegurables()
         {
             return ListarVehiculosAsegurables(Sesion.UsuarioActual.Legajo);
         }
 
+        // Lo mismo para un cliente en particular (lo usa el Alta en oficina)
         public static List<Vehiculo> ListarVehiculosAsegurables(int legajoCliente)
         {
             List<Vehiculo> lista = new List<Vehiculo>();
@@ -216,7 +222,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
-        // Pólizas ofrecidas que sirven para ese tipo de vehículo
+        // Las pólizas ofrecidas que sirven para ese tipo de vehículo
         public static List<Poliza> ListarOfrecidas(string tipoVehiculo)
         {
             return PolizaDatos.ListarOfrecidas(tipoVehiculo);
@@ -232,7 +238,7 @@ namespace FixedSegurosApp.Negocio
             return DateTime.Today;
         }
 
-        // Texto con el detalle de una póliza ofrecida: lo muestran MisPolizas y AltaOficina
+        // Texto con el detalle de una póliza ofrecida: lo muestran Mis pólizas y el Alta en oficina
         public static string DescribirOferta(Poliza poliza)
         {
             DateTime inicio = CalcularInicio(poliza);
@@ -249,7 +255,7 @@ namespace FixedSegurosApp.Negocio
                    (poliza.Requisitos != "" ? "Requisitos: " + poliza.Requisitos : "");
         }
 
-        // Arma las cuotas: la primera vence el día de inicio y las demás cada "MesesPorCuota" meses
+        // Armo las cuotas: la primera vence el día de inicio y las demás cada "MesesPorCuota" meses
         public static List<Pago> CalcularCuotas(Poliza poliza, DateTime inicio)
         {
             List<Pago> cuotas = new List<Pago>();
@@ -267,7 +273,7 @@ namespace FixedSegurosApp.Negocio
             return cuotas;
         }
 
-        // Verificación de requisitos: lo que tiene que cumplir un vehículo para contratar la póliza ofrecida
+        // Verifico lo que tiene que cumplir para contratar: póliza disponible y de aseguradora activa, vehículo aprobado, sin otra póliza, VTV vigente, año mínimo y tipo correcto
         public static bool VerificarRequisitos(Poliza ofrecida, Vehiculo vehiculo, out string mensaje)
         {
             mensaje = "";
@@ -323,7 +329,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Alta de la póliza del cliente con sus cuotas
+        // El cliente contrata la póliza: verifico los requisitos y la guardo con sus cuotas
         public static bool Adquirir(int nroOfrecida, int idVehiculo, out int nroNueva, out string mensaje)
         {
             mensaje = "";
@@ -338,7 +344,7 @@ namespace FixedSegurosApp.Negocio
 
             Poliza ofrecida = PolizaDatos.BuscarPorNro(nroOfrecida);
 
-            // BuscarPorId con el legajo asegura que el vehículo sea del cliente
+            // con el legajo me aseguro de que el vehículo sea del cliente
             Vehiculo vehiculo = VehiculoDatos.BuscarPorId(idVehiculo, legajo);
 
             if (!VerificarRequisitos(ofrecida, vehiculo, out mensaje))
@@ -361,8 +367,8 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Genera el PDF de una póliza del cliente que inició sesión. La póliza se busca entre las suyas,
-        // así nadie descarga la de otro. La comisión no va en el documento: el cliente no la ve.
+        // Genero el PDF de una póliza del cliente que inició sesión. La busco entre las suyas,
+        // así nadie descarga la de otro. La comisión no va en el documento: el cliente no la ve
         public static bool DescargarPoliza(int nroPoliza, string ruta, out string mensaje)
         {
             int legajo = Sesion.UsuarioActual.Legajo;
@@ -394,6 +400,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Ordeno los datos del PDF en secciones (titular, vehículo, cobertura, pago), sin saber cómo se van a dibujar
         private static List<SeccionDocumento> ArmarDocumento(Poliza poliza, Vehiculo vehiculo, Persona titular)
         {
             SeccionDocumento datosTitular = new SeccionDocumento() { Titulo = "Titular" };
@@ -433,18 +440,19 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Comunes =================
 
+        // Dejo la acción en el historial, en el módulo Pólizas
         private static void Registrar(string accion, string detalle)
         {
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Pólizas", accion, detalle);
         }
 
-        // Montos: saca "$" y los puntos de miles: "$ 45.000,50" -> "45000,50"
+        // Montos: saco "$" y los puntos de miles: "$ 45.000,50" -> "45000,50"
         public static string LimpiarNumero(string texto)
         {
             return texto.Replace("$", "").Replace(".", "").Trim();
         }
 
-        // Porcentajes: saca "%" y acepta punto o coma decimal: "12.5 %" -> "12,5"
+        // Porcentajes: saco "%" y acepto punto o coma decimal: "12.5 %" -> "12,5"
         private static string LimpiarPorcentaje(string texto)
         {
             return texto.Replace("%", "").Replace(".", ",").Trim();

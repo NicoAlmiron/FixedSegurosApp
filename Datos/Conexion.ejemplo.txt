@@ -1,4 +1,4 @@
-Copiar este contenido en Datos/Conexion.cs y completar los datos de la base.
+﻿Copiar este contenido en Datos/Conexion.cs y completar los datos de la base.
 Conexion.cs no se sube a GitHub porque tiene la contraseña.
 
 using System;
@@ -7,17 +7,21 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Abro y cierro la conexión con la base. Todas las clases de Datos la usan así:
+    // new Conexion() -> AbrirConexion() -> consulta -> CerrarConexion() (en el finally, para que se cierre siempre)
     internal class Conexion
     {
         // Base en la nube (somee.com). Este archivo no se sube a GitHub porque tiene la contraseña.
         private const string conString = "Server=SERVIDOR;Database=fixedsegurosbd;User Id=USUARIO;Password=CONTRASENA;Encrypt=True;TrustServerCertificate=True;";
         private SqlConnection conx;
 
+        // Preparo la conexión con la cadena de arriba (todavía no se conecta)
         public Conexion()
         {
             conx = new SqlConnection(conString);
         }
 
+        // Abro la conexión si estaba cerrada y la devuelvo para usarla en los SqlCommand
         public SqlConnection AbrirConexion()
         {
             if (conx.State == ConnectionState.Closed)
@@ -27,6 +31,7 @@ namespace FixedSegurosApp.Datos
             return conx;
         }
 
+        // Cierro la conexión si quedó abierta
         public void CerrarConexion()
         {
             if (conx.State == ConnectionState.Open)
@@ -35,13 +40,13 @@ namespace FixedSegurosApp.Datos
             }
         }
 
-        // El servidor al que se conecta la app, sin usuario ni contraseña
+        // El nombre del servidor al que se conecta la app, sin usuario ni contraseña (lo muestro en la barra de abajo)
         public static string NombreServidor()
         {
             return new SqlConnectionStringBuilder(conString).DataSource;
         }
 
-        // Devuelve true si se puede conectar al servidor
+        // Pruebo si me puedo conectar al servidor: true si hay conexión
         public static bool ProbarConexion()
         {
             bool conectado = false;

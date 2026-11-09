@@ -5,9 +5,11 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas del historial de acciones (tabla Accion). Cada operación importante del sistema deja una fila acá.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class AccionDatos
     {
-        // Guarda una fila en el historial de acciones de usuarios
+        // Guardo una fila en el historial: quién, en qué módulo, qué hizo y un detalle. La fecha la pone la base
         public static bool RegistrarAccion(int idPersona, string modulo, string accion, string detalle)
         {
             bool estado = false;
@@ -41,7 +43,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Todo lo que hizo un usuario (para la pestaña Historial del Detalle del cliente)
+        // Traigo todo lo que hizo un usuario (para la pestaña Historial del detalle del cliente y del empleado)
         public static List<Accion> ListarAccionesDeUsuario(int legajo)
         {
             List<Accion> lista = new List<Accion>();
@@ -86,7 +88,8 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Historial filtrado. usuario = legajo o apellido ("" = todos), modulo = "Todos" o un modulo.
+        // Historial con filtros. usuario = legajo o apellido ("" = todos), modulo = "Todos" o un módulo.
+        // Al "hasta" le sumo un día para que entre todo el último día
         public static List<Accion> ListarAcciones(string usuario, string modulo, DateTime desde, DateTime hasta)
         {
             List<Accion> lista = new List<Accion>();

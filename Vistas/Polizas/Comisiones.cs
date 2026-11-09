@@ -7,10 +7,11 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Cálculo de comisiones por rango de meses (solo Administrador).
-    // "Calcular" solo muestra el resultado; "Guardar arqueo" cierra el rango y marca sus cuotas.
+    // Cálculo de comisiones por rango de meses (solo el administrador).
+    // "Calcular" solo muestra el resultado; "Guardar arqueo" cierra el rango y marca sus cuotas
     public partial class Comisiones : Form
     {
+        // Constructor: preparo las grillas
         public Comisiones()
         {
             InitializeComponent();
@@ -18,6 +19,7 @@ namespace FixedSegurosApp.Vistas
             dgv_arqueos.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Comisiones_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_filtros);
@@ -38,11 +40,13 @@ namespace FixedSegurosApp.Vistas
             Calcular();
         }
 
+        // Cargo los arqueos guardados
         private void CargarArqueos()
         {
             dgv_arqueos.DataSource = ComisionNegocio.ListarArqueos();
         }
 
+        // Calculo el rango elegido y muestro las cuotas y los totales
         private void Calcular()
         {
             string mensaje;
@@ -50,7 +54,7 @@ namespace FixedSegurosApp.Vistas
 
             if (!ComisionNegocio.Calcular(dtp_desde.Value, dtp_hasta.Value, out cuotas, out mensaje))
             {
-                MessageBox.Show(mensaje, "Comisiones", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Comisiones");
                 return;
             }
 
@@ -60,16 +64,18 @@ namespace FixedSegurosApp.Vistas
                              "Comisión sin liquidar: $ " + ComisionNegocio.TotalComision(cuotas).ToString("N2");
         }
 
+        // Botón Calcular
         private void btn_calcular_Click(object sender, EventArgs e)
         {
             Calcular();
         }
 
+        // Guardo el arqueo, después de confirmar porque es definitivo
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
 
-            DialogResult respuesta = MessageBox.Show("¿Guardar el arqueo de " + dtp_desde.Value.ToString("MM/yyyy") + " a " + dtp_hasta.Value.ToString("MM/yyyy") + "?\nEs definitivo: esos meses ya no se podrán volver a calcular.", "Guardar arqueo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show("¿Guardar el arqueo de " + dtp_desde.Value.ToString("MM/yyyy") + " a " + dtp_hasta.Value.ToString("MM/yyyy") + "?\nEs definitivo: esos meses ya no se podrán volver a calcular.", "Guardar arqueo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (respuesta == DialogResult.Yes)
             {
                 if (ComisionNegocio.GuardarArqueo(dtp_desde.Value, dtp_hasta.Value, out mensaje))
@@ -80,12 +86,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Guardar arqueo", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Guardar arqueo");
                 }
             }
         }
 
-        // Clic en un arqueo guardado: arriba se ven sus cuotas
+        // Clic en un arqueo guardado: arriba muestro sus cuotas
         private void dgv_arqueos_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -108,7 +114,7 @@ namespace FixedSegurosApp.Vistas
             dgv_arqueos.ClearSelection();
         }
 
-        // Pinta la columna Liquidación: pendiente o ya incluida en un arqueo
+        // Pinto la columna Liquidación: pendiente o ya incluida en un arqueo
         private void dgv_cuotas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_liquidacion.Index && e.Value != null)
@@ -118,6 +124,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Vuelvo a Pólizas
         private void btn_volver_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Polizas());

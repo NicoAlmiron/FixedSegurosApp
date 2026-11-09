@@ -5,9 +5,11 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de Comisiones: cuotas cobradas y arqueos (cierres de comisión).
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class ComisionDatos
     {
-        // Columnas de las cuotas (en el mismo orden que LeerCuota)
+        // Columnas de las cuotas: las escribo una vez y las uso en varias consultas (mismo orden que LeerCuota)
         private const string columnasCuota = "SELECT pa.idPago, pa.idPoliza, pa.cuota, pa.fechaVencimiento, pa.monto, pa.fechaPago, " +
                                              "per.apellido + ', ' + per.nombre, pr.nombre, po.comision, pa.idArqueo " +
                                              "FROM Pago pa " +
@@ -16,12 +18,12 @@ namespace FixedSegurosApp.Datos
                                              "JOIN Cliente c ON c.idCliente = po.idCliente " +
                                              "JOIN Persona per ON per.idPersona = c.idPersona ";
 
-        // Columnas de los arqueos (en el mismo orden que LeerArqueo)
+        // Columnas de los arqueos (mismo orden que LeerArqueo)
         private const string columnasArqueo = "SELECT a.idArqueo, a.desde, a.hasta, a.fechaCalculo, p.apellido + ', ' + p.nombre, a.totalCobrado, a.totalComision " +
                                               "FROM Arqueo a " +
                                               "JOIN Persona p ON p.idPersona = a.idPersona ";
 
-        // Cuotas pagadas en el rango, liquidadas o no (cuenta la fecha en que se pagó, no el vencimiento)
+        // Cuotas pagadas en el rango, liquidadas o no. Cuenta la fecha en que se pagó, no el vencimiento
         public static List<Pago> ListarCuotasCobradas(DateTime desde, DateTime hasta)
         {
             List<Pago> lista = new List<Pago>();
@@ -58,6 +60,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Las cuotas que entraron en un arqueo ya guardado
         public static List<Pago> ListarCuotasDeArqueo(int idArqueo)
         {
             List<Pago> lista = new List<Pago>();
@@ -91,6 +94,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Todos los arqueos guardados, del más nuevo al más viejo
         public static List<Arqueo> ListarArqueos()
         {
             List<Arqueo> lista = new List<Arqueo>();
@@ -123,8 +127,8 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Devuelve un arqueo que se cruce con el rango, o null si el rango está libre.
-        // Dos rangos se cruzan si cada uno empieza antes de que termine el otro.
+        // Busco un arqueo que se cruce con el rango; si el rango está libre devuelvo null.
+        // Dos rangos se cruzan si cada uno empieza antes de que termine el otro
         public static Arqueo BuscarArqueoSolapado(DateTime desde, DateTime hasta)
         {
             Arqueo arqueo = null;
@@ -159,9 +163,9 @@ namespace FixedSegurosApp.Datos
             return arqueo;
         }
 
-        // Guarda el arqueo y marca sus cuotas en una transacción: si algo falla no queda nada a medias.
-        // "idArqueo IS NULL" asegura que una cuota nunca entre en dos arqueos.
-        // Devuelve el id nuevo, o 0 si no se pudo guardar.
+        // Guardo el arqueo y marco sus cuotas en una transacción: si algo falla no queda nada a medias.
+        // Con "idArqueo IS NULL" en el WHERE me aseguro de que una cuota nunca entre en dos arqueos.
+        // Devuelvo el id nuevo, o 0 si no se pudo guardar
         public static int GuardarArqueo(Arqueo arqueo, int legajo)
         {
             int id = 0;
@@ -215,6 +219,7 @@ namespace FixedSegurosApp.Datos
             return id;
         }
 
+        // Armo un Pago con la fila que estoy leyendo
         private static Pago LeerCuota(SqlDataReader leer)
         {
             Pago cuota = new Pago()
@@ -234,6 +239,7 @@ namespace FixedSegurosApp.Datos
             return cuota;
         }
 
+        // Armo un Arqueo con la fila que estoy leyendo
         private static Arqueo LeerArqueo(SqlDataReader leer)
         {
             Arqueo arqueo = new Arqueo()

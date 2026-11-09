@@ -6,16 +6,20 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
+    // Ventana principal: menú lateral según el perfil y, al centro, el panel donde abro cada módulo.
+    // Abajo está la barra con el perfil, la versión y el servidor
     public partial class Principal : Form
     {
         // El Login lo consulta para saber si tiene que volver a mostrarse
         public bool CerroSesion { get; private set; }
 
+        // Constructor de la ventana
         public Principal()
         {
             InitializeComponent();
         }
 
+        // Al abrir la ventana: estilos, el menú según el perfil, la barra de abajo y la pantalla Inicio
         private void Principal_Load(object sender, EventArgs e)
         {
             Persona usuario = Sesion.UsuarioActual;
@@ -38,14 +42,14 @@ namespace FixedSegurosApp.Vistas
             btn_inicio.PerformClick();
         }
 
-        // Es público porque el administrador puede cambiar su nombre desde Mi cuenta
+        // Muestro el nombre del usuario en el menú. Es público porque el administrador puede cambiar su nombre desde Mi cuenta
         public void MostrarNombreUsuario()
         {
             lbl_usuario.Text = Sesion.UsuarioActual.Apellido + ", " + Sesion.UsuarioActual.Nombre;
         }
 
         // Si hay novedades el botón del menú va en negrita y con la cantidad.
-        // Es público para que lo llame la pantalla Notificaciones al leer un aviso.
+        // Es público para que lo llame Notificaciones cuando se lee un aviso
         public void ActualizarNotificaciones()
         {
             if (Sesion.UsuarioActual.Perfil == "Administrador")
@@ -60,7 +64,7 @@ namespace FixedSegurosApp.Vistas
             btn_notificaciones.Font = new System.Drawing.Font("Segoe UI", 10F, nuevas > 0 || seleccionado ? System.Drawing.FontStyle.Bold : System.Drawing.FontStyle.Regular);
         }
 
-        // Muestra solo los modulos que puede ver cada perfil (tabla de la guia visual)
+        // Muestro solo los módulos que puede ver cada perfil; el FlowLayoutPanel acomoda los visibles sin dejar huecos
         private void ConfigurarMenu(string perfil)
         {
             btn_usuarios.Visible = perfil == "Administrador" || perfil == "Empleado";
@@ -73,7 +77,7 @@ namespace FixedSegurosApp.Vistas
             btn_notificaciones.Visible = perfil == "Empleado" || perfil == "Cliente";
         }
 
-        // Pinta el boton elegido con el navy oscuro y los demas con el navy principal
+        // Pinto el botón elegido con el azul oscuro y los demás con el azul principal
         private void SeleccionarBoton(Button seleccionado)
         {
             foreach (Button btn in flp_menu.Controls)
@@ -88,7 +92,7 @@ namespace FixedSegurosApp.Vistas
             ActualizarNotificaciones();
         }
 
-        // Todos los botones del menu usan este evento
+        // Todos los botones del menú usan este evento: según el botón tocado abro el módulo que corresponde
         private void btn_menu_Click(object sender, EventArgs e)
         {
             Button btn = (Button)sender;
@@ -153,7 +157,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Abre un módulo como si se hubiera tocado su botón del menú (lo usan los accesos de Inicio)
+        // Abro un módulo como si se hubiera tocado su botón del menú (lo usan los accesos rápidos de Inicio)
         public void AbrirModulo(string nombre)
         {
             foreach (Button btn in flp_menu.Controls)
@@ -165,8 +169,8 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Muestra un form dentro del panel de contenido (igual que en FinalTallerProg2).
-        // Es publico para que una pantalla pueda abrir otra (ej: Usuarios -> Historial).
+        // Muestro un form dentro del panel de contenido (igual que en FinalTallerProg2).
+        // Es público para que una pantalla pueda abrir otra (ej: Usuarios -> Historial)
         public void AbrirForm(Form formHijo)
         {
             if (pnl_contenido.Controls.Count > 0)
@@ -180,6 +184,7 @@ namespace FixedSegurosApp.Vistas
             formHijo.Show();
         }
 
+        // Cierro la sesión y vuelvo al Login
         private void btn_cerrar_sesion_Click(object sender, EventArgs e)
         {
             UsuarioNegocio.CerrarSesion();

@@ -8,16 +8,18 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Vehículos del cliente que inició sesión
+    // Vehículos del cliente que inició sesión: los carga con sus fotos, los corrige mientras están pendientes
+    // y actualiza la VTV. Un vehículo aprobado queda bloqueado
     public partial class MisVehiculos : Form
     {
         private BindingList<Vehiculo> listaVehiculos = new BindingList<Vehiculo>();
         private Vehiculo vehiculoSeleccionado;     // null = se esta cargando uno nuevo
         private PictureBox[] casilleros;           // los casilleros de fotos
 
-        // Las fotos que se ven en pantalla: posición -> foto (bytes). Se guardan recién al tocar "Guardar cambios".
+        // Las fotos que se ven en pantalla: posición -> foto (bytes). Las guardo recién al tocar "Guardar cambios"
         private Dictionary<string, byte[]> fotosActuales = new Dictionary<string, byte[]>();
 
+        // Conecto la grilla con la lista y armo los casilleros de fotos por código (GrillaFotos)
         public MisVehiculos()
         {
             InitializeComponent();
@@ -26,6 +28,7 @@ namespace FixedSegurosApp.Vistas
             casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 60, 52, casillero_Click);
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void MisVehiculos_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -41,6 +44,7 @@ namespace FixedSegurosApp.Vistas
             CargarDatos();
         }
 
+        // Cargo los vehículos del cliente
         public void CargarDatos()
         {
             listaVehiculos.Clear();
@@ -56,6 +60,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Cuando elijo un vehículo lo muestro a la derecha
         private void dgv_vehiculos_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_vehiculos.SelectedRows.Count == 0)
@@ -67,6 +72,7 @@ namespace FixedSegurosApp.Vistas
             MostrarVehiculo(VehiculoNegocio.BuscarMiVehiculo(fila.IdVehiculo));
         }
 
+        // Lleno el panel de la derecha con el vehículo, su revisión, su VTV y sus fotos
         private void MostrarVehiculo(Vehiculo vehiculo)
         {
             vehiculoSeleccionado = vehiculo;
@@ -84,7 +90,7 @@ namespace FixedSegurosApp.Vistas
             txt_chasis.Text = vehiculo.NumeroChasis;
             txt_motor.Text = vehiculo.NumeroMotor;
 
-            // las fotos se traen de la base recién ahora (pesan)
+            // las fotos las traigo de la base recién ahora, porque pesan
             fotosActuales = new Dictionary<string, byte[]>();
             foreach (FotoVehiculo foto in VehiculoNegocio.ListarFotos(vehiculo.IdVehiculo, Sesion.UsuarioActual.Legajo))
             {
@@ -99,7 +105,7 @@ namespace FixedSegurosApp.Vistas
             Bloquear(vehiculo.EstadoRevision == "Aprobado");
         }
 
-        // Deja el panel de la derecha vacio para cargar un vehículo nuevo
+        // Dejo el panel de la derecha vacío para cargar un vehículo nuevo
         private void LimpiarDetalle()
         {
             vehiculoSeleccionado = null;
@@ -130,7 +136,7 @@ namespace FixedSegurosApp.Vistas
             lbl_revision_motivo.Text = estado == "Rechazado" ? "Motivo: " + motivo + " Corrija y guarde para enviarlo de nuevo." : "";
         }
 
-        // Un vehículo aprobado solo cambia su VTV con "Actualizar VTV", que queda en revisión hasta que lo vea un empleado
+        // Muestro la VTV. Un vehículo aprobado solo cambia su VTV con "Actualizar VTV", que queda en revisión
         private void MostrarVtv(Vehiculo vehiculo)
         {
             btn_actualizar_vtv.Visible = vehiculo.EstadoRevision == "Aprobado" && !vehiculo.VtvEnRevision;
@@ -158,6 +164,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro la ventana Actualizar VTV y al volver recargo la lista
         private void btn_actualizar_vtv_Click(object sender, EventArgs e)
         {
             if (new ActualizarVtv(vehiculoSeleccionado).ShowDialog() == DialogResult.OK)
@@ -169,12 +176,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Una motocicleta lleva menos fotos que el resto
+        // Una motocicleta lleva menos fotos que el resto: reacomodo los casilleros
         private void cb_tipo_SelectedIndexChanged(object sender, EventArgs e)
         {
             GrillaFotos.Mostrar(casilleros, cb_tipo.Text);
         }
 
+        // Muestro en los casilleros las fotos que hay en el diccionario
         private void MostrarFotos()
         {
             for (int i = 0; i < casilleros.Length; i++)
@@ -184,6 +192,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Bloqueo o habilito los campos (un vehículo aprobado no se modifica)
         private void Bloquear(bool bloqueado)
         {
             cb_tipo.Enabled = !bloqueado;
@@ -199,7 +208,8 @@ namespace FixedSegurosApp.Vistas
             grp_fotos.Text = bloqueado ? "Fotos del vehículo (clic para verlas en grande)" : "Fotos del vehículo (clic en cada una para cargarla)";
         }
 
-        // Clic en un casillero: si el vehículo está aprobado se ve la foto en grande; si no, se elige la foto
+        // Clic en un casillero: si el vehículo está aprobado veo la foto en grande;
+        // si no, elijo la foto con un OpenFileDialog, la preparo y la guardo en el diccionario para esa posición
         private void casillero_Click(object sender, EventArgs e)
         {
             int numero = (int)((PictureBox)sender).Tag;
@@ -225,7 +235,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Foto: " + posicion, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Foto: " + posicion);
                     return;
                 }
 
@@ -234,6 +244,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Busco la fila del vehículo y la dejo elegida
         private void SeleccionarFila(int idVehiculo)
         {
             foreach (DataGridViewRow fila in dgv_vehiculos.Rows)
@@ -246,6 +257,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Botón Agregar vehículo
         private void btn_agregar_Click(object sender, EventArgs e)
         {
             dgv_vehiculos.ClearSelection();
@@ -253,6 +265,7 @@ namespace FixedSegurosApp.Vistas
             cb_tipo.Focus();
         }
 
+        // Guardo el vehículo: paso las fotos del diccionario a una lista y Negocio guarda todo junto
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -284,10 +297,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Mis vehículos", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Mis vehículos");
             }
         }
 
+        // Descarto los cambios y vuelvo a mostrar lo guardado
         private void btn_descartar_Click(object sender, EventArgs e)
         {
             if (vehiculoSeleccionado != null)
@@ -300,6 +314,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Elimino el vehículo, después de confirmar (solo si nunca tuvo póliza)
         private void btn_eliminar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -320,12 +335,12 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Mis vehículos", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Mis vehículos");
                 }
             }
         }
 
-        // Pinta las columnas VTV y Revisión con su color
+        // Pinto las columnas VTV y Revisión con su color
         private void dgv_vehiculos_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if ((e.ColumnIndex == col_vtv.Index || e.ColumnIndex == col_revision.Index) && e.Value != null)

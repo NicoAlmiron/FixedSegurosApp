@@ -7,7 +7,8 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Trámite en la oficina (solo Empleado): cliente, vehículo y póliza en una sola pantalla.
+    // Trámite en la oficina (solo el empleado): cliente, vehículo y póliza en una sola pantalla.
+    // Se guarda todo junto al tocar "Crear y contratar"
     public partial class AltaOficina : Form
     {
         private Persona clienteRegistrado;                  // null = cliente nuevo
@@ -17,6 +18,7 @@ namespace FixedSegurosApp.Vistas
         // Las fotos elegidas: posición -> foto (bytes)
         private Dictionary<string, byte[]> fotosActuales = new Dictionary<string, byte[]>();
 
+        // Preparo la grilla y armo los casilleros de fotos por código (GrillaFotos)
         public AltaOficina()
         {
             InitializeComponent();
@@ -24,6 +26,7 @@ namespace FixedSegurosApp.Vistas
             casilleros = GrillaFotos.Crear(grp_fotos, 10, 22, 57, 54, casillero_Click);
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void AltaOficina_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_cliente);
@@ -44,6 +47,7 @@ namespace FixedSegurosApp.Vistas
             Limpiar();
         }
 
+        // Dejo toda la pantalla vacía para un trámite nuevo
         private void Limpiar()
         {
             txt_dni.Clear();
@@ -51,7 +55,7 @@ namespace FixedSegurosApp.Vistas
             txt_dni.Focus();
         }
 
-        // Deja la tarjeta del cliente como cliente nuevo (no toca el DNI) y reinicia el vehículo
+        // Dejo la tarjeta del cliente como cliente nuevo (no toco el DNI) y reinicio el vehículo
         private void LimpiarCliente()
         {
             clienteRegistrado = null;
@@ -71,6 +75,7 @@ namespace FixedSegurosApp.Vistas
             CargarComboVehiculos();
         }
 
+        // Si el cliente ya existe, sus datos no se tocan desde acá: los bloqueo
         private void BloquearCliente(bool bloqueado)
         {
             txt_nombre.ReadOnly = bloqueado;
@@ -85,11 +90,13 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Cliente =================
 
+        // Botón Buscar del DNI
         private void btn_buscar_Click(object sender, EventArgs e)
         {
             BuscarCliente();
         }
 
+        // Si el DNI ya es de un cliente, cargo sus datos y sus vehículos; si no, queda como cliente nuevo
         private void BuscarCliente()
         {
             int dni;
@@ -126,7 +133,7 @@ namespace FixedSegurosApp.Vistas
             CargarComboVehiculos();
         }
 
-        // Si se cambia el DNI de un cliente ya encontrado, ya no es ese cliente
+        // Si cambian el DNI de un cliente ya encontrado, ya no es ese cliente
         private void txt_dni_TextChanged(object sender, EventArgs e)
         {
             if (clienteRegistrado != null && txt_dni.Text.Trim() != clienteRegistrado.Dni.ToString())
@@ -149,6 +156,7 @@ namespace FixedSegurosApp.Vistas
             cb_vehiculo.SelectedIndex = 0;
         }
 
+        // Al elegir un vehículo existente muestro sus datos; con "nuevo" habilito los campos y las fotos
         private void cb_vehiculo_SelectedIndexChanged(object sender, EventArgs e)
         {
             bool esNuevo = cb_vehiculo.SelectedIndex <= 0;
@@ -199,6 +207,7 @@ namespace FixedSegurosApp.Vistas
             CargarOfrecidas();
         }
 
+        // Muestro en los casilleros las fotos elegidas
         private void MostrarFotos()
         {
             for (int i = 0; i < casilleros.Length; i++)
@@ -208,6 +217,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Clic en un casillero: elijo la foto de esa posición y la preparo (legible y liviana)
         private void casillero_Click(object sender, EventArgs e)
         {
             int numero = (int)((PictureBox)sender).Tag;
@@ -224,7 +234,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Foto: " + posicion, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Foto: " + posicion);
                     return;
                 }
 
@@ -235,6 +245,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Póliza =================
 
+        // Cargo las pólizas ofrecidas para el tipo de vehículo
         private void CargarOfrecidas()
         {
             List<Poliza> ofrecidas = cb_tipo.Text == "" ? new List<Poliza>() : PolizaNegocio.ListarOfrecidas(cb_tipo.Text);
@@ -251,6 +262,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Al elegir una póliza muestro su detalle con las cuotas
         private void dgv_ofrecidas_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_ofrecidas.SelectedRows.Count > 0)
@@ -261,6 +273,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Confirmar =================
 
+        // Confirmo el trámite: Negocio valida todo y lo guarda en una sola transacción; después ofrezco cobrar la primera cuota
         private void btn_crear_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -300,7 +313,7 @@ namespace FixedSegurosApp.Vistas
 
             if (!AltaOficinaNegocio.Confirmar(cliente, txt_dni.Text.Trim(), vehiculo, txt_anio.Text.Trim(), fotos, nroOfrecida, out nroPoliza, out mensaje))
             {
-                MessageBox.Show(mensaje, "Alta en oficina", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Alta en oficina");
                 return;
             }
 
@@ -310,7 +323,7 @@ namespace FixedSegurosApp.Vistas
                 aviso += "El cliente entra con el usuario " + cliente.Dni + " y la contraseña " + cliente.Dni + ".\n";
             }
 
-            DialogResult respuesta = MessageBox.Show(aviso + "\n¿Cobrar la primera cuota ahora?", "Alta en oficina", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            DialogResult respuesta = MessageBox.Show(aviso + "\n¿Cobrar la primera cuota ahora?", "Alta en oficina", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (respuesta == DialogResult.Yes)
             {
                 ((Principal)this.ParentForm).AbrirForm(new Pagos(cliente.Dni));
@@ -321,11 +334,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Empiezo de nuevo
         private void btn_limpiar_Click(object sender, EventArgs e)
         {
             Limpiar();
         }
 
+        // Vuelvo a Pólizas
         private void btn_volver_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Polizas());

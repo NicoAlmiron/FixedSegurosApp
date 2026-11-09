@@ -1,6 +1,6 @@
 ﻿namespace FixedSegurosApp.Utilidades
 {
-    // Lista fija de provincias para los ComboBox (Registro, Usuarios, Proveedores)
+    // Lista fija de provincias para los combos (Registro, Usuarios, Proveedores, Mi cuenta)
     internal class Provincias
     {
         public static readonly string[] Lista =

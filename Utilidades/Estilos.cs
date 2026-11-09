@@ -1,49 +1,51 @@
-﻿using System;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace FixedSegurosApp.Utilidades
 {
-    // Colores, fuentes y estilos de la guia visual (Fixed_Seguros_WinForms.pdf)
+    // Acá junto los colores, las letras y el estilo de los controles, sacados de la guía visual
+    // (Fixed_Seguros_WinForms.pdf). Cada pantalla llama a estos métodos en su Load, así si quiero
+    // cambiar un color lo cambio en un solo lugar.
     internal class Estilos
     {
         // ---------- Paleta ----------
+        // static readonly: se crean una sola vez y no se pueden cambiar después
         public static readonly Color NavyPrincipal = Color.FromArgb(27, 58, 92);    // barra lateral y encabezados
-        public static readonly Color NavyOscuro = Color.FromArgb(18, 38, 63);       // item de menu seleccionado
+        public static readonly Color NavyOscuro = Color.FromArgb(18, 38, 63);       // ítem del menú seleccionado
         public static readonly Color Teal = Color.FromArgb(22, 127, 123);           // botones principales
-        public static readonly Color TealHover = Color.FromArgb(15, 102, 99);       // boton principal con el mouse encima
+        public static readonly Color TealHover = Color.FromArgb(15, 102, 99);       // botón principal con el mouse encima
         public static readonly Color Fondo = Color.FromArgb(243, 246, 250);         // fondo de los forms
         public static readonly Color Superficie = Color.White;                      // tarjetas, grillas y campos
-        public static readonly Color Borde = Color.FromArgb(213, 221, 232);         // lineas y bordes
+        public static readonly Color Borde = Color.FromArgb(213, 221, 232);         // líneas y bordes
         public static readonly Color Texto = Color.FromArgb(30, 42, 56);            // texto general
         public static readonly Color TextoSecundario = Color.FromArgb(91, 107, 127); // etiquetas y pie
         public static readonly Color Exito = Color.FromArgb(46, 125, 79);           // aprobado, pagada, activo
         public static readonly Color Advertencia = Color.FromArgb(154, 103, 0);     // pendiente, por vencer
         public static readonly Color Peligro = Color.FromArgb(192, 57, 43);         // rechazado, impaga, eliminar
-        public static readonly Color Informacion = Color.FromArgb(47, 111, 176);    // en evaluacion, avisos
+        public static readonly Color Informacion = Color.FromArgb(47, 111, 176);    // en evaluación, avisos
 
         // ---------- Fuentes ----------
         public static readonly Font Normal = new Font("Segoe UI", 9F);
         public static readonly Font Negrita = new Font("Segoe UI", 9F, FontStyle.Bold);
         public static readonly Font Titulo = new Font("Segoe UI Semibold", 16F);
 
-        // ---------- Botones (alto 32px, Flat, sin borde) ----------
+        // ---------- Botones (alto 32px, planos) ----------
+        // Los hago planos (FlatStyle.Flat) porque el estilo normal de Windows no deja cambiar el color de fondo
 
-        // Boton verde: Guardar, Ingresar, Nuevo...
+        // Botón verde: Guardar, Ingresar, Nuevo...
         public static void BotonPrincipal(Button btn)
         {
             btn.FlatStyle = FlatStyle.Flat;
             btn.FlatAppearance.BorderSize = 0;
-            btn.FlatAppearance.MouseOverBackColor = TealHover;
+            btn.FlatAppearance.MouseOverBackColor = TealHover;   // se oscurece al pasar el mouse
             btn.BackColor = Teal;
             btn.ForeColor = Color.White;
             btn.Font = Negrita;
             btn.Cursor = Cursors.Hand;
         }
 
-        // Boton blanco con borde navy: Cancelar, Descartar, Registrarme...
+        // Botón blanco con borde azul: Cancelar, Descartar, Registrarme...
         public static void BotonSecundario(Button btn)
         {
             btn.FlatStyle = FlatStyle.Flat;
@@ -56,7 +58,7 @@ namespace FixedSegurosApp.Utilidades
             btn.Cursor = Cursors.Hand;
         }
 
-        // Boton blanco con borde rojo: Eliminar, Dar de baja...
+        // Botón blanco con borde rojo: Eliminar, Dar de baja... Uso el secundario y le cambio el color
         public static void BotonPeligro(Button btn)
         {
             BotonSecundario(btn);
@@ -64,7 +66,7 @@ namespace FixedSegurosApp.Utilidades
             btn.ForeColor = Peligro;
         }
 
-        // Boton del menu lateral
+        // Botones del menú lateral: texto a la izquierda con un margen
         public static void BotonMenu(Button btn)
         {
             btn.FlatStyle = FlatStyle.Flat;
@@ -78,9 +80,10 @@ namespace FixedSegurosApp.Utilidades
             btn.Cursor = Cursors.Hand;
         }
 
-        // ---------- Grillas (encabezado navy, texto blanco) ----------
+        // ---------- Grillas (encabezado azul, texto blanco, filas alternadas) ----------
         public static void Grilla(DataGridView dgv)
         {
+            // solo para mirar: no se agregan, borran ni editan filas desde la grilla
             dgv.BackgroundColor = Superficie;
             dgv.BorderStyle = BorderStyle.None;
             dgv.GridColor = Borde;
@@ -95,6 +98,7 @@ namespace FixedSegurosApp.Utilidades
             dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgv.RowTemplate.Height = 40;
 
+            // sin esto Windows ignora los colores del encabezado
             dgv.EnableHeadersVisualStyles = false;
             dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
             dgv.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
@@ -115,6 +119,8 @@ namespace FixedSegurosApp.Utilidades
         public static void Tarjeta(Panel pnl)
         {
             pnl.BackColor = Superficie;
+
+            // el evento Paint se ejecuta cada vez que Windows redibuja el panel: ahí le dibujo el borde
             pnl.Paint += (sender, e) =>
             {
                 Panel p = (Panel)sender;
@@ -122,19 +128,20 @@ namespace FixedSegurosApp.Utilidades
             };
         }
 
-        // ---------- Gráficos: un eje, grilla suave y sin leyenda (una sola serie, la nombra el título) ----------
+        // ---------- Gráficos de Reportes: un eje, grilla suave y sin leyenda ----------
         public static void Grafico(Chart chart)
         {
+            // el ChartArea es la zona donde se dibujan las barras y los ejes
             ChartArea area = new ChartArea();
 
             area.BackColor = Superficie;
             area.AxisX.LineColor = Borde;
-            area.AxisX.MajorGrid.Enabled = false;
+            area.AxisX.MajorGrid.Enabled = false;          // sin líneas verticales
             area.AxisX.MajorTickMark.Enabled = false;
             area.AxisX.LabelStyle.Font = Normal;
             area.AxisX.LabelStyle.ForeColor = TextoSecundario;
             area.AxisY.LineColor = Color.Transparent;
-            area.AxisY.MajorGrid.LineColor = Borde;
+            area.AxisY.MajorGrid.LineColor = Borde;        // líneas horizontales suaves
             area.AxisY.MajorTickMark.Enabled = false;
             area.AxisY.LabelStyle.Font = Normal;
             area.AxisY.LabelStyle.ForeColor = TextoSecundario;
@@ -143,10 +150,12 @@ namespace FixedSegurosApp.Utilidades
             chart.BorderlineColor = Borde;
             chart.BorderlineDashStyle = ChartDashStyle.Solid;
             chart.ChartAreas.Add(area);
+
+            // le dejo un título vacío arriba; después Reportes le pone el texto
             chart.Titles.Add(new Title("", Docking.Top, Negrita, NavyPrincipal));
         }
 
-        // ---------- Color del texto de cada estado (para las grillas) ----------
+        // ---------- Color del texto de cada estado (para grillas y etiquetas) ----------
         public static Color ColorEstado(string estado)
         {
             switch (estado)
@@ -183,22 +192,36 @@ namespace FixedSegurosApp.Utilidades
 
         // ---------- Ventanas secundarias ----------
 
-        // Con ControlBox = false Windows descuenta el borde y el área útil queda más chica.
-        // Se llama en el Load de las ventanas con controles en posición fija.
+        // Con ControlBox = false Windows descuenta el borde y el espacio de adentro queda más chico.
+        // Lo llamo en el Load de las ventanas que tienen controles en posición fija para dejarles el tamaño justo.
         public static void AjustarVentana(Form ventana, int ancho, int alto)
         {
             ventana.Size += new Size(ancho - ventana.ClientSize.Width, alto - ventana.ClientSize.Height);
         }
 
-        // ---------- Texto de ayuda gris dentro de un TextBox ----------
-        // .NET Framework no trae PlaceholderText, por eso se le pide a Windows que lo muestre.
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, string lParam);
-
+        // ---------- Texto de ayuda gris dentro de un TextBox (placeholder) ----------
+        // .NET Framework 4.8 no tiene la propiedad PlaceholderText, así que lo armo yo:
+        // pongo un Label gris adentro del TextBox y lo escondo cuando el campo tiene algo escrito.
+        // El texto de ayuda no forma parte del campo: txt.Text sigue vacío.
         public static void Placeholder(TextBox txt, string texto)
         {
-            const int EM_SETCUEBANNER = 0x1501;
-            SendMessage(txt.Handle, EM_SETCUEBANNER, (IntPtr)1, texto);   // 1 = se ve aunque el campo tenga el foco
+            Label ayuda = new Label();
+            ayuda.Text = texto;
+            ayuda.Font = txt.Font;
+            ayuda.ForeColor = TextoSecundario;
+            ayuda.BackColor = txt.BackColor;      // mismo fondo que el campo, así parece escrito adentro
+            ayuda.AutoSize = true;
+            ayuda.Location = new Point(1, 1);
+            ayuda.Cursor = Cursors.IBeam;         // el cursor de escribir, como en el TextBox
+            ayuda.Visible = txt.Text == "";
+
+            // si hacen clic sobre el texto de ayuda, el foco pasa al campo para poder escribir
+            ayuda.Click += (sender, e) => txt.Focus();
+
+            // cada vez que cambia lo escrito, muestro la ayuda solo si el campo quedó vacío
+            txt.TextChanged += (sender, e) => ayuda.Visible = txt.Text == "";
+
+            txt.Controls.Add(ayuda);
         }
     }
 }

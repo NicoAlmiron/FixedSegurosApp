@@ -12,7 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
-    <ApplicationIcon>Resources\icono_FS.ico</ApplicationIcon>
+    <ApplicationIcon>Recursos\icono_FS.ico</ApplicationIcon>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -175,6 +175,24 @@
     <Compile Include="Vistas\Pagos\Pagos.Designer.cs">
       <DependentUpon>Pagos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Vistas\Pagos\PagoTarjeta.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Pagos\PagoTarjeta.Designer.cs">
+      <DependentUpon>PagoTarjeta.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Pagos\PagoTransferencia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Pagos\PagoTransferencia.Designer.cs">
+      <DependentUpon>PagoTransferencia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Pagos\PagoEfectivo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vistas\Pagos\PagoEfectivo.Designer.cs">
+      <DependentUpon>PagoEfectivo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Datos\PolizaDatos.cs" />
     <Compile Include="Negocio\PolizaNegocio.cs" />
     <Compile Include="Vistas\Polizas\Polizas.cs">
@@ -222,6 +240,7 @@
     <Compile Include="Datos\AccionDatos.cs" />
     <Compile Include="Negocio\UsuarioNegocio.cs" />
     <Compile Include="Negocio\ClienteNegocio.cs" />
+    <Compile Include="Utilidades\Avisos.cs" />
     <Compile Include="Utilidades\Estilos.cs" />
     <Compile Include="Utilidades\Sesion.cs" />
     <Compile Include="Utilidades\Provincias.cs" />
@@ -281,8 +300,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Resources\logo_FS.png" />
-    <Content Include="Resources\icono_FS.ico" />
+    <None Include="Recursos\logo_FS.png" />
+    <Content Include="Recursos\icono_FS.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

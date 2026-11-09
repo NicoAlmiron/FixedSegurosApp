@@ -7,9 +7,9 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Carga de reclamos: a la izquierda el reclamo, a la derecha la documentación, los reclamos y el seguimiento.
+    // Carga de reclamos: a la izquierda el reclamo; a la derecha la documentación, los reclamos y el seguimiento.
     // El cliente carga los suyos y puede reabrir uno Pendiente para corregirlo.
-    // El empleado busca al cliente por DNI y carga el reclamo en la oficina (queda En evaluación).
+    // El empleado busca al cliente por DNI y carga el reclamo en la oficina (queda En evaluación)
     public partial class MisSiniestros : Form
     {
         private bool esEmpleado;
@@ -18,12 +18,14 @@ namespace FixedSegurosApp.Vistas
         private List<byte[]> fotosNuevas = new List<byte[]>();
         private byte[] denunciaNueva;
 
+        // Constructor: preparo la grilla
         public MisSiniestros()
         {
             InitializeComponent();
             dgv_reclamos.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void MisSiniestros_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_form);
@@ -55,6 +57,7 @@ namespace FixedSegurosApp.Vistas
             NuevoReclamo();
         }
 
+        // El empleado busca al cliente por DNI
         private void btn_buscar_Click(object sender, EventArgs e)
         {
             int dni;
@@ -77,11 +80,13 @@ namespace FixedSegurosApp.Vistas
             NuevoReclamo();
         }
 
+        // El empleado vuelve a la pantalla Siniestros
         private void btn_volver_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Siniestros());
         }
 
+        // Cargo los reclamos del cliente y sus pólizas
         private void CargarReclamos()
         {
             List<Siniestro> reclamos = SiniestroNegocio.ListarReclamosDe(legajoCliente);
@@ -89,7 +94,7 @@ namespace FixedSegurosApp.Vistas
             lbl_reclamos_titulo.Text = (esEmpleado ? "Reclamos del cliente (" : "Mis reclamos (") + reclamos.Count + ")";
         }
 
-        // Deja el formulario vacío para iniciar un reclamo
+        // Dejo el formulario vacío para iniciar un reclamo
         private void NuevoReclamo()
         {
             reclamoActual = null;
@@ -138,7 +143,7 @@ namespace FixedSegurosApp.Vistas
             dgv_reclamos.ClearSelection();
         }
 
-        // Carga un reclamo en el formulario: si está Pendiente se puede corregir, si no solo se mira
+        // Cargo un reclamo en el formulario: si está Pendiente se puede corregir, si no solo se mira
         private void MostrarReclamo(Siniestro reclamo)
         {
             reclamoActual = reclamo;
@@ -181,6 +186,7 @@ namespace FixedSegurosApp.Vistas
             MostrarSeguimiento(reclamo);
         }
 
+        // Habilito o bloqueo los campos del formulario
         private void PermitirEdicion(bool editable)
         {
             cb_tipo.Enabled = editable;
@@ -193,7 +199,7 @@ namespace FixedSegurosApp.Vistas
             btn_enviar.Visible = editable;
         }
 
-        // Al elegir la póliza se completa el bien afectado
+        // Al elegir la póliza completo el bien afectado (el vehículo asegurado)
         private void cb_poliza_SelectedIndexChanged(object sender, EventArgs e)
         {
             Poliza poliza = cb_poliza.SelectedItem as Poliza;
@@ -214,6 +220,7 @@ namespace FixedSegurosApp.Vistas
             txt_anio.Text = vehiculo.Anio.ToString();
         }
 
+        // Vacío los datos del bien afectado
         private void LimpiarVehiculo()
         {
             txt_dominio.Text = "";
@@ -223,6 +230,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Documentación =================
 
+        // Muestro cuántas fotos y si hay denuncia: las recién elegidas o, si no, las que ya estaban guardadas
         private void MostrarAdjuntos()
         {
             int fotos = fotosNuevas.Count;
@@ -241,6 +249,7 @@ namespace FixedSegurosApp.Vistas
             lbl_denuncia.Text = denuncia ? "1 archivo adjunto" : "Sin adjuntar";
         }
 
+        // Elijo las fotos del daño (de 1 a 5) y las preparo para guardar
         private void btn_fotos_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialogo = new OpenFileDialog();
@@ -268,7 +277,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Siniestros");
                     return;
                 }
                 elegidas.Add(foto);
@@ -278,6 +287,7 @@ namespace FixedSegurosApp.Vistas
             MostrarAdjuntos();
         }
 
+        // Elijo la foto de la denuncia
         private void btn_denuncia_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialogo = new OpenFileDialog();
@@ -291,7 +301,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Siniestros");
                     return;
                 }
 
@@ -302,6 +312,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Enviar =================
 
+        // Envío el reclamo (nuevo o corregido): Negocio valida y lo guarda con sus adjuntos
         private void btn_enviar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -334,10 +345,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Siniestros", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Siniestros");
             }
         }
 
+        // Descarto lo escrito y empiezo un reclamo nuevo
         private void btn_cancelar_Click(object sender, EventArgs e)
         {
             NuevoReclamo();
@@ -345,7 +357,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Mis reclamos =================
 
-        // Se abre con un clic: al cargar la grilla no se elige ningún reclamo solo
+        // Abro un reclamo con un clic: al cargar la grilla no se elige ninguno solo
         private void dgv_reclamos_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -354,11 +366,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Dejo la grilla sin fila elegida
         private void dgv_reclamos_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
             dgv_reclamos.ClearSelection();
         }
 
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_reclamos_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)
@@ -370,6 +384,7 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Seguimiento =================
 
+        // Muestro en qué paso está el reclamo y las observaciones del empleado
         private void MostrarSeguimiento(Siniestro reclamo)
         {
             lbl_paso3.Text = "3. Resultado: Aprobado o Rechazado";
@@ -405,6 +420,7 @@ namespace FixedSegurosApp.Vistas
             lbl_observaciones.ForeColor = Estilos.Texto;
         }
 
+        // Marco un paso del seguimiento: hecho en verde y negrita, pendiente en gris
         private void MarcarPaso(Label paso, bool hecho)
         {
             paso.Font = hecho ? Estilos.Negrita : Estilos.Normal;

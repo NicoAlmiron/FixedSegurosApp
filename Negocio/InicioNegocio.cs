@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
-    // Resumen de la pantalla Inicio. Administrador y Empleado ven todo; el Cliente, solo lo suyo.
+    // Armo el resumen de Inicio. El administrador y el empleado ven todo; el cliente, solo lo suyo
     internal class InicioNegocio
     {
-        // Las cuatro tarjetas según el perfil
+        // Las cuatro tarjetas, según el perfil de quien inició sesión
         public static List<TarjetaInicio> ListarTarjetas()
         {
             Persona usuario = Sesion.UsuarioActual;
@@ -26,12 +26,14 @@ namespace FixedSegurosApp.Negocio
             return TarjetasAdministrador();
         }
 
+        // Las alertas de pólizas; el cliente solo ve las suyas
         public static List<AlertaPoliza> ListarAlertas(int idProveedor)
         {
             Persona usuario = Sesion.UsuarioActual;
             return InicioDatos.ListarAlertas(usuario.Perfil == "Cliente" ? usuario.Legajo : 0, idProveedor);
         }
 
+        // Tarjetas del administrador: vigentes, por vencer, cuotas impagas y aseguradoras
         private static List<TarjetaInicio> TarjetasAdministrador()
         {
             List<TarjetaInicio> lista = new List<TarjetaInicio>();
@@ -45,6 +47,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
+        // Tarjetas del empleado: lo que tiene para evaluar, por vencer y cuotas impagas
         private static List<TarjetaInicio> TarjetasEmpleado()
         {
             List<TarjetaInicio> lista = new List<TarjetaInicio>();
@@ -58,6 +61,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
+        // Tarjetas del cliente: sus pólizas, su próxima cuota, lo que debe y sus reclamos
         private static List<TarjetaInicio> TarjetasCliente(int legajo)
         {
             List<TarjetaInicio> lista = new List<TarjetaInicio>();
@@ -81,6 +85,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
+        // Armo una tarjeta
         private static TarjetaInicio Tarjeta(string titulo, string valor, string detalle, bool alerta)
         {
             return new TarjetaInicio() { Titulo = titulo, Valor = valor, Detalle = detalle, Alerta = alerta };

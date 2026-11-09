@@ -7,20 +7,22 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Estadísticas del sistema (solo Administrador). Las pestañas no tienen controles propios:
-    // todas comparten las tarjetas, los gráficos y la tabla, que se cargan con la sección elegida.
+    // Estadísticas del sistema (solo el administrador). Las pestañas no tienen controles propios:
+    // todas comparten las tarjetas, los gráficos y la tabla, que cargo con la sección elegida
     public partial class Reportes : Form
     {
         private DateTime desde;
         private DateTime hasta;
         private ReporteSeccion seccionActual;
 
+        // Las columnas de la tabla las armé en el diseñador
         public Reportes()
         {
             InitializeComponent();
             dgv_datos.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos del mes actual
         private void Reportes_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_tarjeta1);
@@ -43,13 +45,14 @@ namespace FixedSegurosApp.Vistas
             MostrarSeccion();
         }
 
+        // Consulto el período elegido, si es válido
         private void btn_consultar_Click(object sender, EventArgs e)
         {
             string mensaje;
 
             if (!ReporteNegocio.ValidarPeriodo(dtp_desde.Value, dtp_hasta.Value, out mensaje))
             {
-                MessageBox.Show(mensaje, "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Reportes");
                 return;
             }
 
@@ -58,11 +61,13 @@ namespace FixedSegurosApp.Vistas
             MostrarSeccion();
         }
 
+        // Al cambiar de pestaña cargo esa sección
         private void tab_secciones_SelectedIndexChanged(object sender, EventArgs e)
         {
             MostrarSeccion();
         }
 
+        // Pido a Negocio la sección de la pestaña elegida y lleno las tarjetas, los dos gráficos y la tabla
         private void MostrarSeccion()
         {
             seccionActual = ReporteNegocio.ArmarSeccion(tab_secciones.SelectedIndex, desde, hasta);
@@ -78,6 +83,7 @@ namespace FixedSegurosApp.Vistas
             dgv_datos.DataSource = seccionActual.Tabla;
         }
 
+        // Lleno una tarjeta; si es una alerta pinto el número de rojo
         private void MostrarTarjeta(TarjetaInicio tarjeta, Label titulo, Label valor, Label detalle)
         {
             titulo.Text = tarjeta.Titulo;
@@ -86,6 +92,8 @@ namespace FixedSegurosApp.Vistas
             detalle.Text = tarjeta.Detalle;
         }
 
+        // Paso los datos de un GraficoReporte al control Chart:
+        // creo la serie, cargo un punto por barra, pongo el título y ajusto los ejes
         private void MostrarGrafico(Chart chart, GraficoReporte grafico)
         {
             Series serie = new Series();
@@ -130,16 +138,19 @@ namespace FixedSegurosApp.Vistas
 
         // ================= Exportar =================
 
+        // El período en texto, para el archivo exportado
         private string TextoPeriodo()
         {
             return desde.ToString("dd/MM/yyyy") + " al " + hasta.ToString("dd/MM/yyyy");
         }
 
+        // Nombre sugerido del archivo: sección y fechas
         private string NombreArchivo()
         {
             return "Reporte " + seccionActual.Titulo + " " + desde.ToString("yyyy-MM-dd") + " a " + hasta.ToString("yyyy-MM-dd");
         }
 
+        // Exporto la sección a CSV: pregunto dónde guardarla y Exportar escribe el archivo
         private void btn_csv_Click(object sender, EventArgs e)
         {
             SaveFileDialog dialogo = new SaveFileDialog();
@@ -157,7 +168,7 @@ namespace FixedSegurosApp.Vistas
                 }
                 else
                 {
-                    MessageBox.Show(mensaje, "Reportes", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Reportes");
                 }
             }
         }

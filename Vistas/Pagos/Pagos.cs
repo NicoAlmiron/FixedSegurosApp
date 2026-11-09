@@ -8,7 +8,7 @@ using System.Windows.Forms;
 namespace FixedSegurosApp.Vistas
 {
     // Cuotas de las pólizas de un cliente: a la izquierda las cuotas, a la derecha pagar la que corresponde.
-    // El cliente ve las suyas; el empleado busca al cliente por DNI y le cobra en la oficina.
+    // El cliente ve las suyas; el empleado busca al cliente por DNI y le cobra en la oficina
     public partial class Pagos : Form
     {
         private int legajoCliente;
@@ -16,17 +16,20 @@ namespace FixedSegurosApp.Vistas
         private List<Pago> cuotas = new List<Pago>();
         private Pago cuotaSeleccionada;
 
+        // Las columnas de la grilla las armé en el diseñador
         public Pagos()
         {
             InitializeComponent();
             dgv_cuotas.AutoGenerateColumns = false;
         }
 
+        // El Alta en oficina abre la pantalla con el cliente ya buscado
         public Pagos(int dni) : this()
         {
             dniInicial = dni;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Pagos_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -65,6 +68,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // El empleado busca al cliente por DNI y cargo sus pólizas
         private void BuscarCliente()
         {
             int dni;
@@ -86,11 +90,13 @@ namespace FixedSegurosApp.Vistas
             CargarPolizas();
         }
 
+        // Botón Buscar
         private void btn_buscar_Click(object sender, EventArgs e)
         {
             BuscarCliente();
         }
 
+        // Cargo las pólizas del cliente en el combo
         private void CargarPolizas()
         {
             List<Poliza> polizas = PagoNegocio.ListarPolizasDe(legajoCliente);
@@ -105,6 +111,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Al elegir una póliza cargo sus cuotas
         private void cb_poliza_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cb_poliza.SelectedItem is Poliza)
@@ -113,7 +120,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
-        // Carga las cuotas de la póliza y deja elegida la que hay que pagar
+        // Cargo las cuotas de la póliza y dejo elegida la que hay que pagar
         private void CargarCuotas()
         {
             Poliza poliza = (Poliza)cb_poliza.SelectedItem;
@@ -134,6 +141,7 @@ namespace FixedSegurosApp.Vistas
             MostrarCuota(cuotas[fila]);
         }
 
+        // Cuando elijo una cuota la muestro a la derecha
         private void dgv_cuotas_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_cuotas.SelectedRows.Count == 0)
@@ -144,6 +152,7 @@ namespace FixedSegurosApp.Vistas
             MostrarCuota((Pago)dgv_cuotas.SelectedRows[0].DataBoundItem);
         }
 
+        // Muestro la cuota elegida, los métodos de pago y el aviso que corresponde (pagada, en orden, solo en efectivo...)
         private void MostrarCuota(Pago cuota)
         {
             cuotaSeleccionada = cuota;
@@ -191,11 +200,11 @@ namespace FixedSegurosApp.Vistas
             }
             else if (cuota.Estado == "Vencida")
             {
-                lbl_aviso.Text = "Regularice el pago para mantener la cobertura de la póliza. Al confirmar, el sistema registra la operación y le asigna un número.";
+                lbl_aviso.Text = "Regularice el pago para mantener la cobertura de la póliza. Elija el método y presione Pagar.";
             }
             else
             {
-                lbl_aviso.Text = "Al confirmar, el sistema registra la operación y le asigna un número.";
+                lbl_aviso.Text = "Elija el método y presione Pagar. Al registrarse, el pago recibe un N° de operación.";
             }
 
             cb_metodo.Enabled = sePuedePagar;
@@ -203,34 +212,37 @@ namespace FixedSegurosApp.Vistas
             btn_cancelar.Visible = sePuedePagar;
         }
 
+        // Abro la pantalla del método elegido. Solo el efectivo (empleado) registra el pago:
+        // tarjeta y transferencia son pantallas simuladas porque todavía no hay conexión con bancos
         private void btn_pagar_Click(object sender, EventArgs e)
         {
-            string mensaje;
             Poliza poliza = (Poliza)cb_poliza.SelectedItem;
-            int idPago = cuotaSeleccionada.IdPago;
 
-            DialogResult respuesta = MessageBox.Show("¿Pagar la cuota " + cuotaSeleccionada.Cuota + " de la póliza " + poliza.NroTexto + " por $ " + cuotaSeleccionada.Monto.ToString("N2") + " con " + cb_metodo.Text + "?", "Pagar cuota", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (respuesta == DialogResult.Yes)
+            if (cb_metodo.Text == PagoNegocio.Efectivo)
             {
-                if (PagoNegocio.Pagar(poliza, idPago, cb_metodo.Text, legajoCliente, out mensaje))
+                PagoEfectivo cobro = new PagoEfectivo(poliza, cuotaSeleccionada, legajoCliente);
+                if (cobro.ShowDialog() == DialogResult.OK)
                 {
-                    MessageBox.Show("Pago registrado. N° de operación: " + idPago.ToString("000000") + ".", "Pagar cuota", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     CargarCuotas();
                 }
-                else
-                {
-                    MessageBox.Show(mensaje, "Pagar cuota", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
+            }
+            else if (cb_metodo.Text == "Transferencia bancaria")
+            {
+                new PagoTransferencia(poliza, cuotaSeleccionada).ShowDialog();
+            }
+            else
+            {
+                new PagoTarjeta(poliza, cuotaSeleccionada, cb_metodo.Text).ShowDialog();
             }
         }
 
-        // Vuelve a la cuota que corresponde pagar
+        // Vuelvo a la cuota que corresponde pagar
         private void btn_cancelar_Click(object sender, EventArgs e)
         {
             CargarCuotas();
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_cuotas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

@@ -5,12 +5,14 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
-    // Consultas de Reportes (solo lectura). @desde y @hasta limitan el período: @hasta es el día siguiente al último.
+    // Consultas de Reportes (solo leen). @desde y @hasta limitan el período: @hasta es el día siguiente al último,
+    // así entra todo el último día. Las que dicen "hoy" no dependen del período
     internal class ReporteDatos
     {
+        // La fecha de hoy sin la hora, para usar dentro de las consultas
         private const string hoy = "CAST(GETDATE() AS DATE)";
 
-        // ================= Totales =================
+        // ================= Totales (los números de las tarjetas) =================
 
         public static int ContarClientesActivos()
         {
@@ -84,7 +86,7 @@ namespace FixedSegurosApp.Datos
             return Sumar("SELECT SUM(monto) FROM Pago WHERE estadoPago = 1 AND fechaPago >= @desde AND fechaPago < @hasta", desde, hasta);
         }
 
-        // Misma regla que Comisiones: % de la póliza sobre cada cuota cobrada en el período
+        // Misma regla que Comisiones: el % de la póliza sobre cada cuota cobrada en el período
         public static decimal SumarComision(DateTime desde, DateTime hasta)
         {
             return Sumar("SELECT SUM(pa.monto * po.comision / 100) FROM Pago pa " +
@@ -102,7 +104,8 @@ namespace FixedSegurosApp.Datos
             return Sumar("SELECT SUM(montoReclamado) FROM Siniestro WHERE fechaRegistro >= @desde AND fechaRegistro < @hasta", desde, hasta);
         }
 
-        // ================= Agrupados (Detalle, Cantidad, Monto) =================
+        // ================= Agrupados: cada consulta devuelve filas (Detalle, Cantidad, Monto) =================
+        // Cada fila es una barra del gráfico y una fila de la tabla
 
         public static List<FilaReporte> CobradoPorMes(DateTime desde, DateTime hasta)
         {
@@ -185,24 +188,27 @@ namespace FixedSegurosApp.Datos
                            "GROUP BY modulo ORDER BY COUNT(*) DESC", desde, hasta, false);
         }
 
-        // ================= Consultas =================
+        // ================= Métodos que ejecutan las consultas =================
 
+        // COUNT sin período
         private static int Contar(string query)
         {
             return Contar(query, DateTime.Today, DateTime.Today);
         }
 
+        // COUNT con período
         private static int Contar(string query, DateTime desde, DateTime hasta)
         {
             return Convert.ToInt32(Escalar(query, desde, hasta));
         }
 
+        // SUM con período
         private static decimal Sumar(string query, DateTime desde, DateTime hasta)
         {
             return Escalar(query, desde, hasta);
         }
 
-        // El resultado de una consulta de un solo valor. SUM sin filas devuelve NULL: vale 0.
+        // Ejecuto una consulta que devuelve un solo valor. Si SUM no encuentra filas devuelve NULL: en ese caso devuelvo 0
         private static decimal Escalar(string query, DateTime desde, DateTime hasta)
         {
             decimal valor = 0;
@@ -234,6 +240,7 @@ namespace FixedSegurosApp.Datos
             return valor;
         }
 
+        // Ejecuto una consulta con GROUP BY y armo una FilaReporte por cada grupo
         private static List<FilaReporte> Agrupar(string query, DateTime desde, DateTime hasta, bool tieneMonto)
         {
             List<FilaReporte> lista = new List<FilaReporte>();

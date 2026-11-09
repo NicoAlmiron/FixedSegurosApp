@@ -8,14 +8,15 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // ABM de pólizas (Administrador y Empleado).
-    // Se cargan pólizas "Ofrecidas"; el cliente las adquiere desde su pantalla (MisPolizas).
+    // Pantalla Pólizas (administrador y empleado): cargo pólizas "Ofrecidas" y doy de baja.
+    // El cliente las contrata desde su pantalla (MisPolizas)
     public partial class Polizas : Form
     {
         private BindingList<Poliza> listaPolizas = new BindingList<Poliza>();
         private Poliza polizaSeleccionada;   // null = se está cargando una póliza nueva
         private int nroInicial;
 
+        // Conecto la grilla con la lista
         public Polizas()
         {
             InitializeComponent();
@@ -29,6 +30,7 @@ namespace FixedSegurosApp.Vistas
             nroInicial = nroPoliza;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Polizas_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -70,11 +72,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Vuelvo a buscar las pólizas con el texto del buscador
         public void CargarDatos()
         {
             CargarLista(PolizaNegocio.ListarPolizas(txt_buscar.Text));
         }
 
+        // Paso el resultado a la lista que muestra la grilla
         private void CargarLista(List<Poliza> resultado)
         {
             listaPolizas.Clear();
@@ -90,6 +94,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Cuando elijo una póliza la muestro a la derecha
         private void dgv_polizas_SelectionChanged(object sender, EventArgs e)
         {
             if (dgv_polizas.SelectedRows.Count == 0)
@@ -101,6 +106,7 @@ namespace FixedSegurosApp.Vistas
             MostrarPoliza(PolizaNegocio.BuscarPorNro(fila.NroPoliza));
         }
 
+        // Lleno el panel de la derecha con la póliza; si es contratada muestro a quién pertenece y sus cuotas
         private void MostrarPoliza(Poliza poliza)
         {
             polizaSeleccionada = poliza;
@@ -154,7 +160,7 @@ namespace FixedSegurosApp.Vistas
             btn_baja.Enabled = poliza.Estado != "Baja";
         }
 
-        // Deja el panel de la derecha vacío para cargar una póliza nueva
+        // Dejo el panel de la derecha vacío para cargar una póliza nueva
         private void LimpiarDetalle()
         {
             polizaSeleccionada = null;
@@ -203,6 +209,7 @@ namespace FixedSegurosApp.Vistas
             btn_descartar.Visible = !bloqueado;
         }
 
+        // Busco la fila de la póliza en la grilla y la dejo elegida
         private void SeleccionarFila(int nroPoliza)
         {
             foreach (DataGridViewRow fila in dgv_polizas.Rows)
@@ -215,11 +222,13 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Busco mientras se escribe
         private void txt_buscar_TextChanged(object sender, EventArgs e)
         {
             CargarDatos();
         }
 
+        // Botón Nueva póliza
         private void btn_nueva_Click(object sender, EventArgs e)
         {
             dgv_polizas.ClearSelection();
@@ -227,6 +236,7 @@ namespace FixedSegurosApp.Vistas
             cb_aseguradora.Focus();
         }
 
+        // Guardo la póliza: los montos van como texto y los valida Negocio
         private void btn_guardar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -254,10 +264,11 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Pólizas", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Pólizas");
             }
         }
 
+        // Descarto los cambios y vuelvo a mostrar lo guardado
         private void btn_descartar_Click(object sender, EventArgs e)
         {
             if (polizaSeleccionada != null)
@@ -270,6 +281,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Doy de baja la póliza elegida, después de confirmar
         private void btn_baja_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -284,12 +296,12 @@ namespace FixedSegurosApp.Vistas
                 ? "¿Dar de baja la póliza " + polizaSeleccionada.NroTexto + "?\nLos clientes ya no podrán contratarla."
                 : "¿Dar de baja la póliza " + polizaSeleccionada.NroTexto + " de " + polizaSeleccionada.Cliente + "?\nEl vehículo " + polizaSeleccionada.Dominio + " queda sin cobertura y se anulan las cuotas que todavía no vencieron.";
 
-            DialogResult respuesta = MessageBox.Show(pregunta, "Pólizas", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            DialogResult respuesta = MessageBox.Show(pregunta, "Pólizas", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (respuesta == DialogResult.Yes)
             {
                 if (!PolizaNegocio.DarDeBaja(polizaSeleccionada, out mensaje))
                 {
-                    MessageBox.Show(mensaje, "Pólizas", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Pólizas");
                 }
                 int nro = polizaSeleccionada.NroPoliza;
                 CargarDatos();
@@ -297,17 +309,19 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro el Alta en oficina (solo el empleado)
         private void btn_alta_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new AltaOficina());
         }
 
+        // Abro Comisiones (solo el administrador)
         private void btn_comision_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirForm(new Comisiones());
         }
 
-        // Pinta la columna Estado con el color que le corresponde
+        // Pinto la columna Estado con el color que le corresponde (evento que se ejecuta antes de mostrar cada celda)
         private void dgv_polizas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_estado.Index && e.Value != null)

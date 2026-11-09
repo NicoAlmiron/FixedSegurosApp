@@ -6,8 +6,10 @@ using System.Data.SqlClient;
 namespace FixedSegurosApp.Datos
 {
     // Consultas del "Detalle del cliente". Todas buscan por el legajo (idPersona) del cliente.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class ClienteDatos
     {
+        // Traigo las observaciones que dejó el empleado o el administrador sobre el cliente
         public static string BuscarObservaciones(int legajo)
         {
             string observaciones = "";
@@ -39,6 +41,7 @@ namespace FixedSegurosApp.Datos
             return observaciones;
         }
 
+        // Guardo las observaciones del cliente
         public static bool GuardarObservaciones(int legajo, string observaciones)
         {
             bool estado = false;
@@ -70,6 +73,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
+        // Todas las cuotas de todas las pólizas del cliente, pagadas o no (pestaña Pagos)
         public static List<Pago> ListarPagos(int legajo)
         {
             List<Pago> lista = new List<Pago>();
@@ -118,6 +122,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
+        // Los reclamos del cliente (pestaña Siniestros)
         public static List<Siniestro> ListarSiniestros(int legajo)
         {
             List<Siniestro> lista = new List<Siniestro>();

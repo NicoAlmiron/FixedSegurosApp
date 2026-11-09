@@ -5,22 +5,23 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
-    // El cliente ve sus avisos y, al abrirlos, quedan leídos.
-    // El empleado ve lo que tiene para evaluar y, debajo, los avisos de los clientes (sin marcarlos).
+    // Reglas de Notificaciones. El cliente ve sus avisos y, al abrirlos, quedan leídos.
+    // El empleado ve lo que tiene para evaluar y, debajo, los avisos de los clientes (sin marcarlos)
     internal class NotificacionNegocio
     {
-        // Se llama al iniciar sesión
+        // Genero los avisos que falten. Lo llamo al iniciar sesión
         public static void GenerarAvisos()
         {
             NotificacionDatos.GenerarNotificaciones();
         }
 
-        // Aviso de un reclamo: "El expediente 000033 " + texto
+        // Aviso al cliente de un cambio en su reclamo: "El expediente 000033 " + texto
         public static void AvisarSiniestro(Siniestro siniestro, string texto)
         {
             NotificacionDatos.CrearNotificacion(siniestro.NroPoliza, "Siniestro", "El expediente " + siniestro.ExpedienteTexto + " " + texto);
         }
 
+        // Los tipos de aviso del filtro, según el perfil
         public static string[] TiposDe(string perfil)
         {
             if (perfil == "Empleado")
@@ -31,7 +32,7 @@ namespace FixedSegurosApp.Negocio
             return new string[] { "Todos", "Por vencer", "Cuota impaga", "Siniestro", "VTV" };
         }
 
-        // soloNuevas: al cliente le deja las no leídas; al empleado, lo pendiente
+        // Listo los avisos con el filtro. soloNuevas: al cliente le dejo las no leídas; al empleado, lo pendiente
         public static List<Notificacion> Listar(string tipo, bool soloNuevas)
         {
             Persona usuario = Sesion.UsuarioActual;
@@ -69,7 +70,7 @@ namespace FixedSegurosApp.Negocio
             return lista;
         }
 
-        // Lo que se muestra en el menú: avisos sin leer del cliente o pendientes del empleado
+        // El número que muestra el menú: avisos sin leer del cliente o pendientes del empleado
         public static int ContarNuevas()
         {
             Persona usuario = Sesion.UsuarioActual;
@@ -82,8 +83,8 @@ namespace FixedSegurosApp.Negocio
             return NotificacionDatos.ContarSinLeerCliente(usuario.Legajo);
         }
 
-        // Solo cuenta lo que abre el cliente. Devuelve true si el aviso pasó a leído.
-        // Abrir un aviso no queda en el historial de acciones.
+        // Solo cuenta cuando el aviso lo abre el cliente. Devuelvo true si pasó a leído.
+        // Abrir un aviso no lo guardo en el historial de acciones
         public static bool MarcarLeida(Notificacion notificacion)
         {
             Persona usuario = Sesion.UsuarioActual;

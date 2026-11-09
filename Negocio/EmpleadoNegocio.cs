@@ -6,13 +6,17 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
+    // Reglas de la pantalla Empleados y del detalle del empleado (solo el administrador).
+    // Negocio valida lo que llega de la pantalla, aplica las reglas, llama a Datos y registra la acción en el historial. No escribe SQL.
     internal class EmpleadoNegocio
     {
+        // Lista para la grilla con el texto de búsqueda
         public static List<Empleado> ListarEmpleados(string buscar)
         {
             return EmpleadoDatos.ListarEmpleados(buscar.Trim());
         }
 
+        // Un empleado por legajo
         public static Empleado BuscarPorLegajo(int legajo)
         {
             return EmpleadoDatos.BuscarPorLegajo(legajo);
@@ -20,21 +24,24 @@ namespace FixedSegurosApp.Negocio
 
         // ================= Detalle del empleado (administrador) =================
 
+        // Las pólizas que cargó o vendió el empleado
         public static List<Poliza> ListarPolizas(int legajo)
         {
             return PolizaDatos.ListarPolizasDeEmpleado(legajo);
         }
 
+        // Los reclamos que tiene a cargo
         public static List<Siniestro> ListarSiniestros(int legajo)
         {
             return SiniestroDatos.ListarDeEmpleado(legajo);
         }
 
+        // Todo lo que hizo en el sistema
         public static List<Accion> ListarHistorial(int legajo)
         {
             return AccionDatos.ListarAccionesDeUsuario(legajo);
         }
-        // Guarda puesto y fecha de ingreso
+        // Guardo puesto y fecha de ingreso (la fecha no puede ser futura)
         public static bool GuardarEmpleado(Empleado empleado, out string mensaje)
         {
             if (!PuedeModificar(empleado.Legajo, out mensaje))
@@ -64,7 +71,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Por habilitar o Deshabilitado -> Habilitado. Necesita tener un puesto asignado.
+        // Por habilitar o Deshabilitado -> Habilitado. Necesita tener un puesto asignado
         public static bool Habilitar(int legajo, out string mensaje)
         {
             if (!PuedeModificar(legajo, out mensaje))
@@ -91,7 +98,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // Habilitado -> Deshabilitado
+        // Habilitado -> Deshabilitado: ya no puede iniciar sesión
         public static bool Deshabilitar(int legajo, out string mensaje)
         {
             if (!PuedeModificar(legajo, out mensaje))
@@ -134,6 +141,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
+        // Dejo la acción en el historial con el legajo del empleado
         private static void Registrar(string accion, int legajo)
         {
             AccionDatos.RegistrarAccion(Sesion.UsuarioActual.Legajo, "Empleados", accion, "Legajo " + legajo.ToString("0000"));

@@ -5,12 +5,14 @@ using System.Collections.Generic;
 
 namespace FixedSegurosApp.Negocio
 {
-    // Arma cada pestaña de Reportes. "Hoy" es una foto del momento; lo demás depende del período elegido.
+    // Armo cada pestaña de Reportes con sus tarjetas, gráficos y tabla.
+    // "Hoy" es una foto del momento; lo demás depende del período elegido
     internal class ReporteNegocio
     {
         private const string Hoy = "Hoy";
         private const string EnPeriodo = "En el período";
 
+        // Controlo que la fecha Desde no sea posterior a la fecha Hasta
         public static bool ValidarPeriodo(DateTime desde, DateTime hasta, out string mensaje)
         {
             mensaje = "";
@@ -24,7 +26,7 @@ namespace FixedSegurosApp.Negocio
             return true;
         }
 
-        // El orden es el de las pestañas de la pantalla
+        // Armo la sección de la pestaña elegida; el orden es el de las pestañas de la pantalla
         public static ReporteSeccion ArmarSeccion(int indice, DateTime desde, DateTime hasta)
         {
             switch (indice)
@@ -44,6 +46,7 @@ namespace FixedSegurosApp.Negocio
             }
         }
 
+        // Pestaña General
         private static ReporteSeccion General(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("General");
@@ -58,6 +61,7 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Pestaña Pólizas
         private static ReporteSeccion Polizas(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("Pólizas");
@@ -72,6 +76,7 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Pestaña Cobranzas
         private static ReporteSeccion Cobranzas(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("Cobranzas");
@@ -87,6 +92,7 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Pestaña Siniestros
         private static ReporteSeccion Siniestros(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("Siniestros");
@@ -106,6 +112,7 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Pestaña Clientes y vehículos
         private static ReporteSeccion ClientesYVehiculos(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("Clientes y vehículos");
@@ -120,6 +127,7 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Pestaña Personal
         private static ReporteSeccion Personal(DateTime desde, DateTime hasta)
         {
             ReporteSeccion seccion = Seccion("Personal");
@@ -134,16 +142,19 @@ namespace FixedSegurosApp.Negocio
             return seccion;
         }
 
+        // Sección vacía con su título
         private static ReporteSeccion Seccion(string titulo)
         {
             return new ReporteSeccion() { Titulo = titulo, Tarjetas = new List<TarjetaInicio>() };
         }
 
+        // Armo una tarjeta
         private static TarjetaInicio Tarjeta(string titulo, string valor, string detalle, bool alerta)
         {
             return new TarjetaInicio() { Titulo = titulo, Valor = valor, Detalle = detalle, Alerta = alerta };
         }
 
+        // Armo un gráfico y le pongo a cada fila el título del gráfico, para la tabla
         private static GraficoReporte Grafico(string titulo, List<FilaReporte> filas, bool porMonto, bool vertical)
         {
             foreach (FilaReporte fila in filas)
@@ -154,6 +165,7 @@ namespace FixedSegurosApp.Negocio
             return new GraficoReporte() { Titulo = titulo, Filas = filas, PorMonto = porMonto, Vertical = vertical };
         }
 
+        // Monto con formato de plata, sin decimales: "$ 45.000"
         private static string Plata(decimal monto)
         {
             return "$ " + monto.ToString("N0");

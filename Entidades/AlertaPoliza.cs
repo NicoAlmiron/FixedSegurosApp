@@ -2,7 +2,7 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Fila de la grilla de Inicio: una póliza por vencer o con cuotas vencidas sin pagar
+    // Una fila de las alertas de Inicio: una póliza que está por vencer o que tiene cuotas vencidas sin pagar
     public class AlertaPoliza
     {
         public int NroPoliza { get; set; }
@@ -12,14 +12,14 @@ namespace FixedSegurosApp.Entidades
         public DateTime Vence { get; set; }
         public int CuotasVencidas { get; set; }
 
-        // ---------- Para mostrar en la grilla ----------
+        // ---------- Propiedades calculadas: no están en la base, las armo para mostrar en la grilla ----------
 
         public string NroTexto
         {
             get { return NroPoliza.ToString("000000"); }
         }
 
-        // La cuota impaga va primero: es lo más urgente
+        // Si tiene las dos cosas muestro la cuota impaga, porque es lo más urgente
         public string Alerta
         {
             get

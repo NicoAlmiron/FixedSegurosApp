@@ -2,6 +2,7 @@
 
 namespace FixedSegurosApp.Entidades
 {
+    // Un vehículo de un cliente, con los datos de la revisión del empleado y de la VTV
     public class Vehiculo
     {
         public int IdVehiculo { get; set; }
@@ -15,13 +16,13 @@ namespace FixedSegurosApp.Entidades
         public string NumeroMotor { get; set; }
         public int NroPoliza { get; set; }          // 0 = sin póliza vigente
 
-        // Revisión: un empleado o administrador aprueba el vehículo antes de que pueda tener póliza
+        // Revisión: un empleado o el administrador aprueba el vehículo antes de que pueda tener póliza
         public string EstadoRevision { get; set; }          // Pendiente / Aprobado / Rechazado
         public string ObservacionRevision { get; set; }     // motivo del rechazo
         public string Revisor { get; set; }                 // "Apellido, Nombre" de quien lo revisó
         public DateTime? FechaRevision { get; set; }
 
-        // Renovación de la VTV: el vehículo sigue aprobado mientras un empleado la revisa
+        // Renovación de la VTV: el vehículo sigue aprobado mientras un empleado revisa la VTV nueva
         public DateTime? VigenciaVtvNueva { get; set; }     // null = no hay nada para revisar
         public DateTime? FechaEnvioVtv { get; set; }
         public string ObservacionVtv { get; set; }          // motivo del rechazo de la renovación
@@ -36,8 +37,8 @@ namespace FixedSegurosApp.Entidades
             get { return VigenciaVtvNueva != null; }
         }
 
-        // Con la VTV vencida el servicio se suspende, salvo que la renovación se haya enviado antes de vencer.
-        // La misma regla está en VehiculoDatos.Suspendido, para las consultas.
+        // Con la VTV vencida el servicio se suspende, salvo que el cliente haya mandado la renovación antes de que venza.
+        // La misma regla la tengo en VehiculoDatos.Suspendido, para usarla en las consultas SQL
         public bool ServicioSuspendido
         {
             get { return !VtvVigente && (FechaEnvioVtv == null || FechaEnvioVtv.Value.Date > VigenciaVtv); }

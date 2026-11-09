@@ -6,11 +6,13 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
-    // Los cambios exigen en el WHERE el estado esperado: si otro usuario ya movió el reclamo, no se pisa nada.
+    // Consultas de Siniestros (reclamos) y sus adjuntos.
+    // Cada cambio pide en el WHERE el estado esperado: si otro usuario ya movió el reclamo, no piso nada.
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class SiniestroDatos
     {
-        // Columnas que usan las consultas (en el mismo orden que LeerSiniestro).
-        // Los adjuntos solo se cuentan: los bytes se piden con ListarAdjuntos porque pesan.
+        // Columnas que usan las consultas (mismo orden que LeerSiniestro).
+        // Los adjuntos solo los cuento: los bytes los pido aparte con ListarAdjuntos porque pesan
         private const string columnas = "SELECT s.idSiniestro, s.idPoliza, s.fechaOcurrencia, s.fechaRegistro, s.tipoSiniestro, s.ubicacion, " +
                                         "s.descripcion, s.observaciones, s.resultado, s.estado, s.fechaResolucion, s.montoReclamado, " +
                                         "p.apellido + ', ' + p.nombre, v.dominio, r.apellido + ', ' + r.nombre, " +
@@ -25,7 +27,7 @@ namespace FixedSegurosApp.Datos
                                         "LEFT JOIN Empleado e ON e.idEmpleado = s.idEmpleado " +
                                         "LEFT JOIN Persona r ON r.idPersona = e.idPersona ";
 
-        // Todos los reclamos (empleado). Con estado "Todos" no filtra.
+        // Todos los reclamos (empleado). Con estado "Todos" no filtro
         public static List<Siniestro> ListarSiniestros(string estado)
         {
             List<Siniestro> lista = new List<Siniestro>();
@@ -93,7 +95,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Los reclamos que tiene a cargo un empleado (fue el último que actuó)
+        // Los reclamos que tiene a cargo un empleado (el último que actuó)
         public static List<Siniestro> ListarDeEmpleado(int legajoEmpleado)
         {
             List<Siniestro> lista = new List<Siniestro>();
@@ -127,7 +129,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Las fotos o la denuncia de un reclamo, según el tipo
+        // Las fotos, la denuncia o el formulario de un reclamo, según el tipo
         public static List<AdjuntoSiniestro> ListarAdjuntos(int idSiniestro, string tipo)
         {
             List<AdjuntoSiniestro> lista = new List<AdjuntoSiniestro>();
@@ -167,8 +169,8 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Guarda el reclamo y sus adjuntos en una transacción. Si lo cargó un empleado, queda como responsable
-        // (legajoEmpleado = 0 si lo cargó el cliente). Devuelve el N° de expediente, o 0 si no se pudo guardar.
+        // Guardo el reclamo y sus adjuntos en una transacción. Si lo cargó un empleado, queda como responsable
+        // (legajoEmpleado = 0 si lo cargó el cliente). Devuelvo el N° de expediente, o 0 si no se pudo guardar
         public static int CrearSiniestro(Siniestro siniestro, List<AdjuntoSiniestro> adjuntos, int legajoEmpleado)
         {
             int id = 0;
@@ -215,8 +217,8 @@ namespace FixedSegurosApp.Datos
             return id;
         }
 
-        // Corrige un reclamo Pendiente del cliente. Los adjuntos nuevos reemplazan a los del mismo tipo;
-        // el tipo que no viene en la lista queda como estaba.
+        // El cliente corrige su reclamo mientras está Pendiente. Los adjuntos nuevos reemplazan a los de su tipo;
+        // el tipo que no viene en la lista queda como estaba
         public static bool EditarSiniestro(Siniestro siniestro, List<AdjuntoSiniestro> adjuntosNuevos, int legajoCliente)
         {
             bool estado = false;
@@ -275,7 +277,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // El empleado que actúa queda como responsable. Un reclamo resuelto ya no cambia.
+        // Guardo las observaciones del empleado; el que actúa queda como responsable. Un reclamo resuelto ya no cambia
         public static bool GuardarObservaciones(int idSiniestro, string observaciones, int legajoEmpleado)
         {
             bool estado = false;
@@ -310,7 +312,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Documentación verificada: el reclamo pasa de Pendiente a En evaluación
+        // La documentación está verificada: el reclamo pasa de Pendiente a En evaluación
         public static bool PasarAEvaluacion(int idSiniestro, string observaciones, int legajoEmpleado)
         {
             bool estado = false;
@@ -345,7 +347,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Guarda el formulario de un reclamo En evaluación: las fotos nuevas reemplazan a las anteriores.
+        // Guardo el formulario de un reclamo En evaluación: las fotos nuevas reemplazan a las anteriores
         public static bool GuardarFormulario(int idSiniestro, List<AdjuntoSiniestro> formulario, int legajoEmpleado)
         {
             bool estado = false;
@@ -394,7 +396,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Registra el resultado final (Aprobado o Rechazado). Solo si el reclamo sigue en estadoActual.
+        // Registro el resultado final (Aprobado o Rechazado), solo si el reclamo sigue en estadoActual
         public static bool Resolver(int idSiniestro, string estadoActual, string resultado, string observaciones, decimal monto, int legajoEmpleado)
         {
             bool estado = false;
@@ -433,6 +435,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
+        // Inserto cada adjunto con la misma conexión y transacción del reclamo
         private static void GuardarAdjuntos(SqlConnection con, SqlTransaction transaccion, int idSiniestro, List<AdjuntoSiniestro> adjuntos)
         {
             foreach (AdjuntoSiniestro adjunto in adjuntos)
@@ -447,6 +450,7 @@ namespace FixedSegurosApp.Datos
             }
         }
 
+        // Parámetros comunes del alta y la modificación del reclamo
         private static void CargarParametros(SqlCommand sql, Siniestro siniestro)
         {
             sql.Parameters.AddWithValue("@fecha", siniestro.FechaOcurrencia);
@@ -456,6 +460,7 @@ namespace FixedSegurosApp.Datos
             sql.Parameters.AddWithValue("@monto", siniestro.MontoReclamado);
         }
 
+        // Armo un Siniestro con la fila que estoy leyendo
         private static Siniestro LeerSiniestro(SqlDataReader leer)
         {
             Siniestro siniestro = new Siniestro()

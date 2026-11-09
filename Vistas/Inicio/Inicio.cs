@@ -7,16 +7,18 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // Pantalla de entrada: cuatro tarjetas de resumen según el perfil y las pólizas que requieren atención.
-    // El Administrador tiene además accesos rápidos; todos entran a Mi cuenta.
+    // Pantalla de entrada: cuatro tarjetas de resumen según el perfil y las pólizas que necesitan atención.
+    // El administrador tiene además accesos rápidos; todos entran a Mi cuenta
     public partial class Inicio : Form
     {
+        // Las columnas de la grilla las armé en el diseñador
         public Inicio()
         {
             InitializeComponent();
             dgv_alertas.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Inicio_Load(object sender, EventArgs e)
         {
             string perfil = Sesion.UsuarioActual.Perfil;
@@ -62,6 +64,7 @@ namespace FixedSegurosApp.Vistas
             MostrarAvisoContrasena();
         }
 
+        // Lleno las cuatro tarjetas con lo que me devuelve Negocio
         private void CargarTarjetas()
         {
             List<TarjetaInicio> tarjetas = InicioNegocio.ListarTarjetas();
@@ -72,6 +75,7 @@ namespace FixedSegurosApp.Vistas
             MostrarTarjeta(tarjetas[3], lbl_titulo4, lbl_valor4, lbl_detalle4);
         }
 
+        // Lleno una tarjeta; si es una alerta pinto el número de rojo
         private void MostrarTarjeta(TarjetaInicio tarjeta, Label titulo, Label valor, Label detalle)
         {
             titulo.Text = tarjeta.Titulo;
@@ -80,6 +84,7 @@ namespace FixedSegurosApp.Vistas
             detalle.Text = tarjeta.Detalle;
         }
 
+        // Si el usuario sigue con su DNI como contraseña le muestro un aviso.
         // El aviso ocupa una franja debajo de las tarjetas; sin aviso la grilla sube y usa ese lugar
         private void MostrarAvisoContrasena()
         {
@@ -92,6 +97,7 @@ namespace FixedSegurosApp.Vistas
             pnl_alertas.Height = abajo - pnl_alertas.Top;
         }
 
+        // Cargo las pólizas por vencer o con cuotas impagas, filtradas por aseguradora
         private void CargarAlertas(int idProveedor)
         {
             List<AlertaPoliza> alertas = InicioNegocio.ListarAlertas(idProveedor);
@@ -100,6 +106,7 @@ namespace FixedSegurosApp.Vistas
             lbl_cantidad.Text = alertas.Count == 0 ? "No hay pólizas que requieran atención" : "Mostrando " + alertas.Count + (alertas.Count == 1 ? " póliza" : " pólizas");
         }
 
+        // Al cambiar la aseguradora del filtro, recargo las alertas
         private void cb_aseguradora_SelectedIndexChanged(object sender, EventArgs e)
         {
             Proveedor aseguradora = cb_aseguradora.SelectedItem as Proveedor;
@@ -110,6 +117,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Abro Mi cuenta como ventana aparte y al volver actualizo el nombre y el aviso
         private void btn_mi_cuenta_Click(object sender, EventArgs e)
         {
             new MiCuenta().ShowDialog();
@@ -117,16 +125,19 @@ namespace FixedSegurosApp.Vistas
             ((Principal)this.ParentForm).MostrarNombreUsuario();
         }
 
+        // Acceso rápido a Pólizas
         private void btn_nueva_poliza_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirModulo("Pólizas");
         }
 
+        // Acceso rápido a Empleados
         private void btn_habilitar_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirModulo("Empleados");
         }
 
+        // Acceso rápido a Proveedores
         private void btn_aseguradora_Click(object sender, EventArgs e)
         {
             ((Principal)this.ParentForm).AbrirModulo("Proveedores");
@@ -138,7 +149,7 @@ namespace FixedSegurosApp.Vistas
             dgv_alertas.ClearSelection();
         }
 
-        // Pinta la alerta: rojo si debe cuotas, amarillo si está por vencer
+        // Pinto la alerta: rojo si debe cuotas, amarillo si está por vencer
         private void dgv_alertas_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.ColumnIndex == col_alerta.Index && e.Value != null)

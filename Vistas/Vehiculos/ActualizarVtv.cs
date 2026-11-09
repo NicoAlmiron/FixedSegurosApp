@@ -6,12 +6,13 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // El cliente carga la nueva vigencia y la foto de la VTV renovada; después la corrobora un empleado
+    // Ventana aparte: el cliente carga la nueva vigencia y la foto de la VTV renovada; después la corrobora un empleado
     public partial class ActualizarVtv : Form
     {
         private Vehiculo vehiculo;
         private byte[] fotoNueva;
 
+        // Recibo el vehículo, muestro su VTV actual y propongo una fecha nueva
         public ActualizarVtv(Vehiculo vehiculoActual)
         {
             InitializeComponent();
@@ -30,11 +31,13 @@ namespace FixedSegurosApp.Vistas
             dtp_vigencia.Value = sugerida > vehiculo.VigenciaVtv ? sugerida : vehiculo.VigenciaVtv.AddYears(1);
         }
 
+        // Ajusto el tamaño de la ventana
         private void ActualizarVtv_Load(object sender, EventArgs e)
         {
             Estilos.AjustarVentana(this, 440, 312);
         }
 
+        // Elijo la foto de la VTV nueva y la preparo (legible y liviana)
         private void btn_foto_Click(object sender, EventArgs e)
         {
             OpenFileDialog dialogo = new OpenFileDialog();
@@ -48,7 +51,7 @@ namespace FixedSegurosApp.Vistas
 
                 if (foto == null)
                 {
-                    MessageBox.Show(mensaje, "Actualizar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    Avisos.Problema(mensaje, "Actualizar VTV");
                     return;
                 }
 
@@ -57,6 +60,7 @@ namespace FixedSegurosApp.Vistas
             }
         }
 
+        // Envío la renovación: queda en revisión hasta que la vea un empleado
         private void btn_enviar_Click(object sender, EventArgs e)
         {
             string mensaje;
@@ -68,7 +72,7 @@ namespace FixedSegurosApp.Vistas
             }
             else
             {
-                MessageBox.Show(mensaje, "Actualizar VTV", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                Avisos.Problema(mensaje, "Actualizar VTV");
             }
         }
     }

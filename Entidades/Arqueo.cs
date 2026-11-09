@@ -2,7 +2,8 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Cierre de comisiones de un rango de meses. Sus cuotas quedan marcadas con Pago.idArqueo
+    // Un cierre de comisiones de un rango de meses (lo guarda el administrador).
+    // Las cuotas que entran en el arqueo quedan marcadas con Pago.idArqueo, así no se liquidan dos veces
     public class Arqueo
     {
         public int IdArqueo { get; set; }
@@ -13,7 +14,7 @@ namespace FixedSegurosApp.Entidades
         public decimal TotalCobrado { get; set; }
         public decimal TotalComision { get; set; }
 
-        // Para mostrar en la grilla
+        // Textos armados para mostrar en la grilla
         public string NroTexto
         {
             get { return IdArqueo.ToString("000000"); }

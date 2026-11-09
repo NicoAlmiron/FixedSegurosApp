@@ -1,6 +1,6 @@
 ﻿namespace FixedSegurosApp.Entidades
 {
-    // Foto del daño, denuncia o formulario de un reclamo (se guarda dentro de la base)
+    // Un archivo de un reclamo (foto del daño, denuncia o formulario). La imagen la guardo dentro de la base, como bytes
     public class AdjuntoSiniestro
     {
         public string Tipo { get; set; }        // Foto / Denuncia / Formulario

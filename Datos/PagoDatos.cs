@@ -5,9 +5,11 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de Pagos (tabla Pago: una fila por cuota).
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class PagoDatos
     {
-        // Cuotas de una póliza. El legajo asegura que la póliza sea de ese cliente.
+        // Las cuotas de una póliza. Pido también el legajo para asegurarme de que la póliza sea de ese cliente
         public static List<Pago> ListarCuotas(int nroPoliza, int legajoCliente)
         {
             List<Pago> lista = new List<Pago>();
@@ -58,8 +60,8 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Marca la cuota como pagada con la fecha de hoy. No toca cuotas ya pagadas ni de otro cliente
-        // (las condiciones están en el WHERE). La fecha nunca es anterior: de eso depende que un arqueo cerrado no cambie.
+        // Marco la cuota como pagada con la fecha de hoy. No toco cuotas ya pagadas ni de otro cliente (está en el WHERE).
+        // La fecha nunca es anterior a hoy: de eso depende que un arqueo cerrado no cambie
         public static bool RegistrarPago(int idPago, string metodoPago, int legajoCliente)
         {
             bool estado = false;

@@ -5,13 +5,15 @@ using System.Data.SqlClient;
 
 namespace FixedSegurosApp.Datos
 {
+    // Consultas de la pantalla Empleados (tablas Persona + Empleado).
+    // Todos los métodos siguen el mismo esquema: abro la conexión, armo el SqlCommand con parámetros (@...), leo o ejecuto, y en el finally cierro la conexión.
     internal class EmpleadoDatos
     {
-        // Columnas que usan ListarEmpleados y BuscarPorLegajo (en el mismo orden que LeerEmpleado)
+        // Columnas que usan ListarEmpleados y BuscarPorLegajo (mismo orden que LeerEmpleado)
         private const string columnas = "SELECT p.idPersona, p.nombre, p.apellido, p.dni, e.puesto, e.fechaIngreso, e.estado, p.estado " +
                                         "FROM Empleado e JOIN Persona p ON p.idPersona = e.idPersona ";
 
-        // Lista para la grilla. Si "buscar" tiene texto, filtra por legajo, DNI o apellido.
+        // Lista para la grilla. Si "buscar" tiene texto, filtro por legajo, DNI o apellido
         public static List<Empleado> ListarEmpleados(string buscar)
         {
             List<Empleado> lista = new List<Empleado>();
@@ -50,7 +52,7 @@ namespace FixedSegurosApp.Datos
             return lista;
         }
 
-        // Devuelve null si el legajo no es de un empleado
+        // Busco un empleado por legajo; si el legajo no es de un empleado devuelvo null
         public static Empleado BuscarPorLegajo(int legajo)
         {
             Empleado empleado = null;
@@ -84,7 +86,7 @@ namespace FixedSegurosApp.Datos
             return empleado;
         }
 
-        // Guarda puesto y fecha de ingreso
+        // Guardo el puesto y la fecha de ingreso
         public static bool EditarEmpleado(Empleado empleado)
         {
             bool estado = false;
@@ -117,7 +119,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Por habilitar / Habilitado / Deshabilitado
+        // Cambio la habilitación: Por habilitar / Habilitado / Deshabilitado
         public static bool CambiarEstado(int legajo, string nuevoEstado)
         {
             bool estado = false;
@@ -149,7 +151,7 @@ namespace FixedSegurosApp.Datos
             return estado;
         }
 
-        // Arma un Empleado con la fila actual del lector
+        // Armo un Empleado con la fila que estoy leyendo
         private static Empleado LeerEmpleado(SqlDataReader leer)
         {
             Empleado empleado = new Empleado()

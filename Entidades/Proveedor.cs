@@ -2,7 +2,7 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Compañía aseguradora que ofrece pólizas
+    // Una compañía aseguradora que ofrece pólizas
     public class Proveedor
     {
         public int IdProveedor { get; set; }

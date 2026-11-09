@@ -6,11 +6,11 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp
 {
+    // Lo primero que se ejecuta al abrir el programa
     internal static class Program
     {
-        /// <summary>
-        /// Punto de entrada principal para la aplicación.
-        /// </summary>
+        // Punto de entrada: preparo el estilo visual de Windows y abro el Login.
+        // Application.Run deja el programa abierto hasta que se cierra esa ventana
         [STAThread]
         static void Main()
         {

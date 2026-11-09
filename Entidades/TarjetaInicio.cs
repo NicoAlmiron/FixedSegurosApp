@@ -1,6 +1,6 @@
 ﻿namespace FixedSegurosApp.Entidades
 {
-    // Una de las cuatro tarjetas de resumen de la pantalla Inicio
+    // Una de las cuatro tarjetas de resumen de Inicio (también las uso en Reportes)
     public class TarjetaInicio
     {
         public string Titulo { get; set; }

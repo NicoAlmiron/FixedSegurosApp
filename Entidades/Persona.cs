@@ -2,6 +2,8 @@
 
 namespace FixedSegurosApp.Entidades
 {
+    // Datos comunes de cualquier usuario del sistema. Cliente y Empleado heredan de Persona.
+    // El legajo es el idPersona de la base
     public class Persona
     {
         public int Legajo { get; set; }

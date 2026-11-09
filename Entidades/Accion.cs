@@ -2,7 +2,8 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Una fila del historial de acciones de usuarios
+    // Una fila del historial de acciones: quién hizo qué, en qué módulo y cuándo.
+    // Las entidades solo llevan datos de una capa a otra; no tienen lógica ni SQL.
     public class Accion
     {
         public DateTime Fecha { get; set; }

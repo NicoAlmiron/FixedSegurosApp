@@ -7,20 +7,22 @@ using System.Windows.Forms;
 
 namespace FixedSegurosApp.Vistas
 {
-    // A la izquierda la lista, a la derecha el detalle del aviso que se abre con un clic.
+    // A la izquierda la lista y a la derecha el detalle del aviso que se abre con un clic.
     // Cliente: sus avisos; al abrir uno queda leído.
-    // Empleado: arriba lo que tiene para evaluar y debajo los avisos de los clientes, con si los vieron.
+    // Empleado: arriba lo que tiene para evaluar y debajo los avisos de los clientes
     public partial class Notificaciones : Form
     {
         private bool esEmpleado;
         private Notificacion notificacionActual;
 
+        // Constructor de la pantalla
         public Notificaciones()
         {
             InitializeComponent();
             dgv_notificaciones.AutoGenerateColumns = false;
         }
 
+        // Al abrir la pantalla le aplico los estilos y cargo los datos
         private void Notificaciones_Load(object sender, EventArgs e)
         {
             Estilos.Tarjeta(pnl_lista);
@@ -50,16 +52,19 @@ namespace FixedSegurosApp.Vistas
             cb_tipo.SelectedIndex = 0;     // al elegirlo se carga la lista
         }
 
+        // Al cambiar el filtro de tipo, recargo la lista
         private void cb_tipo_SelectedIndexChanged(object sender, EventArgs e)
         {
             CargarLista();
         }
 
+        // Al marcar "solo nuevas", recargo la lista
         private void chk_nuevas_CheckedChanged(object sender, EventArgs e)
         {
             CargarLista();
         }
 
+        // Cargo los avisos con los filtros elegidos
         private void CargarLista()
         {
             List<Notificacion> lista = NotificacionNegocio.Listar(cb_tipo.Text, chk_nuevas.Checked);
@@ -74,6 +79,7 @@ namespace FixedSegurosApp.Vistas
             dgv_notificaciones.ClearSelection();
         }
 
+        // Clic en un aviso: lo abro y, si es del cliente, queda leído
         private void dgv_notificaciones_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0)
@@ -92,6 +98,7 @@ namespace FixedSegurosApp.Vistas
             MostrarNotificacion(notificacion);
         }
 
+        // Muestro el detalle del aviso y el botón para ir a lo que corresponde
         private void MostrarNotificacion(Notificacion notificacion)
         {
             notificacionActual = notificacion;
@@ -133,7 +140,7 @@ namespace FixedSegurosApp.Vistas
             btn_ver.Visible = notificacion.EsPendiente || notificacion.NroPoliza != 0;
         }
 
-        // El panel queda a la vista, vacío y sin acciones
+        // Dejo el panel a la vista, vacío y sin acciones
         private void LimpiarDetalle(string aviso)
         {
             notificacionActual = null;
@@ -148,6 +155,7 @@ namespace FixedSegurosApp.Vistas
             btn_ver.Visible = false;
         }
 
+        // Llevo al usuario a la pantalla del aviso: la póliza, el reclamo o el detalle del cliente
         private void btn_ver_Click(object sender, EventArgs e)
         {
             Principal principal = (Principal)this.ParentForm;

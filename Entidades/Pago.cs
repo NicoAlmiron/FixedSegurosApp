@@ -2,7 +2,7 @@
 
 namespace FixedSegurosApp.Entidades
 {
-    // Una cuota de una póliza
+    // Una cuota de una póliza. Cada póliza tiene una fila por cuota en la tabla Pago
     public class Pago
     {
         public int IdPago { get; set; }             // N° de operación
@@ -14,7 +14,7 @@ namespace FixedSegurosApp.Entidades
         public string MetodoPago { get; set; }
         public bool Pagada { get; set; }
 
-        // Datos para el cálculo de comisiones
+        // Estos datos los uso solo en el cálculo de comisiones
         public string Cliente { get; set; }
         public string Aseguradora { get; set; }
         public decimal PorcentajeComision { get; set; }
@@ -30,7 +30,7 @@ namespace FixedSegurosApp.Entidades
             get { return IdArqueo == 0 ? "Sin liquidar" : "Arqueo " + IdArqueo.ToString("000000"); }
         }
 
-        // Pagada, o Vencida si ya pasó la fecha, o Pendiente
+        // El estado no lo guardo: lo calculo. Pagada, Vencida si ya pasó la fecha sin pagar, o Pendiente
         public string Estado
         {
             get
